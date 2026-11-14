@@ -4,7 +4,7 @@ Generated: 2026-11-14. Description: "MVP (Этап 1) КвестКласс 2 п�
 
 ## Summary
 - Total items: 61
-- Pending: 0 | Done: 60 (FEAT-001–FEAT-046, FEAT-048–FEAT-061; FEAT-061 — базы скриншотов админки с новым пунктом меню ждут Docker; FEAT-046 с оговоркой про GHCR-токен; FEAT-050 условно — нет замера из Калининграда) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
+- Pending: 0 | Done: 60 (FEAT-001–FEAT-046, FEAT-048–FEAT-061; FEAT-046 с оговоркой про GHCR-токен; FEAT-050 условно — нет замера из Калининграда) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
 - Items requiring user decision: 1 — FEAT-047 (где хранить бэкапы), после MVP. Открытый вопрос из FEAT-041: должен ли сброс прогресса требовать пересмотра видео (сейчас нет).
 - Critic iterations: 3 (+ патч после вердикта)
 - Critic verdict: halted at max iterations; HIGH и MED третьего круга закрыты патчем после вердикта (повторно не критиковались), 11 LOW — известные риски
@@ -1529,7 +1529,7 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Плагин Vite берёт адрес API из прокси `/api` своего сервера (dev, e2e, демо); URL с `?v=` идёт в API сразу.
   - Проверено вживую на демо: замена логотипа видна в шапке после обновления, возврат отдаёт встроенный PNG; на 390 px без горизонтальной прокрутки.
   - Тесты: `apps/web/test/admin-appearance.test.tsx` (3), `e2e/admin-appearance.spec.ts` (замена логотипа → тот же адрес отдаёт WebP, шапка 256 px → возврат → PNG 192 px; база `admin-appearance` из Docker). Юнит-тестов 950.
-  - **Осталось:** пересобрать в Docker базы скриншотов админских экранов (в меню новый пункт) — `pnpm e2e:docker --update-snapshots=changed`, Docker был занят.
+  - Раздел есть на главной кабинета («Все разделы» с подписью) и в поиске действий («логотип», «звук», «картинка»…). Базы `admin-home` пересняты в Docker; полный e2e — 102 зелёных.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: запрос пользователя.
