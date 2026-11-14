@@ -163,6 +163,24 @@ export const routes: RouteObject[] = [
                       Component: (await import('../screens/admin/Awards')).Awards,
                     }),
                   },
+                  {
+                    path: 'shop',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/ShopItems')).ShopItems,
+                    }),
+                  },
+                  {
+                    path: 'shop/:id',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/ShopItemEdit')).ShopItemEdit,
+                    }),
+                  },
+                  {
+                    path: 'wishes',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/WishFulfillment')).WishFulfillment,
+                    }),
+                  },
                   { path: '*', element: <AdminStub title="Такой страницы нет" /> },
                 ],
               },

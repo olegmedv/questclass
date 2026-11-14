@@ -7,7 +7,9 @@ import {
   ListChecks,
   Settings,
   Shapes,
+  ShoppingBag,
   TabletSmartphone,
+  Ticket,
   ToastProvider,
   Users,
 } from '@questclass/ui';
@@ -47,6 +49,18 @@ export const ADMIN_SECTIONS: readonly AdminSection[] = [
     icon: <ClipboardCheck aria-hidden="true" />,
   },
   { id: 'awards', label: 'Награды', href: '/admin/awards', icon: <Gift aria-hidden="true" /> },
+  {
+    id: 'shop',
+    label: 'Магазин',
+    href: '/admin/shop',
+    icon: <ShoppingBag aria-hidden="true" />,
+  },
+  {
+    id: 'wishes',
+    label: 'Выдача желаний',
+    href: '/admin/wishes',
+    icon: <Ticket aria-hidden="true" />,
+  },
   {
     id: 'settings',
     label: 'Настройки',
