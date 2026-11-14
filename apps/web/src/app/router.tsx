@@ -4,6 +4,8 @@ import { Login } from '../screens/auth/Login';
 import { Setup } from '../screens/auth/Setup';
 import { Hero } from '../screens/learner/Hero';
 import { Home } from '../screens/learner/Home';
+import { Progress } from '../screens/learner/Progress';
+import { Rewards } from '../screens/learner/Rewards';
 import { Shop } from '../screens/learner/Shop';
 import { TaskScreen } from '../screens/learner/TaskScreen';
 import { Wishes } from '../screens/learner/Wishes';
@@ -14,11 +16,6 @@ import { DevToolsGate, RequireRole, SetupGate } from './guards';
 import { AdminLayout, LearnerLayout } from './layouts';
 
 const LATER = 'Этот экран появится в следующих версиях.';
-
-/** Temporary content of a learner route whose screen arrives in a later plan item. */
-function LearnerStub({ title }: { title: string }) {
-  return <EmptyState headingLevel={1} plain title={title} description={LATER} />;
-}
 
 /** The same inside the admin shell. */
 function AdminStub({ title }: { title: string }) {
@@ -53,7 +50,8 @@ export const routes: RouteObject[] = [
                   { path: '/', element: <Home /> },
                   { path: '/hero', element: <Hero /> },
                   { path: '/shop', element: <Shop /> },
-                  { path: '/rewards', element: <LearnerStub title="Мои награды" /> },
+                  { path: '/rewards', element: <Rewards /> },
+                  { path: '/progress', element: <Progress /> },
                   { path: '/wishes', element: <Wishes /> },
                 ],
               },
