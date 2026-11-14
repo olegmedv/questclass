@@ -349,7 +349,15 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - `GET /api/tasks` для ученика: published, наступил `release_at`, назначено ему; «нет назначений» = все **активные** ученики на момент запроса. Config — только через `publicConfig` (тесты + строки FEAT-049).
 
 ### FEAT-054 — Вопросы (версии) и расшифровки
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Ресурс вопроса — `(task, key)`, версии — его история: `GET/POST /api/admin/tasks/:taskId/questions` (`?archived=true` — все версии), `GET …/questions/:key/versions`, `PUT …/questions/:key` (новая версия, редактируемая архивируется), `DELETE …/questions/:key` (архив всех живых версий ключа; повтор — 404), `POST …/question-imports {content, append?}`, `GET/POST /api/admin/tasks/:taskId/transcripts` (тело до 4 МБ).
+  - Колонки сверх DoD: `state active|pending`, `source import|admin`, `position`, `created_by/at`, `archived_by`. Импорт (`importVersions(taskId, questions, {state})` для FEAT-012) считает конфликтом ключ, чья последняя версия создана админом **или** архивирована админом — так удалённый мамой вопрос не воскресает. Импортные вопросы, которых нет в новом пакете, попадают в `removed` (в режиме `active` архивируются, в `pending` только сообщаются). Для FEAT-010/013 — `activeBank()` и `countActive()`.
+  - Админский импорт текста/JSON: формат определяется по содержимому, как в оригинале; 3–30 вопросов, ровно 4 различных варианта; без `append` живой банк архивируется и заменяется (источник `admin`, новые ключи). Парсер `shared/questions/importText.ts` написан заново по описанию поведения (код оригинала не копировался); `helpVideo {startSeconds,endSeconds,quote}` оригинала → `evidence {start,end,quote}`.
+  - Картинки — только относительные пути (ведущий `/` срезается, `{src}` оригинала принимается); внешние URL отклоняются (без сторонних CDN).
+  - FK `questions.task_id` и `transcripts.task_id` — `ON DELETE CASCADE`: это содержимое задания, не история; задание без истории удаляется вместе с ними, а попытки (FEAT-010) будут ссылаться на вопросы с RESTRICT и такое удаление заблокируют. `transcripts.media_id` без FK: таблицы `media` ещё нет (FEAT-011), а добавить FK к существующей колонке можно только пересборкой таблицы.
+  - Строки FEAT-049 добавлены (8 маршрутов). RSS в простое 72,9 МиБ.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: SPEC §8 «questions (task_id, text, options, correct, image, evidence)», «transcripts»; Critique 1 HIGH#6, MED#7.

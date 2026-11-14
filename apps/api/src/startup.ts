@@ -7,6 +7,7 @@ import { trustedProxiesFromSettings } from './http/clientIp';
 import { createAuditService } from './modules/audit/service';
 import { createAuthService } from './modules/auth/service';
 import { createLedgerService } from './modules/ledger/service';
+import { createQuestionsService } from './modules/questions/service';
 import { createKeyring } from './modules/settings/crypto';
 import { loadOrCreateMasterKey } from './modules/settings/masterKey';
 import { createSettingsService } from './modules/settings/service';
@@ -62,6 +63,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
     const taskTypes = createTaskTypeRegistry();
     const subjects = createSubjectsService(db, { audit });
     const tasks = createTasksService(db, { audit, settings, ledger, users, subjects, taskTypes });
+    const questions = createQuestionsService(db, { audit });
     const ctx: AppContext = {
       config,
       db,
@@ -74,6 +76,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       taskTypes,
       subjects,
       tasks,
+      questions,
       trustedProxies: trustedProxiesFromSettings(settings),
     };
     return { ctx, closers };

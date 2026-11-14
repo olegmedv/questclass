@@ -10,6 +10,8 @@ import type { AuditService } from './modules/audit/service';
 import { authMiddleware, authRoutes } from './modules/auth/routes';
 import type { AuthService } from './modules/auth/service';
 import { ledgerRoutes } from './modules/ledger/routes';
+import { questionsRoutes } from './modules/questions/routes';
+import type { QuestionsService } from './modules/questions/service';
 import type { LedgerService } from './modules/ledger/service';
 import type { Keyring } from './modules/settings/crypto';
 import { settingsRoutes } from './modules/settings/routes';
@@ -38,6 +40,7 @@ export interface AppContext {
   readonly taskTypes: TaskTypeRegistry;
   readonly subjects: SubjectsService;
   readonly tasks: TasksService;
+  readonly questions: QuestionsService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -64,6 +67,7 @@ function collectRoutes(ctx: AppContext): RouteDef[] {
     ...ledgerRoutes(ctx),
     ...subjectsRoutes(ctx),
     ...tasksRoutes(ctx),
+    ...questionsRoutes(ctx),
   ];
 }
 

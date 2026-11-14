@@ -5,6 +5,7 @@
  * at learner A's resource and set `learnerOwned: true`; learner B must then get 404.
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import type { QuestionContent } from '@questclass/shared/questions/schema';
 import { ROLES } from '../src/http/route';
 import { NOTE_TYPE, READY_NOTE, noteTaskType } from './fixtures/noteTaskType';
 import {
@@ -31,6 +32,17 @@ interface MatrixData {
 
 const prepared = new WeakMap<TwoLearners, MatrixData>();
 
+const SAMPLE_QUESTION = {
+  text: 'Сколько будет 2 + 2?',
+  options: [
+    { id: 'a', text: '3' },
+    { id: 'b', text: '4' },
+    { id: 'c', text: '5' },
+    { id: 'd', text: '6' },
+  ],
+  correct: 'b',
+} as const satisfies QuestionContent;
+
 function data(f: TwoLearners): MatrixData {
   const found = prepared.get(f);
   if (!found) {
@@ -53,6 +65,9 @@ function prepare(f: TwoLearners): TwoLearners {
   ctx.tasks.assign(taskA, f.ids.learnerA, admin);
   const assignedToB = task('Для Бори');
   ctx.tasks.assign(assignedToB, f.ids.learnerB, admin);
+  for (const key of ['q1', 'q-spare']) {
+    ctx.questions.create(taskA, { key, ...SAMPLE_QUESTION }, admin);
+  }
   prepared.set(f, { subjectId, spareSubjectId, taskA, spareTask: task('Лишнее'), assignedToB });
   return f;
 }
@@ -263,6 +278,59 @@ const MATRIX: readonly MatrixRow[] = [
     route: 'DELETE /api/admin/tasks/:id/assignments/:learnerId',
     url: (f) => `/api/admin/tasks/${data(f).assignedToB}/assignments/${f.ids.learnerB}`,
     expect: adminOnly(204),
+  },
+
+  // questions and transcripts
+  {
+    route: 'GET /api/admin/tasks/:taskId/questions',
+    url: (f) => `/api/admin/tasks/${data(f).taskA}/questions`,
+    expect: adminOnly(200),
+  },
+  {
+    route: 'POST /api/admin/tasks/:taskId/questions',
+    url: (f) => `/api/admin/tasks/${data(f).taskA}/questions`,
+    body: () => SAMPLE_QUESTION,
+    expect: adminOnly(201),
+  },
+  {
+    route: 'GET /api/admin/tasks/:taskId/questions/:key/versions',
+    url: (f) => `/api/admin/tasks/${data(f).taskA}/questions/q1/versions`,
+    expect: adminOnly(200),
+  },
+  {
+    route: 'PUT /api/admin/tasks/:taskId/questions/:key',
+    url: (f) => `/api/admin/tasks/${data(f).taskA}/questions/q1`,
+    body: () => SAMPLE_QUESTION,
+    expect: adminOnly(200),
+  },
+  {
+    route: 'DELETE /api/admin/tasks/:taskId/questions/:key',
+    url: (f) => `/api/admin/tasks/${data(f).taskA}/questions/q-spare`,
+    expect: adminOnly(204),
+  },
+  {
+    route: 'POST /api/admin/tasks/:taskId/question-imports',
+    url: (f) => `/api/admin/tasks/${data(f).taskA}/question-imports`,
+    body: () => ({
+      content: JSON.stringify([SAMPLE_QUESTION, SAMPLE_QUESTION, SAMPLE_QUESTION]),
+      append: true, // keep q1 and q-spare for the other rows
+    }),
+    expect: adminOnly(201),
+  },
+  {
+    route: 'GET /api/admin/tasks/:taskId/transcripts',
+    url: (f) => `/api/admin/tasks/${data(f).taskA}/transcripts`,
+    expect: adminOnly(200),
+  },
+  {
+    route: 'POST /api/admin/tasks/:taskId/transcripts',
+    url: (f) => `/api/admin/tasks/${data(f).taskA}/transcripts`,
+    body: () => ({
+      lang: 'ru',
+      source: 'manual',
+      segments: [{ start: 0, end: 1, text: 'Привет' }],
+    }),
+    expect: adminOnly(201),
   },
 ];
 
