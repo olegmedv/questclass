@@ -43,6 +43,8 @@ const SECTIONS = [
   'skeleton',
   'typography',
   'animated-hero',
+  'celebration',
+  'sounds',
 ];
 
 test('gallery shows every component in five states and fits the screen', async ({ page }) => {
@@ -101,4 +103,42 @@ test('a modal opens over the page, traps focus and closes with Escape', async ({
   await page.keyboard.press('Escape');
   await expect(dialog).toBeHidden();
   await expect(opener).toBeFocused();
+});
+
+test('celebrations open as dialogs: pass, purchase, streak and its static version', async ({
+  page,
+}) => {
+  await page.goto('/dev/ui');
+  const section = page.locator('[data-gallery="celebration"]');
+
+  await section.getByRole('button', { name: 'Зачёт', exact: true }).click();
+  const pass = page.getByRole('dialog', { name: 'Тест пройден!' });
+  await expect(pass.getByText('+100 XP')).toBeVisible();
+  await expect(pass.getByText('Предпросмотр: ничего не начислено')).toBeVisible();
+  await expectNoHorizontalScroll(page);
+  await expectScreenshot(pass, 'celebration-pass');
+  await pass.getByRole('button', { name: 'Закрыть предпросмотр' }).click();
+
+  await section.getByRole('button', { name: 'Покупка' }).click();
+  await expect(page.getByRole('dialog', { name: 'Куплено!' })).toBeVisible();
+  await page.keyboard.press('Escape');
+
+  await section.getByRole('button', { name: 'Серия', exact: true }).click();
+  const streak = page.getByRole('dialog', { name: 'Пять дней подряд — серия завершена!' });
+  await expect(
+    streak.getByRole('img', { name: 'Герой побеждает и поднимает кубок' }),
+  ).toBeVisible();
+  await expectNoHorizontalScroll(page);
+  await streak.getByRole('button', { name: 'К наградам' }).click();
+  await expect(streak.getByRole('button', { name: 'Закрыть предпросмотр' })).toBeVisible({
+    timeout: 5000,
+  });
+  await expect(streak.getByText('550', { exact: true })).toBeVisible();
+  await streak.getByRole('button', { name: 'Закрыть предпросмотр' }).click();
+
+  await section.getByRole('button', { name: 'Серия без движения' }).click();
+  const still = page.getByRole('dialog', { name: 'Пять дней подряд — серия завершена!' });
+  await expect(still.locator('.qc-streak-movie')).toHaveCount(0);
+  await expect(still.getByRole('button', { name: 'Закрыть предпросмотр' })).toBeVisible();
+  await expectScreenshot(still, 'celebration-streak-static');
 });

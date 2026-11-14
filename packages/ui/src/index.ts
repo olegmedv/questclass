@@ -20,6 +20,22 @@ export {
   type IconButtonProps,
 } from './components/Button';
 export { Card, type CardProps } from './components/Card';
+export {
+  Celebration,
+  type CelebrationProps,
+  type CelebrationReward,
+  type PassCelebrationProps,
+  type PurchaseCelebrationProps,
+  type StreakCelebrationProps,
+  type Totals,
+} from './components/Celebration/Celebration';
+export {
+  markStreakCelebrated,
+  STREAK_CELEBRATION_PREFIX,
+  streakCelebrationKey,
+  wasStreakCelebrated,
+  type MarkerStorage,
+} from './components/Celebration/streakOnce';
 export { DataTable, type Column, type DataTableProps } from './components/DataTable';
 export { EmptyState, type EmptyStateProps } from './components/EmptyState';
 export {

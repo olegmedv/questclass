@@ -9,6 +9,7 @@ import {
   Button,
   buttonClassName,
   Card,
+  Celebration,
   Checkbox,
   CircleQuestionMark,
   Container,
@@ -61,6 +62,8 @@ import {
 } from '@questclass/ui';
 import { useState, type ReactNode } from 'react';
 import { LiveHero } from '../../features/animation/LiveHero';
+import { INTERFACE_SOUNDS, soundUrl, type InterfaceSound } from '../../features/sound/SoundManager';
+import { useSound } from '../../features/sound/useSound';
 import { describeHero, LIVE_HEROES } from './liveHeroes';
 
 type StateName = 'default' | 'disabled' | 'loading' | 'empty' | 'error';
@@ -244,6 +247,163 @@ function PinPadDemo() {
   );
 }
 
+const STREAK_MOVIE = {
+  src: '/assets/celebrations/streak-five-v1.webp',
+  poster: '/assets/celebrations/streak-five-poster.webp',
+  durationMs: 10_083,
+};
+
+type CelebrationDemo =
+  'pass' | 'pass-empty' | 'purchase' | 'streak' | 'streak-reduced' | 'streak-broken';
+
+function CelebrationSection() {
+  const sound = useSound();
+  const [open, setOpen] = useState<CelebrationDemo | null>(null);
+  const close = () => setOpen(null);
+  const onReward = () => sound.play('complete');
+  const opener = (demo: CelebrationDemo, label: string) => (
+    <Button size="sm" onClick={() => setOpen(demo)}>
+      {label}
+    </Button>
+  );
+  const audio = `/assets/celebrations/streak-five-v1.${sound.format}`;
+  return (
+    <>
+      <Demo
+        id="celebration"
+        title="Celebration"
+        description="Зачёт, покупка, серия (ролик, полёт монет и XP). Здесь всё — предпросмотр: данные не меняются."
+        states={{
+          default: (
+            <Inline>
+              {opener('pass', 'Зачёт')}
+              {opener('purchase', 'Покупка')}
+              {opener('streak', 'Серия')}
+            </Inline>
+          ),
+          disabled: { na: 'праздник не нажимается, его показывает приложение' },
+          loading: {
+            na: 'пока ролик серии грузится, видна его первая картинка; без анимации (reduced-motion) — статичная версия',
+          },
+          empty: (
+            <Inline>
+              {opener('pass-empty', 'Зачёт без награды')}
+              {opener('streak-reduced', 'Серия без движения')}
+            </Inline>
+          ),
+          error: opener('streak-broken', 'Серия: ролик не загрузился'),
+        }}
+      />
+      <Celebration
+        variant="pass"
+        open={open === 'pass' || open === 'pass-empty'}
+        onClose={close}
+        preview
+        title="Тест пройден!"
+        message={open === 'pass-empty' ? 'Награда за этот тест уже получена.' : '7 из 8 верно'}
+        reward={open === 'pass-empty' ? {} : { xp: 100, coins: 350 }}
+        onReward={onReward}
+      />
+      <Celebration
+        variant="purchase"
+        open={open === 'purchase'}
+        onClose={close}
+        preview
+        item={{ name: 'Вампир', image: '/assets/game/characters/vampire-boy.webp' }}
+        spent={40}
+        balance={310}
+        onReward={onReward}
+      />
+      <Celebration
+        variant="streak"
+        open={open === 'streak' || open === 'streak-reduced' || open === 'streak-broken'}
+        onClose={close}
+        preview
+        reducedMotion={open === 'streak-reduced' ? true : undefined}
+        reward={{ coins: 200, xp: 200 }}
+        totals={{ coins: 550, xp: 1331 }}
+        movie={
+          open === 'streak-broken'
+            ? { ...STREAK_MOVIE, src: '/assets/celebrations/missing-movie.webp' }
+            : { ...STREAK_MOVIE, audio }
+        }
+        volume={sound.preferences.volume}
+        onReward={onReward}
+      />
+    </>
+  );
+}
+
+const SOUND_LABELS: Record<InterfaceSound, string> = {
+  packet: 'Пакетик',
+  element: 'Новый элемент',
+  level: 'Новый уровень',
+  complete: 'Набор собран',
+};
+
+function SoundsSection() {
+  const sound = useSound();
+  const names = Object.keys(INTERFACE_SOUNDS) as InterfaceSound[];
+  return (
+    <Demo
+      id="sounds"
+      title="Звуки интерфейса"
+      description={`Один звук за раз, важный не прерывается менее важным; загрузка дольше 900 мс — без звука. Формат на этом устройстве: ${sound.format.toUpperCase()}.`}
+      states={{
+        default: (
+          <Stack>
+            <Switch
+              checked={sound.preferences.enabled}
+              onChange={(enabled) => sound.update({ enabled })}
+              label="Звуки интерфейса"
+              description="Пакетики, новые элементы, уровни и собранные наборы."
+            />
+            <Field label="Громкость">
+              <Slider
+                value={Math.round(sound.preferences.volume * 100)}
+                onChange={(value) => sound.update({ volume: value / 100 })}
+                step={5}
+                format={(value) => `${value}%`}
+                disabled={!sound.preferences.enabled}
+              />
+            </Field>
+            <Inline>
+              {names.map((name) => (
+                <Button
+                  key={name}
+                  size="sm"
+                  icon={<Play />}
+                  disabled={!sound.preferences.enabled}
+                  onClick={() => {
+                    sound.prime();
+                    sound.play(name);
+                  }}
+                >
+                  {SOUND_LABELS[name]} · {INTERFACE_SOUNDS[name].priority}
+                </Button>
+              ))}
+            </Inline>
+            <Text size="xs" tone="subtle">
+              {names.map((name) => soundUrl(INTERFACE_SOUNDS[name].file, sound.format)).join(', ')}
+            </Text>
+          </Stack>
+        ),
+        disabled: (
+          <Switch
+            checked={false}
+            onChange={() => {}}
+            label="Звуки интерфейса"
+            description="Выключены на этом устройстве"
+          />
+        ),
+        loading: { na: 'звуки загружаются при первом касании; поздний звук пропускается' },
+        empty: { na: 'список звуков фиксирован' },
+        error: { na: 'если звук не загрузился, он просто не играет' },
+      }}
+    />
+  );
+}
+
 interface Row {
   readonly id: number;
   readonly name: string;
@@ -311,6 +471,8 @@ export function UiGallery() {
     ['typography', 'Heading и Text'],
     ['animated-hero', 'AnimatedHero'],
     ['live-heroes', 'Живые герои'],
+    ['celebration', 'Celebration'],
+    ['sounds', 'Звуки интерфейса'],
   ];
 
   return (
@@ -1378,6 +1540,9 @@ export function UiGallery() {
               ))}
             </Grid>
           </Card>
+
+          <CelebrationSection />
+          <SoundsSection />
         </Stack>
       </Container>
     </ToastProvider>
