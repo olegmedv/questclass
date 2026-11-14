@@ -5,6 +5,16 @@ import type { AppEnv } from './route';
 /** Source of the trusted proxy CIDR list (the `http.trustedProxies` setting). */
 export type TrustedProxiesSource = () => readonly string[];
 
+/** Anything that can read the `http.trustedProxies` setting (the settings service). */
+export interface TrustedProxiesSetting {
+  get(key: 'http.trustedProxies'): readonly string[];
+}
+
+/** The trust list as configured in the admin UI (default: private IPv4 ranges). */
+export function trustedProxiesFromSettings(settings: TrustedProxiesSetting): TrustedProxiesSource {
+  return () => settings.get('http.trustedProxies');
+}
+
 const MAPPED_V4_PREFIX = '::ffff:';
 
 /** Normalises an address (strips the IPv4-mapped IPv6 prefix); null if it is not an IP. */

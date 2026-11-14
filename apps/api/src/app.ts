@@ -7,6 +7,8 @@ import { sameOriginOnly } from './http/origin';
 import { mountRoutes, type AppEnv, type RouteDef } from './http/route';
 import { auditRoutes } from './modules/audit/routes';
 import type { AuditService } from './modules/audit/service';
+import type { Keyring } from './modules/settings/crypto';
+import type { SettingsService } from './modules/settings/service';
 import { healthRoutes } from './modules/health/routes';
 
 /** Dependencies shared by all modules; built once at startup (see startup.ts). */
@@ -14,6 +16,9 @@ export interface AppContext {
   readonly config: Config;
   readonly db: Db;
   readonly audit: AuditService;
+  /** Keys derived from DATA_DIR/master.key. */
+  readonly keyring: Keyring;
+  readonly settings: SettingsService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }

@@ -204,7 +204,14 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Сервис и `GET /api/admin/audit?learnerId&action&from&to&cursor` (роль admin; HTTP-тест маршрута — в FEAT-049). Колонка `learner_id NULL` для фильтра по ученику. Индексы `(at)`, `(entity, entity_id)`, `(learner_id, at)`.
 
 ### FEAT-005 — Настройки и секреты — ядро (без HTTP)
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Вне перечня Scope: `packages/shared/src/settings/define.ts` (`defineSetting`, `combineKeys` — вынесены, чтобы `keys/*.ts` не импортировали `registry.ts` по кругу), zod в `packages/shared/package.json`, регистрация в `schema/index.ts`, `app.ts`, `startup.ts`.
+  - Модуль подключается двумя строками в `registry.ts` (`combineKeys(coreSettings, …)` для настроек и секретов); повтор ключа — ошибка при загрузке.
+  - Секреты: в ядре реестр секретов пуст (ключи ИИ, Telegram, почты — этапы 2–3), механизм проверен тестовым секретом через инъекцию реестра. Ключ шифрования выводится HKDF из master.key (`keyring.derive('secrets/v1')`), имя секрета — AAD. Наружу только `{key,isSet,updatedAt}`; расшифровка — `useSecret()` для серверного кода.
+  - Сервис пишет audit сам (`setting.updated {key,before,after}`, `secret.updated {key,isSet}`) в одной транзакции с изменением. Чтение кэшируется в памяти процесса и сбрасывается при `set`.
+  - RSS в простое 69,8 МиБ (было 64,6).
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: SPEC §1 «Конфигурация… секреты зашифрованы мастер-ключом»; Critique 1 MED#1, LOW (passRatio → целое, ключи по модулям).

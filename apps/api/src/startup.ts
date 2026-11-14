@@ -1,10 +1,13 @@
-import { DEFAULT_TRUSTED_PROXIES } from '@questclass/shared/net';
 import type { AppContext } from './app';
 import type { Config } from './config';
 import { openDatabase } from './db/client';
+import { trustedProxiesFromSettings } from './http/clientIp';
 import { runMigrations } from './db/migrate';
 import { snapshotsDir } from './db/snapshot';
 import { createAuditService } from './modules/audit/service';
+import { createKeyring } from './modules/settings/crypto';
+import { loadOrCreateMasterKey } from './modules/settings/masterKey';
+import { createSettingsService } from './modules/settings/service';
 
 /** Releases a resource on shutdown (closed in reverse order of registration). */
 export type Closer = () => void | Promise<void>;
@@ -31,15 +34,20 @@ export interface Runtime {
 export async function startup(config: Config): Promise<Runtime> {
   const closers: Closer[] = [];
   try {
+    const keyring = createKeyring(loadOrCreateMasterKey(config.dataDir));
     const db = openDatabase(config.dataDir);
     closers.push(() => {
       db.$client.close();
     });
+    const audit = createAuditService(db);
+    const settings = createSettingsService(db, { audit, keyring });
     const ctx: AppContext = {
       config,
       db,
-      audit: createAuditService(db),
-      trustedProxies: () => DEFAULT_TRUSTED_PROXIES,
+      audit,
+      keyring,
+      settings,
+      trustedProxies: trustedProxiesFromSettings(settings),
     };
     for (const hook of STARTUP_HOOKS) {
       await hook(ctx);
