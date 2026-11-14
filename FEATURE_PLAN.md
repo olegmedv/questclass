@@ -708,7 +708,14 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Запуски пишутся в `job_runs` и не пересекаются (тест). Тест удалённого видео проходится без просмотра.
 
 ### FEAT-023 — `lesson-prep import`
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `lesson-prep import <папка>… [--config] [--server] [--encoder auto|nvenc|x264]`; `--token` в любом виде отклоняется. Настройки `~/.questclass/lesson-prep.json`: `server`, `token?`, `encoder`, `ffmpeg`, `ffprobe`, `videos?` (для FEAT-048), неизвестные поля — ошибка (опечатки). Без `token` токен читается из stdin (первая строка) или спрашивается в терминале. Тексты CLI по-русски.
+  - Пакет: `lesson.json` (поля манифеста FEAT-012 без `media`/`images`, плюс `video` — путь к исходнику, по умолчанию `video.mp4`), `hls/`, `images/`. `lesson.json` проверяется общей схемой `lessonManifestSchema` с заглушкой медиа **до** перекодирования; картинки — только `images/<имя>`, существование файлов проверяется; все ошибки выводятся списком.
+  - HLS: один запуск ffmpeg на обе дорожки (`split` + `scale=-2:360|480`, `format=yuv420p` — исходники AV1/VP9 10-бит тоже проходят), H.264 main, VBR 400/700 кбит/с (max 500/900), AAC стерео 64/96 кбит/с, ключевой кадр каждые 4 с (`-force_key_frames`), сегменты 4 с, `master.m3u8` + `360p|480p/index.m3u8` + `seg_00000.ts`. NVENC (`h264_nvenc -preset p5`) выбирается, только если пробное кодирование на GPU прошло, иначе libx264 `veryfast`. Видео без звука — без аудио-дорожек (проверка ffprobe). Пути для ffmpeg с прямыми слешами (иначе на Windows в master попадает `360p\index.m3u8`). Работа в `hls.tmp/`, переименование в конце; HLS переделывается, если видео новее `master.m3u8`. Длительность — сумма `#EXTINF` первого варианта (уходит в `completion {durationSec}`).
+  - Загрузка: sha256 и размер каждого файла, манифест, затем только недостающие байты частями по 4 МБ (4 файла параллельно); `offset_mismatch`/`upload_interrupted` → продолжение с `details.received`; сетевая ошибка или 5xx → пауза, `GET /api/import/media/:id`, продолжение с принятого (до 5 попыток); `verification_failed` → перезалить сброшенные файлы один раз. Повторный запуск без изменений ничего не кодирует и не шлёт.
+  - Тесты: ffmpeg мокается (`test/fakeFfmpeg.ts` — помощник вне маски `*.test.ts`), сервер — тестовый экземпляр API в процессе (`fetch` → `app.request`, импорт из `apps/api/src` и `apps/api/test/helpers`). Сверх DoD тест с настоящим ffmpeg (`testsrc` + `sine`, 9 с) проверяет, что команда даёт 360p/480p H.264 + AAC с сегментами по 4 с; без ffmpeg пропускается. Тестов 462 (+1 пропущен), было 432.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: SPEC §5 «В MVP — минимальная команда import»; Critique 1 LOW (токен не в аргументах).
