@@ -1,0 +1,130 @@
+.qc-stack {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.qc-stack[data-align='start'] {
+  align-items: flex-start;
+}
+
+.qc-stack[data-align='center'] {
+  align-items: center;
+}
+
+.qc-stack[data-align='end'] {
+  align-items: flex-end;
+}
+
+.qc-inline {
+  display: flex;
+  flex-wrap: wrap;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.qc-inline[data-nowrap] {
+  flex-wrap: nowrap;
+}
+
+.qc-inline[data-align='start'] {
+  align-items: flex-start;
+}
+
+.qc-inline[data-align='center'] {
+  align-items: center;
+}
+
+.qc-inline[data-align='end'] {
+  align-items: flex-end;
+}
+
+.qc-inline[data-align='baseline'] {
+  align-items: baseline;
+}
+
+.qc-inline[data-align='stretch'] {
+  align-items: stretch;
+}
+
+.qc-inline[data-justify='center'] {
+  justify-content: center;
+}
+
+.qc-inline[data-justify='end'] {
+  justify-content: flex-end;
+}
+
+.qc-inline[data-justify='between'] {
+  justify-content: space-between;
+}
+
+.qc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--qc-grid-min)), 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  --qc-grid-min: 220px;
+}
+
+.qc-grid[data-min='xs'] {
+  --qc-grid-min: 104px;
+}
+
+.qc-grid[data-min='sm'] {
+  --qc-grid-min: 150px;
+}
+
+.qc-grid[data-min='lg'] {
+  --qc-grid-min: 320px;
+}
+
+:is(.qc-stack, .qc-inline, .qc-grid)[data-gap='none'] {
+  gap: 0;
+}
+
+:is(.qc-stack, .qc-inline, .qc-grid)[data-gap='xs'] {
+  gap: var(--q-space-1);
+}
+
+:is(.qc-stack, .qc-inline, .qc-grid)[data-gap='sm'] {
+  gap: var(--q-space-2);
+}
+
+:is(.qc-stack, .qc-inline, .qc-grid)[data-gap='md'] {
+  gap: var(--q-space-4);
+}
+
+:is(.qc-stack, .qc-inline, .qc-grid)[data-gap='lg'] {
+  gap: var(--q-space-6);
+}
+
+:is(.qc-stack, .qc-inline, .qc-grid)[data-gap='xl'] {
+  gap: var(--q-space-10);
+}
+
+.qc-container {
+  width: 100%;
+  max-width: var(--q-content-width);
+  margin-inline: auto;
+  padding-inline: var(--q-space-4);
+}
+
+.qc-container[data-width='shell'] {
+  max-width: var(--q-shell-width);
+}
+
+.qc-container[data-width='admin'] {
+  max-width: var(--q-admin-width);
+}
+
+.qc-container[data-padded] {
+  padding-block: var(--q-space-6) var(--q-space-12);
+}

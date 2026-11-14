@@ -1,0 +1,55 @@
+.qc-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--q-space-1);
+  min-height: 36px;
+  padding: var(--q-space-1) var(--q-space-2);
+  border: 1px solid transparent;
+  border-radius: var(--q-radius-sm);
+  background: transparent;
+  color: var(--q-text);
+  font-size: var(--q-text-base);
+  white-space: nowrap;
+}
+
+.qc-stat svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.qc-stat-value {
+  font-weight: var(--q-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.qc-stat-label {
+  color: var(--q-muted);
+  font-size: var(--q-text-sm);
+}
+
+.qc-stat[data-kind='coins'] {
+  color: var(--q-coin);
+}
+
+.qc-stat[data-kind='xp'] svg {
+  color: var(--q-xp);
+}
+
+.qc-stat[data-kind='level'] svg,
+.qc-stat[data-kind='wishes'] svg {
+  color: var(--q-blue);
+}
+
+.qc-stat[aria-busy='true'] {
+  opacity: 0.6;
+}
+
+.qc-stat-button:disabled {
+  opacity: 0.55;
+}
+
+.qc-stat-button:not(:disabled):hover {
+  border-color: var(--q-border);
+  background: var(--q-raised);
+}

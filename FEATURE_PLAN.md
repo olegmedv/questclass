@@ -707,7 +707,16 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Видеофикстуры (HLS и MP4, 5 с) генерируются в `global-setup` через `ffmpeg -f lavfi -i testsrc`; в git их нет.
 
 ### FEAT-025 — Дизайн-система: токены и компоненты
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `tokens.css`: палитра тёмной темы оригинала (`--q-page/surface/raised/input/border/text/muted/blue/selected/focus`), тёплый акцент `--q-accent #f4c65f` (+ hover/shadow/ink), жёлтая «Начать» (`--q-cta-*`), игровые цвета (монеты, XP, «живой»), статусы, шрифты (Arial; заголовки — Arial Black), шкала размеров, отступы 4 px, радиусы, тени, длительности, слои. Глобальная база — `base.css`, вход — `@questclass/ui/styles.css` (подключён в `main.tsx`).
+  - Компоненты (`packages/ui/src/components`, по файлу на компонент или группу): Button/IconButton (+`buttonClassName` для ссылок), Card, ItemCard, Modal/Sheet/Drawer (портал, фокус-ловушка, Escape, возврат фокуса, блок прокрутки), Tabs, SegmentedControl, ProgressBar, ProgressRing, StatChip, Badge, Avatar, StepList, EmptyState, Toast (+`ToastProvider`/`useToast`), Tooltip, Placeholder, Field (+TextInput, Textarea, Select, DateTimeInput), Switch, Checkbox, NumberInput, Slider, FileInput, Accordion, DataTable, PinPad (экранные кнопки + физическая клавиатура), Spinner, QuestionCard, OptionTile. Дополнительно (чтобы экранам и галерее не нужен был свой CSS): Stack/Inline/Grid/Container, Heading/Text/VisuallyHidden, Skeleton; набор иконок lucide-react (`icons.ts`, версия 1.63.0 закреплена) — экраны берут иконки только из дизайн-системы.
+  - Классы — kebab-case (`qc-btn-primary`): `selector-class-pattern` из stylelint-config-standard не пропускает BEM-разделители; варианты — через `data-*`.
+  - Галерея `/dev/ui` (`UiGallery`, ленивый чанк ~65 КБ): каждый компонент в состояниях «обычное», «недоступно», «загрузка», «пусто», «ошибка»; где состояние неприменимо, вместо него строка «Не применимо: причина». `docs/PLACEHOLDERS.md`: описание компонента и типов `kind`.
+  - Тесты: 54 testing-library теста в `packages/ui/test` (роли, имена, описания, фокус, клавиатура); e2e `ui-gallery.spec.ts` — все секции и 5 состояний, нет горизонтальной прокрутки на 390 и 1440, скриншоты каждой секции и открытого окна (76 баз из Linux-контейнера, повторный прогон в контейнере — 26 passed). База `smoke/login-*` перегенерирована (тёмная тема).
+  - Исправление FEAT-053: ffmpeg писал init-сегмент HLS (`init.mp4`) в текущую папку, а не рядом с плейлистом; шаг HLS теперь запускается в папке фикстуры с относительными именами, смоук проверяет `init.mp4` и сегменты, в `.gitignore` добавлены `*.mp4` и `*.m4s`.
+  - Вне перечня Scope (необходимо): `packages/ui/{package.json,tsconfig.json,vitest.config.ts,test/setup.ts}`, `packages/ui/src/{index.ts,icons.ts,styles.css,base.css,env.d.ts,internal/*}`, `apps/web/src/main.tsx` (глобальные стили), `apps/web/src/app/router.tsx` (ленивый маршрут галереи), `e2e/ui-gallery.spec.ts`, `e2e/fixtures/test.ts` (скриншот элемента), `e2e/fixtures/video.ts`, `e2e/smoke.spec.ts`, `.gitignore`, `e2e/__screenshots__/**`, `pnpm-lock.yaml`.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: SPEC §3 пп. 1–5; Critique 1 MED#10.

@@ -45,7 +45,12 @@ export const routes: RouteObject[] = [
       {
         path: '/dev/ui',
         element: <DevToolsGate />,
-        children: [{ index: true, element: <ScreenStub title="Галерея компонентов" /> }],
+        children: [
+          {
+            index: true,
+            lazy: async () => ({ Component: (await import('../screens/dev/UiGallery')).UiGallery }),
+          },
+        ],
       },
       { path: '*', element: notFound },
     ],

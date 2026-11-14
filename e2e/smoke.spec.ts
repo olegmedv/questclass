@@ -1,5 +1,6 @@
 // FEAT-053 smoke: the stack is up, sessions of each persona work, assets and fixtures exist.
-import { statSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { expect, expectNoHorizontalScroll, expectScreenshot, test } from './fixtures/test';
 
 test('API answers through the SPA origin', async ({ request }) => {
@@ -20,7 +21,11 @@ test('built bundles and game assets are served separately', async ({ page, reque
 
 test('video fixtures are generated for the run', ({ env }) => {
   expect(statSync(env.video.mp4).size).toBeGreaterThan(10_000);
-  expect(statSync(env.video.hls).size).toBeGreaterThan(0);
+  // The playlist, its fMP4 init segment and the media segments live in one folder.
+  const playlist = readFileSync(env.video.hls, 'utf8');
+  expect(playlist).toContain('#EXT-X-MAP:URI="init.mp4"');
+  expect(statSync(join(dirname(env.video.hls), 'init.mp4')).size).toBeGreaterThan(0);
+  expect(statSync(join(dirname(env.video.hls), 'segment-000.m4s')).size).toBeGreaterThan(0);
 });
 
 test.describe('anonymous', () => {

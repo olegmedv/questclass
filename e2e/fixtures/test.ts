@@ -1,6 +1,6 @@
 // The `test` used by every spec: base URL of the shared installation, personas (browser
 // sessions), a fresh installation on demand, and screenshot helpers.
-import { expect, test as base, type Page } from '@playwright/test';
+import { expect, test as base, type Locator, type Page } from '@playwright/test';
 import type { Family } from './family';
 import { STORAGE, type Persona } from './paths';
 import { startStack, type Stack } from './stack';
@@ -72,7 +72,7 @@ export const screenshotsEnabled =
   process.env['E2E_SCREENSHOTS'] === '1' ||
   (process.platform === 'linux' && process.env['E2E_SCREENSHOTS'] !== '0');
 
-export async function expectScreenshot(page: Page, name: string): Promise<void> {
+export async function expectScreenshot(target: Page | Locator, name: string): Promise<void> {
   if (!screenshotsEnabled) {
     test.info().annotations.push({
       type: 'screenshot skipped',
@@ -80,7 +80,11 @@ export async function expectScreenshot(page: Page, name: string): Promise<void> 
     });
     return;
   }
-  await expect(page).toHaveScreenshot(`${name}.png`, { fullPage: true });
+  if ('goto' in target) {
+    await expect(target).toHaveScreenshot(`${name}.png`, { fullPage: true });
+  } else {
+    await expect(target).toHaveScreenshot(`${name}.png`);
+  }
 }
 
 /** The page must fit the viewport width: no horizontal scrolling. */

@@ -18,5 +18,7 @@ coverage/
 /data/
 .data/
 
-# e2e: generated fixtures, sessions, results
+# e2e: generated fixtures, sessions, results; videos are never committed (CLAUDE.md)
 /e2e/.output/
+*.mp4
+*.m4s
