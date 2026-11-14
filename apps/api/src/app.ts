@@ -12,6 +12,8 @@ import type { AuditService } from './modules/audit/service';
 import { authMiddleware, authRoutes } from './modules/auth/routes';
 import type { AuthService } from './modules/auth/service';
 import { catalogRoutes } from './modules/catalog/routes';
+import { characterRoutes } from './modules/character/routes';
+import type { CharacterService } from './modules/character/service';
 import type { CatalogService } from './modules/catalog/service';
 import { importRoutes, importTokenMiddleware } from './modules/import/routes';
 import type { ImportService } from './modules/import/service';
@@ -86,6 +88,8 @@ export interface AppContext {
   readonly shop: ShopService;
   /** Ticket requests and handing out wishes and Robux. */
   readonly wishes: WishesService;
+  /** The learner's hero: look, room, name. */
+  readonly character: CharacterService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -125,6 +129,7 @@ function collectRoutes(ctx: AppContext): RouteDef[] {
     ...uploadsRoutes(ctx),
     ...shopRoutes(ctx),
     ...wishesRoutes(ctx),
+    ...characterRoutes(ctx),
   ];
 }
 

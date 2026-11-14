@@ -88,6 +88,8 @@ interface MatrixData {
   readonly shopItem: { readonly id: number; readonly version: number };
   /** Learner A's group of two bought wish tickets. */
   readonly wishGroup: string;
+  /** A look and a room learner A bought (learner B owns neither). */
+  readonly hero: { readonly look: number; readonly room: number };
 }
 
 const prepared = new WeakMap<TwoLearners, MatrixData>();
@@ -313,6 +315,23 @@ function prepareWishes(f: TwoLearners): string {
   return group?.groupKey ?? '';
 }
 
+/** Learner A buys a cheap look and a room (prepared after the shop's coins). */
+function prepareHero(f: TwoLearners): MatrixData['hero'] {
+  const { ctx } = f.runtime;
+  const cheapest = (kind: 'outfit' | 'room') =>
+    ctx.catalog
+      .items({ kind, activeOnly: true })
+      .filter((i) => !i.starter && !i.animated)
+      .at(-1);
+  const bought = (kind: 'outfit' | 'room', requestId: string): number => {
+    const target = cheapest(kind);
+    if (!target) throw new Error(`No ${kind} to buy`);
+    ctx.shop.purchase(f.ids.learnerA, { itemId: target.id, version: target.version, requestId });
+    return target.id;
+  };
+  return { look: bought('outfit', 'matrix-hero-look'), room: bought('room', 'matrix-hero-room') };
+}
+
 /** Adds the domain data rows need (task types beyond the built-ins come from fixtures). */
 function prepare(f: TwoLearners): TwoLearners {
   const { ctx } = f.runtime;
@@ -351,6 +370,7 @@ function prepare(f: TwoLearners): TwoLearners {
     upload: ctx.uploads.create(readFileSync(SMALL_PICTURE), admin).id,
     shopItem: prepareShop(f),
     wishGroup: prepareWishes(f),
+    hero: prepareHero(f),
   });
   return f;
 }
@@ -920,6 +940,24 @@ const MATRIX: readonly MatrixRow[] = [
       requestId: 'matrix-fulfil-0001',
     }),
     expect: adminOnly(201),
+  },
+
+  // the hero: learner B does not own what learner A bought (403 by the rule of the item)
+  { route: 'GET /api/me/character', expect: learnerOnly(200) },
+  {
+    route: 'PUT /api/me/character/look',
+    body: (f) => ({ itemId: data(f).hero.look }),
+    expect: { anon: 401, import: 403, learnerA: 200, learnerB: 403, admin: 403 },
+  },
+  {
+    route: 'PUT /api/me/character/room',
+    body: (f) => ({ itemId: data(f).hero.room }),
+    expect: { anon: 401, import: 403, learnerA: 200, learnerB: 403, admin: 403 },
+  },
+  {
+    route: 'PUT /api/me/character/name',
+    body: () => ({ name: 'Герой' }),
+    expect: learnerOnly(200),
   },
 ];
 

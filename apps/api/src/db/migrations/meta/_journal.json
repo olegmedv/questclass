@@ -120,6 +120,13 @@
       "when": 1794675996599,
       "tag": "0016_wishes",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "6",
+      "when": 1794676232409,
+      "tag": "0017_character",
+      "breakpoints": true
     }
   ]
 }

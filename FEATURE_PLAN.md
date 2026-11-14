@@ -726,7 +726,13 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - `GET /api/me/wishes` (группы с остатком и история) и `GET /api/admin/wishes?status=open` (ждут выполнения, по ученикам) (тесты).
 
 ### FEAT-021 — Персонаж
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Маршруты (learner): `GET /api/me/character` → `{name, look, room, looks[], rooms[]}` (гардероб: стартовые + купленное, каждая вещь — `itemId`, `purchaseId|null`, название и снимок вида как куплено), `PUT /api/me/character/look {itemId}`, `PUT /api/me/character/room {itemId}`, `PUT /api/me/character/name {name}` (1–30 после схлопывания пробелов). Не своё (не стартовое и не купленное этим учеником, другой вид, неизвестное) → 403 `not_owned` «Сначала открой этот скин в магазине» / «…этот фон в магазине» (про альбомы — этап 2). Цвет фона героя оригинала (`sky|mint|sun|lilac`) не перенесён — в DoD нет, в новом интерфейсе не используется.
+  - Таблица `learner_characters` (PK `learner_id`; `name`, `look_item_id`, `room_item_id` — FK на `catalog_items`): имя `characters` уже занято библиотекой героев FEAT-017. Строка создаётся первым изменением (upsert одной колонки), до этого надеты стартовые. Владение и гардероб — `ownership.owned()` FEAT-019 (стартовые по флагу `starter`, без id в коде; купленное — из снимков; дубли по виду схлопнуты).
+  - `GET` только читает: если надетое больше не принадлежит (или ничего не выбрано), отдаётся первое доступное, в БД ничего не пишется (тест на `total_changes`).
+  - Вне Scope: `packages/shared/src/character/dto.ts`, регистрация в `app.ts`, `startup.ts` (`ctx.character`), `schema/index.ts`. Строки FEAT-049 добавлены (4 маршрута; надеть купленное учеником A: A → 200, B → 403). Тестов 718 (+2 пропущено), было 708.
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: spec/02 §2.8.

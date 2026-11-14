@@ -8,6 +8,7 @@ import { createAttemptsService } from './modules/attempts/service';
 import { createAuditService } from './modules/audit/service';
 import { createAuthService } from './modules/auth/service';
 import { seedCatalog } from './modules/catalog/seed';
+import { createCharacterService } from './modules/character/service';
 import { createCatalogService } from './modules/catalog/service';
 import { createImportService } from './modules/import/service';
 import { createLedgerService } from './modules/ledger/service';
@@ -126,6 +127,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
     });
     const shop = createShopService(db, { catalog, ledger });
     const wishes = createWishesService(db, { audit, users });
+    const character = createCharacterService(db, { ownership: shop.ownership });
     const ctx: AppContext = {
       config,
       db,
@@ -151,6 +153,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       uploads,
       shop,
       wishes,
+      character,
       trustedProxies: trustedProxiesFromSettings(settings),
     };
     return { ctx, closers };

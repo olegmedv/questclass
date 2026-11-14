@@ -6,6 +6,7 @@ export * from './attemptQuestions';
 export * from './attempts';
 export * from './audit';
 export * from './catalog';
+export * from './character';
 export * from './choreCompletions';
 export * from './ledger';
 export * from './fulfillmentAllocations';
