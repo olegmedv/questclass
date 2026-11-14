@@ -74,8 +74,15 @@ export const userUpdateRequestSchema = z
   .partial()
   .refine((patch) => Object.keys(patch).length > 0, 'Нечего менять');
 
+/** The admin changes their own password: the current one proves it is them. */
+export const passwordChangeRequestSchema = z.object({
+  current: z.string().min(1, 'Введите текущий пароль').max(200),
+  next: passwordSchema,
+});
+
 export type SetupRequest = z.infer<typeof setupRequestSchema>;
 export type AdminLoginRequest = z.infer<typeof adminLoginRequestSchema>;
 export type LearnerLoginRequest = z.infer<typeof learnerLoginRequestSchema>;
 export type UserCreateRequest = z.infer<typeof userCreateRequestSchema>;
 export type UserUpdateRequest = z.infer<typeof userUpdateRequestSchema>;
+export type PasswordChangeRequest = z.infer<typeof passwordChangeRequestSchema>;

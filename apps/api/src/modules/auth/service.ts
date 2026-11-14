@@ -1,18 +1,18 @@
 import type { DeviceDto, MeDto, ProfileDto } from '@questclass/shared/auth/dto';
 import type { SetupRequest } from '@questclass/shared/auth/schemas';
-import { and, desc, eq, isNull } from 'drizzle-orm';
+import { and, desc, eq, isNull, ne } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Config } from '../../config';
 import type { Db } from '../../db/client';
 import { sessions, type SessionRow } from '../../db/schema/sessions';
 import { trustedDevices, type TrustedDeviceRow } from '../../db/schema/trustedDevices';
 import { users, type UserRow } from '../../db/schema/users';
-import { HttpError, conflict, forbidden, notFound } from '../../http/errors';
+import { HttpError, badRequest, conflict, forbidden, notFound } from '../../http/errors';
 import { auditPayload, defineAuditAction, type AuditService } from '../audit/service';
 import type { Keyring } from '../settings/crypto';
 import type { SettingsService } from '../settings/service';
 import type { UsersService } from '../users/service';
-import { dummySecretHash, randomToken, sha256Hex, verifySecret } from './crypto';
+import { dummySecretHash, hashSecret, randomToken, sha256Hex, verifySecret } from './crypto';
 import { clearSetupToken, issueSetupToken, verifySetupToken } from './setupToken';
 import { createThrottle, throttleKeys, type ThrottleKeys } from './throttle';
 
@@ -22,6 +22,11 @@ export const setupCompleted = defineAuditAction(
 );
 export const deviceTrusted = defineAuditAction('device.trusted', z.object({ name: z.string() }));
 export const deviceRevoked = defineAuditAction('device.revoked', z.object({ name: z.string() }));
+/** Only the fact of the change: never a password or its hash. */
+export const passwordChanged = defineAuditAction(
+  'user.password_changed',
+  z.object({ login: z.string(), otherSessionsClosed: z.number() }),
+);
 
 const HOUR_MS = 60 * 60 * 1000;
 const DAY_MS = 24 * HOUR_MS;
@@ -91,6 +96,16 @@ export interface AuthService {
   revokeDevice(id: number, actorId: number, currentToken?: string): DeviceDto;
   /** Learner profiles for the picker; only on a trusted device. */
   profiles(deviceToken: string | undefined): ProfileDto[];
+  /**
+   * The admin's own new password. The current one must match (with the login's protection
+   * against guessing: throttled, 403 when wrong); the admin's other sessions end, this one stays.
+   */
+  changePassword(
+    userId: number,
+    input: { current: string; next: string },
+    ip: string,
+    currentToken: string | undefined,
+  ): Promise<void>;
   /** Key for the signed admin activity cookie. */
   readonly activityKey: Buffer;
 }
@@ -290,6 +305,46 @@ export function createAuthService(db: Db, deps: AuthDeps): AuthService {
     },
 
     resolveDevice,
+
+    async changePassword(userId, input, ip, currentToken) {
+      const user = usersService.findRow(userId);
+      if (user?.role !== 'admin' || user.login === null || !currentToken) {
+        throw notFound();
+      }
+      const keys = throttleKeys(`admin:${user.login}`, ip);
+      guardThrottle(keys);
+      const ok = await checkSecret(input.current, user.passwordHash);
+      if (!ok) {
+        throttle.recordFailure(keys);
+        throw forbidden('Текущий пароль не подходит', 'invalid_password');
+      }
+      throttle.recordSuccess(keys);
+      if (input.current === input.next) {
+        throw badRequest('same_password', 'Новый пароль совпадает с текущим');
+      }
+      const passwordHash = await hashSecret(input.next);
+      const keep = sha256Hex(currentToken);
+      db.transaction(() => {
+        const now = Date.now();
+        db.update(users).set({ passwordHash, updatedAt: now }).where(eq(users.id, userId)).run();
+        const closed = db
+          .update(sessions)
+          .set({ revokedAt: now, revokedReason: 'password_changed' })
+          .where(
+            and(
+              eq(sessions.userId, userId),
+              isNull(sessions.revokedAt),
+              ne(sessions.tokenHash, keep),
+            ),
+          )
+          .run().changes;
+        const payload = auditPayload(passwordChanged, {
+          login: user.login ?? '',
+          otherSessionsClosed: closed,
+        });
+        audit.record(userId, passwordChanged, 'user', userId, payload);
+      });
+    },
 
     trustDevice(name, actorId, currentToken) {
       const now = Date.now();

@@ -12,6 +12,7 @@ import {
   TabletSmartphone,
   Ticket,
   ToastProvider,
+  UserRound,
   Users,
 } from '@questclass/ui';
 import { Outlet, useLocation, useNavigate } from 'react-router';
@@ -73,6 +74,12 @@ export const ADMIN_SECTIONS: readonly AdminSection[] = [
     label: 'Настройки',
     href: '/admin/settings',
     icon: <Settings aria-hidden="true" />,
+  },
+  {
+    id: 'profile',
+    label: 'Профиль',
+    href: '/admin/profile',
+    icon: <UserRound aria-hidden="true" />,
   },
 ];
 

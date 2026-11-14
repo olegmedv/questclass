@@ -187,6 +187,12 @@ export const routes: RouteObject[] = [
                       Component: (await import('../screens/admin/History')).History,
                     }),
                   },
+                  {
+                    path: 'profile',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/Profile')).Profile,
+                    }),
+                  },
                   { path: '*', element: <AdminStub title="Такой страницы нет" /> },
                 ],
               },

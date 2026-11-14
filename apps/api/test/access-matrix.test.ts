@@ -13,6 +13,7 @@ import { taskRevisions } from '../src/db/schema/taskRevisions';
 import { ROLES } from '../src/http/route';
 import { requestKey } from '../src/modules/ledger/service';
 import { NOTE_TYPE, READY_NOTE, noteTaskType } from './fixtures/noteTaskType';
+import { ADMIN } from './helpers/client';
 import {
   createTwoLearners,
   PERSONAS,
@@ -462,6 +463,13 @@ const MATRIX: readonly MatrixRow[] = [
   },
   { route: 'POST /api/auth/logout', fresh: true, expect: signedIn(204) },
   { route: 'GET /api/auth/me', expect: signedIn(200) },
+  // The admin's own password (a fresh fixture: the shared admin keeps theirs).
+  {
+    route: 'PUT /api/me/password',
+    fresh: true,
+    body: () => ({ current: ADMIN.password, next: 'matrix-new-password' }),
+    expect: adminOnly(204),
+  },
   {
     route: 'GET /api/auth/profiles',
     expect: { anon: 403, import: 403, learnerA: 200, learnerB: 200, admin: 403 },

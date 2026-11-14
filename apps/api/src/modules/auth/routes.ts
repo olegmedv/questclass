@@ -2,6 +2,7 @@ import {
   adminLoginRequestSchema,
   deviceCreateRequestSchema,
   learnerLoginRequestSchema,
+  passwordChangeRequestSchema,
   setupRequestSchema,
 } from '@questclass/shared/auth/schemas';
 import type { Context, MiddlewareHandler } from 'hono';
@@ -167,6 +168,18 @@ export function authRoutes(ctx: AppContext): RouteDef[] {
       path: '/api/auth/me',
       roles: ['admin', 'learner'],
       handler: (c) => c.json(ctx.auth.me(c.get('actor')?.id ?? 0)),
+    }),
+    route({
+      method: 'PUT',
+      path: '/api/me/password',
+      roles: ['admin'],
+      handler: (c) =>
+        withRetryAfter(c, async () => {
+          const input = await readJson(c, passwordChangeRequestSchema);
+          const token = getCookie(c, SESSION_COOKIE);
+          await ctx.auth.changePassword(c.get('actor')?.id ?? 0, input, clientIp(c), token);
+          return c.body(null, 204);
+        }),
     }),
     route({
       method: 'GET',

@@ -1261,7 +1261,13 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - e2e-скриншот. Ручная сверка с reference 21 — отметка в PARITY.md.
 
 ### FEAT-056 — Смена своего пароля админом
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `PUT /api/me/password {current, next}` (роль `admin`, схема `passwordChangeRequestSchema` в `@questclass/shared/auth/schemas`): текущий пароль проверяется тем же `checkSecret` и тем же троттлингом, что вход (ключи `admin:<логин>` + IP: неверный — 403 `invalid_password` и счётчик неудач, после лимита — 429 с `Retry-After`); новый — по `passwordSchema`, совпадающий с текущим — 400 `same_password`. В одной транзакции: новый хеш, отзыв остальных сессий этого админа (`revoked_reason = password_changed`, текущая по хешу токена остаётся), audit `user.password_changed {login, otherSessionsClosed}` — без паролей и хешей. Ответ 204.
+  - Экран «Профиль» (`/admin/profile`, раздел в меню кабинета): имя, форма «Текущий пароль · Новый пароль · Новый пароль ещё раз» с проверкой до отправки (длина, совпадение), отказ сервера — у своего поля (неверный текущий, совпадающий новый), 429 — сообщением с минутами ожидания, успех — тост и очистка формы. Из «Пользователей» свой пароль не меняется (FEAT-039 отправляет сюда).
+  - Тесты: 6 в `apps/api/test/password-change.test.ts` (нужен текущий пароль, потом входит только новый; другие сессии закрыты, текущая жива; проверка нового и «совпадает»; троттлинг 403 → 429 + Retry-After; audit без секретов; аноним 401), строка матрицы доступа `PUT /api/me/password` (свежая установка, только админ — 204), 3 в `apps/web/test/admin-profile.test.tsx`. Миграций нет.
+  - Вне перечня Scope (необходимо): `packages/shared/src/auth/schemas.ts` (схема запроса), `apps/api/test/access-matrix.test.ts` (строка FEAT-049), `apps/web/test/admin-profile.test.tsx`, `apps/web/src/app/{router.tsx,layouts.tsx}`. Тестов 830 (+2 пропущено), было 820.
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: PARITY 01-085 (решение пользователя 14.11.2026).
