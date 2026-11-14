@@ -1,0 +1,1901 @@
+{
+  "characters": [
+    {
+      "key": "blue",
+      "name": "Синий исследователь",
+      "image": "game/fitting-room/blue-original.webp",
+      "footOffset": 4.4
+    },
+    {
+      "key": "purple",
+      "name": "Фиолетовый исследователь",
+      "image": "game/fitting-room/purple-original.webp",
+      "footOffset": 4.4
+    },
+    {
+      "key": "space",
+      "name": "Космонавт",
+      "image": "game/fitting-room/space-original.webp",
+      "footOffset": 4.4
+    },
+    {
+      "key": "forest",
+      "name": "Лесной следопыт",
+      "image": "game/fitting-room/forest-original.webp",
+      "footOffset": 4.4
+    },
+    {
+      "key": "pizza",
+      "name": "Пицца",
+      "image": "game/special.webp",
+      "sprite": {
+        "cols": 2,
+        "rows": 2,
+        "col": 0,
+        "row": 0
+      },
+      "footOffset": 4.4
+    },
+    {
+      "key": "seek",
+      "name": "Seek · DOORS",
+      "image": "game/special.webp",
+      "sprite": {
+        "cols": 2,
+        "rows": 2,
+        "col": 1,
+        "row": 0
+      },
+      "footOffset": 4.4
+    },
+    {
+      "key": "dozer",
+      "name": "Dozer · Grace",
+      "image": "game/special.webp",
+      "sprite": {
+        "cols": 2,
+        "rows": 2,
+        "col": 0,
+        "row": 1
+      },
+      "footOffset": 4.4
+    },
+    {
+      "key": "blue-live-cover",
+      "name": "Синий исследователь · обложка",
+      "image": "game/animated/repaired/blue-idle-cover.webp",
+      "footOffset": 10
+    },
+    {
+      "key": "hero-punch-cover",
+      "name": "Супергерой · удар",
+      "image": "game/animated/repaired/hero-punch-cover.webp",
+      "footOffset": 10.15625
+    },
+    {
+      "key": "hero-hair-cover",
+      "name": "Супергерой · куда делись волосы?",
+      "image": "game/animated/repaired/hero-hair-cover.webp",
+      "footOffset": 10.15625
+    },
+    {
+      "key": "claw-show-cover",
+      "name": "Когтистый герой · показывает когти",
+      "image": "game/animated/repaired/claw-show-cover.webp",
+      "footOffset": 10.15625
+    },
+    {
+      "key": "fairy-swing-cover",
+      "name": "Фея · взмах топориком",
+      "image": "game/animated/repaired/fairy-swing-cover.webp",
+      "footOffset": 10.15625
+    },
+    {
+      "key": "fairy-magic-cover",
+      "name": "Фея · волшебные искры",
+      "image": "game/animated/repaired/fairy-magic-cover.webp",
+      "footOffset": 10.15625
+    },
+    {
+      "key": "vampire-juice-cover",
+      "name": "Вампир · красный сок",
+      "image": "game/animated/vampire-drink-v2-cover.webp",
+      "footOffset": 10.15625
+    },
+    {
+      "key": "vampire-bat-cover",
+      "name": "Вампир · летучая мышь",
+      "image": "game/animated/repaired/vampire-bat-cover.webp",
+      "footOffset": 10.15625
+    },
+    {
+      "key": "vampire-awakening-cover",
+      "name": "Вампир · пробуждение",
+      "image": "game/animated/repaired/vampire-awakening-cover.webp",
+      "footOffset": 10.15625
+    },
+    {
+      "key": "boy-fairy-cover",
+      "name": "Мальчик · превращение в фею",
+      "image": "game/animated/repaired/boy-fairy-cover.webp",
+      "footOffset": 10.15625
+    },
+    {
+      "key": "astro",
+      "name": "Астро · Dandy’s World",
+      "image": "game/characters/astro.webp",
+      "footOffset": 1.5
+    },
+    {
+      "key": "hotdog-boy",
+      "name": "Хот-дог",
+      "image": "game/characters/hotdog-boy.webp",
+      "footOffset": 5.26
+    },
+    {
+      "key": "claw-explorer",
+      "name": "Когтистый исследователь",
+      "image": "game/characters/claw-explorer.webp",
+      "footOffset": 5.34
+    },
+    {
+      "key": "star-hero",
+      "name": "Звёздный супергерой",
+      "image": "game/characters/star-hero.webp",
+      "footOffset": 4.63
+    },
+    {
+      "key": "pizza-boy",
+      "name": "Пицца-парень",
+      "image": "game/characters/pizza-boy.webp",
+      "footOffset": 4.15
+    },
+    {
+      "key": "red-hero",
+      "name": "Красный герой",
+      "image": "game/characters/red-hero-transparent.webp",
+      "footOffset": 4.4
+    },
+    {
+      "key": "dinosaur-boy",
+      "name": "Динозавр",
+      "image": "game/characters/dinosaur-boy.webp",
+      "footOffset": 4.55
+    },
+    {
+      "key": "star-wizard",
+      "name": "Волшебник",
+      "image": "game/characters/star-wizard.webp",
+      "footOffset": 3.67
+    },
+    {
+      "key": "star-pajamas",
+      "name": "Звёздная пижама",
+      "image": "game/characters/star-pajamas.webp",
+      "footOffset": 3.03
+    },
+    {
+      "key": "sleepy-dozer",
+      "name": "Dozer в пижаме",
+      "image": "game/characters/sleepy-dozer.webp",
+      "footOffset": 3.27
+    },
+    {
+      "key": "angel-boy",
+      "name": "Ангел",
+      "image": "game/characters/angel-boy.webp",
+      "footOffset": 3.67
+    },
+    {
+      "key": "fairy-boy",
+      "name": "Розовая фея",
+      "image": "game/characters/fairy-boy.webp",
+      "footOffset": 4.63
+    },
+    {
+      "key": "skeleton-boy",
+      "name": "Скелет",
+      "image": "game/characters/skeleton-boy.webp",
+      "footOffset": 5.26
+    },
+    {
+      "key": "zombie-boy",
+      "name": "Зомби",
+      "image": "game/characters/zombie-boy.webp",
+      "footOffset": 5.26
+    },
+    {
+      "key": "demon-boy",
+      "name": "Демон",
+      "image": "game/characters/demon-boy.webp",
+      "footOffset": 5.26
+    },
+    {
+      "key": "vampire-boy",
+      "name": "Вампир",
+      "image": "game/characters/vampire-boy.webp",
+      "footOffset": 5.1
+    },
+    {
+      "key": "floating-angel",
+      "name": "Парящий ангел",
+      "image": "game/characters/floating-angel.webp",
+      "footOffset": 2.95
+    },
+    {
+      "key": "fairy-prankster",
+      "name": "Фея-проказник",
+      "image": "game/characters/fairy-prankster.webp",
+      "footOffset": 1.52
+    },
+    {
+      "key": "dancing-skeleton",
+      "name": "Танцующий скелет",
+      "image": "game/characters/dancing-skeleton.webp",
+      "footOffset": 4.86
+    },
+    {
+      "key": "mischievous-demon",
+      "name": "Озорной демон",
+      "image": "game/characters/mischievous-demon.webp",
+      "footOffset": 4.07
+    },
+    {
+      "key": "mart-round",
+      "name": "Март · Nullscape",
+      "image": "game/characters/mart-round.webp",
+      "footOffset": 5.18
+    },
+    {
+      "key": "mart-boy",
+      "name": "Костюм Марта",
+      "image": "game/characters/mart-boy.webp",
+      "footOffset": 4.31
+    },
+    {
+      "key": "cadence-clock",
+      "name": "Cadence · Nullscape",
+      "image": "game/characters/cadence-clock.webp",
+      "footOffset": 7.42
+    },
+    {
+      "key": "cadence-boy",
+      "name": "Костюм Cadence",
+      "image": "game/characters/cadence-boy.webp",
+      "footOffset": 4.15
+    },
+    {
+      "key": "dozer-nightcap",
+      "name": "Дозер в колпаке · Grace",
+      "image": "game/characters/dozer-nightcap.webp",
+      "footOffset": 10.15625
+    },
+    {
+      "key": "dozer-boy",
+      "name": "Мальчик-Дозер",
+      "image": "game/characters/dozer-boy.webp",
+      "footOffset": 10.15625
+    },
+    {
+      "key": "rebound-face",
+      "name": "Рибаунд · DOORS",
+      "image": "game/characters/rebound-face.webp",
+      "footOffset": 9
+    },
+    {
+      "key": "rebound-boy",
+      "name": "Мальчик-Рибаунд",
+      "image": "game/characters/rebound-boy.webp",
+      "footOffset": 9
+    }
+  ],
+  "animations": [
+    {
+      "key": "astro-idle",
+      "name": "Астро · лунное парение",
+      "kind": "hero",
+      "src": "game/characters/astro-idle.webp",
+      "poster": "game/characters/astro.webp",
+      "durationMs": 8000
+    },
+    {
+      "key": "astro-room-night",
+      "name": "Лунная комната Астро",
+      "kind": "room",
+      "src": "game/rooms/room-astro-night-animated.webp",
+      "poster": "game/rooms/room-astro-night.webp",
+      "durationMs": 8000
+    },
+    {
+      "key": "rebound-float",
+      "name": "Рибаунд · исчезновение",
+      "kind": "hero",
+      "src": "game/characters/rebound-float.webp",
+      "poster": "game/characters/rebound-face.webp",
+      "durationMs": 12000
+    },
+    {
+      "key": "rebound-boy-idle",
+      "name": "Мальчик-Рибаунд · живой костюм",
+      "kind": "hero",
+      "src": "game/characters/rebound-boy-flight.webp",
+      "poster": "game/characters/rebound-boy-flight-cover.webp",
+      "durationMs": 2800
+    },
+    {
+      "key": "cadence-pendulum",
+      "name": "Cadence · ритм времени",
+      "kind": "hero",
+      "motion": "pendulum",
+      "poster": "game/characters/cadence-clock.webp",
+      "durationMs": 3200
+    },
+    {
+      "key": "blue-idle",
+      "name": "Синий исследователь · приветствие",
+      "kind": "hero",
+      "src": "game/animated/repaired/blue-idle.webp",
+      "poster": "game/animated/repaired/blue-idle-cover.webp",
+      "durationMs": 3000
+    },
+    {
+      "key": "hero-punch",
+      "name": "Супергерой · удар",
+      "kind": "hero",
+      "src": "game/animated/repaired/hero-punch.webp",
+      "poster": "game/animated/repaired/hero-punch-cover.webp",
+      "durationMs": 2800
+    },
+    {
+      "key": "hero-hair",
+      "name": "Супергерой · куда делись волосы?",
+      "kind": "hero",
+      "src": "game/animated/repaired/hero-hair.webp",
+      "poster": "game/animated/repaired/hero-hair-cover.webp",
+      "durationMs": 3600
+    },
+    {
+      "key": "claw-show",
+      "name": "Когтистый герой · показывает когти",
+      "kind": "hero",
+      "src": "game/animated/repaired/claw-show.webp",
+      "poster": "game/animated/repaired/claw-show-cover.webp",
+      "durationMs": 3000
+    },
+    {
+      "key": "fairy-swing",
+      "name": "Фея · взмах топориком",
+      "kind": "hero",
+      "src": "game/animated/repaired/fairy-swing.webp",
+      "poster": "game/animated/repaired/fairy-swing-cover.webp",
+      "durationMs": 2800
+    },
+    {
+      "key": "fairy-magic",
+      "name": "Фея · волшебные искры",
+      "kind": "hero",
+      "src": "game/animated/repaired/fairy-magic.webp",
+      "poster": "game/animated/repaired/fairy-magic-cover.webp",
+      "durationMs": 3200
+    },
+    {
+      "key": "vampire-juice",
+      "name": "Вампир · красный сок",
+      "kind": "hero",
+      "src": "game/animated/vampire-drink-v2.webp",
+      "poster": "game/animated/vampire-drink-v2-cover.webp",
+      "durationMs": 4000
+    },
+    {
+      "key": "vampire-bat",
+      "name": "Вампир · летучая мышь",
+      "kind": "hero",
+      "src": "game/animated/repaired/vampire-bat.webp",
+      "poster": "game/animated/repaired/vampire-bat-cover.webp",
+      "durationMs": 3800
+    },
+    {
+      "key": "vampire-awakening",
+      "name": "Вампир · пробуждение",
+      "kind": "hero",
+      "src": "game/animated/repaired/vampire-awakening.webp",
+      "poster": "game/animated/repaired/vampire-awakening-cover.webp",
+      "durationMs": 3400
+    },
+    {
+      "key": "boy-fairy",
+      "name": "Мальчик · превращение в фею",
+      "kind": "hero",
+      "src": "game/animated/repaired/boy-fairy.webp",
+      "poster": "game/animated/repaired/boy-fairy-cover.webp",
+      "durationMs": 4000
+    },
+    {
+      "key": "dozer-drowsy",
+      "name": "Мальчик-Дозер · сонное приветствие",
+      "kind": "hero",
+      "src": "game/animated/dozer-drowsy.webp",
+      "poster": "game/characters/dozer-boy.webp",
+      "durationMs": 4600
+    },
+    {
+      "key": "mart-bounce",
+      "name": "Март · прыжок и покачивание",
+      "kind": "hero",
+      "motion": "bounce",
+      "poster": "game/characters/mart-round.webp",
+      "durationMs": 2800
+    },
+    {
+      "key": "mart-boy-wave",
+      "name": "Мальчик-Март · приветствие",
+      "kind": "hero",
+      "src": "game/animated/mart-boy-wave.webp",
+      "poster": "game/characters/mart-boy.webp",
+      "durationMs": 3200
+    },
+    {
+      "key": "vampire-cape",
+      "name": "Вампир · оживший плащ",
+      "kind": "hero",
+      "src": "game/animated/vampire-cape.webp",
+      "poster": "game/characters/vampire-boy.webp",
+      "durationMs": 3200
+    },
+    {
+      "key": "fairy-float",
+      "name": "Фея · волшебный полёт",
+      "kind": "hero",
+      "motion": "float",
+      "poster": "game/characters/fairy-boy.webp",
+      "durationMs": 3400
+    },
+    {
+      "key": "seek-sway",
+      "name": "Сик · движение тени",
+      "kind": "hero",
+      "motion": "sway",
+      "poster": "game/special.webp",
+      "posterSprite": {
+        "cols": 2,
+        "rows": 2,
+        "col": 1,
+        "row": 0
+      },
+      "durationMs": 3000
+    }
+  ],
+  "rooms": [
+    {
+      "key": "room-default",
+      "title": "Уютная примерочная",
+      "category": "day",
+      "image": "game/fitting-room/room-bright.webp",
+      "thumb": "game/fitting-room/room-bright.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-astro-night",
+      "title": "Лунная комната Астро",
+      "category": "night",
+      "image": "game/rooms/room-astro-night.webp",
+      "thumb": "game/rooms/room-astro-night-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "astro",
+      "sceneAssets": {
+        "audio": {
+          "ambient": [
+            "game/rooms/astro-audio-v1/ambient/lullaby.ogg",
+            "game/rooms/astro-audio-v1/ambient/night-air.ogg"
+          ],
+          "events": [
+            "game/rooms/astro-audio-v1/events/star-chime.ogg"
+          ]
+        }
+      }
+    },
+    {
+      "key": "room-night-hotel-v1",
+      "title": "Ночной отель",
+      "category": "night",
+      "image": "game/rooms/night-hotel/room_base.webp",
+      "thumb": "game/rooms/night-hotel/thumbnail.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "night-hotel",
+      "sceneAssets": {
+        "layers": {
+          "candles": "game/rooms/night-hotel/candles_flicker.webp",
+          "lightning": "game/rooms/night-hotel/lightning_flash.webp",
+          "eyesBlink": "game/rooms/night-hotel/eyes_blink.webp",
+          "lightFlicker": "game/rooms/night-hotel/light_flicker_event.webp",
+          "shadowRun": "game/rooms/night-hotel/shadow_run_event.webp",
+          "girlWindow": "game/rooms/night-hotel/window_girl_appear.webp",
+          "figurePeek": "game/rooms/night-hotel/figure_peek_event.webp",
+          "wardrobeMonster": "game/rooms/night-hotel/wardrobe_monster_peek.webp",
+          "doorBend": "game/rooms/night-hotel/door_bend_event.webp",
+          "screech": "game/rooms/night-hotel/screech_ceiling_event.webp"
+        },
+        "audio": {
+          "ambient": [
+            "game/rooms/night-hotel/audio/ambient/ambient_room_loop.ogg",
+            "game/rooms/night-hotel/audio/ambient/rain_loop.ogg",
+            "game/rooms/night-hotel/audio/ambient/music_optional_loop.ogg"
+          ],
+          "events": [
+            "game/rooms/night-hotel/audio/events/closet_creak_close.ogg",
+            "game/rooms/night-hotel/audio/events/closet_creak_open.ogg",
+            "game/rooms/night-hotel/audio/events/door_creak.ogg",
+            "game/rooms/night-hotel/audio/events/girl_laugh.ogg",
+            "game/rooms/night-hotel/audio/events/light_flicker.ogg",
+            "game/rooms/night-hotel/audio/events/monster_slither.ogg",
+            "game/rooms/night-hotel/audio/events/screech_jump.ogg",
+            "game/rooms/night-hotel/audio/events/shadow_run.ogg",
+            "game/rooms/night-hotel/audio/events/thunder_01.ogg",
+            "game/rooms/night-hotel/audio/events/thunder_02.ogg",
+            "game/rooms/night-hotel/audio/events/wardrobe_thump.ogg"
+          ]
+        }
+      }
+    },
+    {
+      "key": "room-mart-islands",
+      "title": "Острова Марта",
+      "category": "special",
+      "image": "game/rooms/room-mart-islands.webp",
+      "thumb": "game/rooms/room-mart-islands-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 66
+      },
+      "scene": "ambient:water"
+    },
+    {
+      "key": "room-dozer-bedroom",
+      "title": "Сонная спальня Дозера",
+      "category": "night",
+      "image": "game/rooms/room-dozer-bedroom.webp",
+      "thumb": "game/rooms/room-dozer-bedroom-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "ambient:fairy"
+    },
+    {
+      "key": "room-cadence-observatory",
+      "title": "Обсерватория времени",
+      "category": "special",
+      "image": "game/rooms/room-cadence-observatory.webp",
+      "thumb": "game/rooms/room-cadence-observatory-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 76
+      },
+      "scene": "ambient:clock"
+    },
+    {
+      "key": "room-rebound-hotel",
+      "title": "Ночной отель Рибаунда",
+      "category": "night",
+      "image": "game/rooms/room-rebound-hotel-v3.webp",
+      "thumb": "game/rooms/room-rebound-hotel-v3-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 77
+      },
+      "scene": "rebound",
+      "sceneAssets": {
+        "layers": {
+          "curtain": "game/rooms/rebound-curtain-v3.webp"
+        },
+        "audio": {
+          "ambient": [
+            "game/rooms/rebound-audio-v2/ambient/night-air.ogg",
+            "game/rooms/rebound-audio-v2/ambient/night-music.ogg"
+          ],
+          "events": [
+            "game/rooms/rebound-audio-v2/events/wood-creak.ogg",
+            "game/rooms/rebound-audio-v2/events/curtain-rustle.ogg",
+            "game/rooms/rebound-audio-v2/events/ghost-vanish.ogg",
+            "game/rooms/rebound-audio-v2/events/ghost-return.ogg"
+          ]
+        }
+      }
+    },
+    {
+      "key": "room-star-studio",
+      "title": "Звёздная студия",
+      "category": "day",
+      "image": "game/rooms/room-star-studio.webp",
+      "thumb": "game/rooms/room-star-studio-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-sunny-hero",
+      "title": "Солнечная комната героя",
+      "category": "day",
+      "image": "game/rooms/room-sunny-hero.webp",
+      "thumb": "game/rooms/room-sunny-hero-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-game-wardrobe",
+      "title": "Игровая примерочная",
+      "category": "day",
+      "image": "game/rooms/room-game-wardrobe.webp",
+      "thumb": "game/rooms/room-game-wardrobe-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-music-day",
+      "title": "Музыкальная гостиная",
+      "category": "day",
+      "image": "game/rooms/room-music-day.webp",
+      "thumb": "game/rooms/room-music-day-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-forest-house",
+      "title": "Лесной домик",
+      "category": "day",
+      "image": "game/rooms/room-forest-house.webp",
+      "thumb": "game/rooms/room-forest-house-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "ambient:forest"
+    },
+    {
+      "key": "room-danya-day",
+      "title": "Детская · день",
+      "category": "day",
+      "image": "game/rooms/room-danya-day.webp",
+      "thumb": "game/rooms/room-danya-day-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 79.5
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-fairy-gallery",
+      "title": "Галерея сказок",
+      "category": "day",
+      "image": "game/rooms/room-fairy-gallery.webp",
+      "thumb": "game/rooms/room-fairy-gallery-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "ambient:fairy"
+    },
+    {
+      "key": "room-neon-studio",
+      "title": "Неоновая игровая",
+      "category": "day",
+      "image": "game/rooms/room-neon-studio.webp",
+      "thumb": "game/rooms/room-neon-studio-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-city-hero",
+      "title": "Городская комната героя",
+      "category": "day",
+      "image": "game/rooms/room-city-hero.webp",
+      "thumb": "game/rooms/room-city-hero-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 73
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-danya-night",
+      "title": "Детская · ночь",
+      "category": "night",
+      "image": "game/rooms/room-danya-night.webp",
+      "thumb": "game/rooms/room-danya-night-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 79.5
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-dracula",
+      "title": "Замок Дракулы",
+      "category": "night",
+      "image": "game/rooms/room-dracula.webp",
+      "thumb": "game/rooms/room-dracula-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "ambient:embers"
+    },
+    {
+      "key": "room-gothic-organ",
+      "title": "Готический зал с органом",
+      "category": "night",
+      "image": "game/rooms/room-gothic-organ.webp",
+      "thumb": "game/rooms/room-gothic-organ-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-moon-wizard",
+      "title": "Комната лунного мага",
+      "category": "night",
+      "image": "game/rooms/room-moon-wizard.webp",
+      "thumb": "game/rooms/room-moon-wizard-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-music-night",
+      "title": "Музыкальная гостиная · ночь",
+      "category": "night",
+      "image": "game/rooms/room-music-night.webp",
+      "thumb": "game/rooms/room-music-night-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-vampire-gallery",
+      "title": "Галерея вампира",
+      "category": "night",
+      "image": "game/rooms/room-vampire-gallery.webp",
+      "thumb": "game/rooms/room-vampire-gallery-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-star-night",
+      "title": "Звёздная студия · ночь",
+      "category": "night",
+      "image": "game/rooms/room-star-night.webp",
+      "thumb": "game/rooms/room-star-night-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-secret-crypt",
+      "title": "Тайная комната скелета",
+      "category": "night",
+      "image": "game/rooms/room-secret-crypt.webp",
+      "thumb": "game/rooms/room-secret-crypt-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-game-night",
+      "title": "Игровая примерочная · ночь",
+      "category": "night",
+      "image": "game/rooms/room-game-night.webp",
+      "thumb": "game/rooms/room-game-night-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-fairy-night",
+      "title": "Галерея сказок · ночь",
+      "category": "night",
+      "image": "game/rooms/room-fairy-night.webp",
+      "thumb": "game/rooms/room-fairy-night-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-vampire-organ",
+      "title": "Орган вампира",
+      "category": "night",
+      "image": "game/rooms/room-vampire-organ.webp",
+      "thumb": "game/rooms/room-vampire-organ-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-gothic-piano",
+      "title": "Лунный зал с пианино",
+      "category": "night",
+      "image": "game/rooms/room-gothic-piano.webp",
+      "thumb": "game/rooms/room-gothic-piano-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-lilac-moon",
+      "title": "Сиреневая луна",
+      "category": "night",
+      "image": "game/rooms/room-lilac-moon.webp",
+      "thumb": "game/rooms/room-lilac-moon-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-monster-platform",
+      "title": "На языке монстра",
+      "category": "special",
+      "image": "game/rooms/room-monster-platform.webp",
+      "thumb": "game/rooms/room-monster-platform-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 72.5
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-giant-mouth",
+      "title": "Гигантская пасть",
+      "category": "special",
+      "image": "game/rooms/room-giant-mouth.webp",
+      "thumb": "game/rooms/room-giant-mouth-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-ruined-city",
+      "title": "Город после битвы",
+      "category": "special",
+      "image": "game/rooms/room-ruined-city.webp",
+      "thumb": "game/rooms/room-ruined-city-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 72.5
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-monster-city",
+      "title": "Монстр за углом",
+      "category": "special",
+      "image": "game/rooms/room-monster-city.webp",
+      "thumb": "game/rooms/room-monster-city-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 72.5
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-forgotten-crypt",
+      "title": "Забытая крипта",
+      "category": "special",
+      "image": "game/rooms/room-forgotten-crypt.webp",
+      "thumb": "game/rooms/room-forgotten-crypt-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-monster-tongue",
+      "title": "Язык монстра · ночь",
+      "category": "special",
+      "image": "game/rooms/room-monster-tongue.webp",
+      "thumb": "game/rooms/room-monster-tongue-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 73
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-before-monster",
+      "title": "Перед пастью монстра",
+      "category": "special",
+      "image": "game/rooms/room-before-monster.webp",
+      "thumb": "game/rooms/room-before-monster-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 72.5
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-crypt-night",
+      "title": "Крипта под луной",
+      "category": "special",
+      "image": "game/rooms/room-crypt-night.webp",
+      "thumb": "game/rooms/room-crypt-night-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 75
+      },
+      "scene": "static"
+    },
+    {
+      "key": "room-monster-neon",
+      "title": "Ночной город монстра",
+      "category": "special",
+      "image": "game/rooms/room-monster-neon.webp",
+      "thumb": "game/rooms/room-monster-neon-thumb.webp",
+      "footAnchor": {
+        "x": 50,
+        "y": 73
+      },
+      "scene": "static"
+    }
+  ],
+  "items": [
+    {
+      "seedKey": "blue",
+      "kind": "outfit",
+      "title": "Синий исследователь",
+      "description": "",
+      "price": 0,
+      "active": false,
+      "starter": true,
+      "character": "blue"
+    },
+    {
+      "seedKey": "purple",
+      "kind": "outfit",
+      "title": "Фиолетовый исследователь",
+      "description": "",
+      "price": 0,
+      "active": false,
+      "starter": true,
+      "character": "purple"
+    },
+    {
+      "seedKey": "room-default",
+      "kind": "room",
+      "title": "Уютная примерочная",
+      "description": "",
+      "price": 0,
+      "active": false,
+      "starter": true,
+      "room": "room-default"
+    },
+    {
+      "seedKey": "space",
+      "kind": "outfit",
+      "title": "Космонавт",
+      "description": "Скафандр для больших открытий.",
+      "price": 40,
+      "active": true,
+      "character": "space"
+    },
+    {
+      "seedKey": "forest",
+      "kind": "outfit",
+      "title": "Лесной следопыт",
+      "description": "Новый образ для любителя приключений.",
+      "price": 40,
+      "active": true,
+      "character": "forest"
+    },
+    {
+      "seedKey": "pizza",
+      "kind": "outfit",
+      "title": "Пицца",
+      "description": "Сырный герой с хрустящей корочкой.",
+      "price": 40,
+      "active": true,
+      "character": "pizza"
+    },
+    {
+      "seedKey": "seek",
+      "kind": "outfit",
+      "title": "Seek · DOORS",
+      "description": "Пиксельный образ одноглазого героя из DOORS.",
+      "price": 40,
+      "active": true,
+      "character": "seek"
+    },
+    {
+      "seedKey": "dozer",
+      "kind": "outfit",
+      "title": "Dozer · Grace",
+      "description": "Жёлтый сонный герой из Grace.",
+      "price": 40,
+      "active": true,
+      "character": "dozer"
+    },
+    {
+      "seedKey": "fries",
+      "kind": "ticket",
+      "title": "Картошка и наггетсы из Додо",
+      "description": "Один заказ картошки с наггетсами. Купленный билет гарантирует награду от родителя.",
+      "price": 400,
+      "active": false,
+      "image": "game/wishes-transparent-v1.webp",
+      "sprite": {
+        "cols": 2,
+        "rows": 2,
+        "col": 0,
+        "row": 0
+      },
+      "rewardType": "wish",
+      "rewardAmount": 1
+    },
+    {
+      "seedKey": "tokens",
+      "kind": "ticket",
+      "title": "300 Robux",
+      "description": "300 Robux от родителя. Купленный билет гарантирует награду.",
+      "price": 300,
+      "active": true,
+      "image": "game/wishes-transparent-v1.webp",
+      "sprite": {
+        "cols": 2,
+        "rows": 2,
+        "col": 1,
+        "row": 0
+      },
+      "rewardType": "robux",
+      "rewardAmount": 300
+    },
+    {
+      "seedKey": "cinema",
+      "kind": "ticket",
+      "title": "Семейный киновечер",
+      "description": "Ты выбираешь фильм для совместного просмотра.",
+      "price": 100,
+      "active": false,
+      "image": "game/wishes.webp",
+      "sprite": {
+        "cols": 2,
+        "rows": 2,
+        "col": 0,
+        "row": 1
+      },
+      "rewardType": "wish",
+      "rewardAmount": 1
+    },
+    {
+      "seedKey": "gift",
+      "kind": "ticket",
+      "title": "Сюрприз",
+      "description": "Небольшой подарок, который заранее согласуем с родителем.",
+      "price": 200,
+      "active": false,
+      "image": "game/wishes.webp",
+      "sprite": {
+        "cols": 2,
+        "rows": 2,
+        "col": 1,
+        "row": 1
+      },
+      "rewardType": "wish",
+      "rewardAmount": 1
+    },
+    {
+      "seedKey": "blue-live",
+      "kind": "outfit",
+      "title": "Синий исследователь",
+      "description": "Живой образ: герой моргает и слегка двигает руками. Оживи своего исследователя!",
+      "price": 80,
+      "active": true,
+      "character": "blue-live-cover",
+      "animation": "blue-idle"
+    },
+    {
+      "seedKey": "hotdog-boy",
+      "kind": "outfit",
+      "title": "Хот-дог",
+      "description": "Весёлый герой в костюме хот-дога.",
+      "price": 40,
+      "active": true,
+      "character": "hotdog-boy"
+    },
+    {
+      "seedKey": "claw-explorer",
+      "kind": "outfit",
+      "title": "Когтистый исследователь",
+      "description": "Жёлто-синий костюм с серебристыми когтями.",
+      "price": 40,
+      "active": true,
+      "character": "claw-explorer"
+    },
+    {
+      "seedKey": "star-hero",
+      "kind": "outfit",
+      "title": "Звёздный супергерой",
+      "description": "Супергерой с красным плащом и золотой звездой.",
+      "price": 40,
+      "active": true,
+      "character": "star-hero"
+    },
+    {
+      "seedKey": "pizza-boy",
+      "kind": "outfit",
+      "title": "Пицца-парень",
+      "description": "Сырный костюм и шляпа в форме кусочка пиццы.",
+      "price": 40,
+      "active": true,
+      "character": "pizza-boy"
+    },
+    {
+      "seedKey": "red-hero",
+      "kind": "outfit",
+      "title": "Красный герой",
+      "description": "Красно-чёрный костюм для новых приключений.",
+      "price": 40,
+      "active": true,
+      "character": "red-hero"
+    },
+    {
+      "seedKey": "dinosaur-boy",
+      "kind": "outfit",
+      "title": "Динозавр",
+      "description": "Зелёный костюм с хвостом и мягкими шипами.",
+      "price": 40,
+      "active": true,
+      "character": "dinosaur-boy"
+    },
+    {
+      "seedKey": "star-wizard",
+      "kind": "outfit",
+      "title": "Волшебник",
+      "description": "Звёздная мантия и большой волшебный колпак.",
+      "price": 40,
+      "active": true,
+      "character": "star-wizard"
+    },
+    {
+      "seedKey": "star-pajamas",
+      "kind": "outfit",
+      "title": "Звёздная пижама",
+      "description": "Уютный синий наряд с золотыми звёздами.",
+      "price": 40,
+      "active": true,
+      "character": "star-pajamas"
+    },
+    {
+      "seedKey": "sleepy-dozer",
+      "kind": "outfit",
+      "title": "Dozer в пижаме",
+      "description": "Сонный жёлтый герой в звёздной пижаме.",
+      "price": 40,
+      "active": true,
+      "character": "sleepy-dozer"
+    },
+    {
+      "seedKey": "angel-boy",
+      "kind": "outfit",
+      "title": "Ангел",
+      "description": "Белые крылья, золотой нимб и праздничный наряд.",
+      "price": 40,
+      "active": true,
+      "character": "angel-boy"
+    },
+    {
+      "seedKey": "fairy-boy",
+      "kind": "outfit",
+      "title": "Розовая фея",
+      "description": "Розовые крылья и сказочный топорик с сердечком.",
+      "price": 40,
+      "active": true,
+      "character": "fairy-boy"
+    },
+    {
+      "seedKey": "skeleton-boy",
+      "kind": "outfit",
+      "title": "Скелет",
+      "description": "Чёрный костюм с белыми косточками.",
+      "price": 40,
+      "active": true,
+      "character": "skeleton-boy"
+    },
+    {
+      "seedKey": "zombie-boy",
+      "kind": "outfit",
+      "title": "Зомби",
+      "description": "Зелёный герой в костюме для Хэллоуина.",
+      "price": 40,
+      "active": true,
+      "character": "zombie-boy"
+    },
+    {
+      "seedKey": "demon-boy",
+      "kind": "outfit",
+      "title": "Демон",
+      "description": "Красные рожки, крылья и озорной хвост.",
+      "price": 40,
+      "active": true,
+      "character": "demon-boy"
+    },
+    {
+      "seedKey": "vampire-boy",
+      "kind": "outfit",
+      "title": "Вампир",
+      "description": "Красно-чёрный плащ и наряд с золотыми деталями.",
+      "price": 40,
+      "active": true,
+      "character": "vampire-boy"
+    },
+    {
+      "seedKey": "floating-angel",
+      "kind": "outfit",
+      "title": "Парящий ангел",
+      "description": "Ангел с расправленными крыльями в воздушной позе.",
+      "price": 40,
+      "active": true,
+      "character": "floating-angel"
+    },
+    {
+      "seedKey": "fairy-prankster",
+      "kind": "outfit",
+      "title": "Фея-проказник",
+      "description": "Цветочный венок, розовые крылья и хитрая улыбка.",
+      "price": 40,
+      "active": true,
+      "character": "fairy-prankster"
+    },
+    {
+      "seedKey": "dancing-skeleton",
+      "kind": "outfit",
+      "title": "Танцующий скелет",
+      "description": "Скелет в забавной позе с поднятыми руками.",
+      "price": 40,
+      "active": true,
+      "character": "dancing-skeleton"
+    },
+    {
+      "seedKey": "mischievous-demon",
+      "kind": "outfit",
+      "title": "Озорной демон",
+      "description": "Демон с улыбкой и жестом победителя.",
+      "price": 40,
+      "active": true,
+      "character": "mischievous-demon"
+    },
+    {
+      "seedKey": "room-star-studio",
+      "kind": "room",
+      "title": "Звёздная студия",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-star-studio"
+    },
+    {
+      "seedKey": "room-sunny-hero",
+      "kind": "room",
+      "title": "Солнечная комната героя",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-sunny-hero"
+    },
+    {
+      "seedKey": "room-game-wardrobe",
+      "kind": "room",
+      "title": "Игровая примерочная",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-game-wardrobe"
+    },
+    {
+      "seedKey": "room-music-day",
+      "kind": "room",
+      "title": "Музыкальная гостиная",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-music-day"
+    },
+    {
+      "seedKey": "room-forest-house",
+      "kind": "room",
+      "title": "Лесной домик",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 200,
+      "active": true,
+      "room": "room-forest-house"
+    },
+    {
+      "seedKey": "room-danya-day",
+      "kind": "room",
+      "title": "Детская · день",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-danya-day"
+    },
+    {
+      "seedKey": "room-fairy-gallery",
+      "kind": "room",
+      "title": "Галерея сказок",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 200,
+      "active": true,
+      "room": "room-fairy-gallery"
+    },
+    {
+      "seedKey": "room-neon-studio",
+      "kind": "room",
+      "title": "Неоновая игровая",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-neon-studio"
+    },
+    {
+      "seedKey": "room-city-hero",
+      "kind": "room",
+      "title": "Городская комната героя",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-city-hero"
+    },
+    {
+      "seedKey": "room-danya-night",
+      "kind": "room",
+      "title": "Детская · ночь",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-danya-night"
+    },
+    {
+      "seedKey": "room-dracula",
+      "kind": "room",
+      "title": "Замок Дракулы",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 200,
+      "active": true,
+      "room": "room-dracula"
+    },
+    {
+      "seedKey": "room-gothic-organ",
+      "kind": "room",
+      "title": "Готический зал с органом",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-gothic-organ"
+    },
+    {
+      "seedKey": "room-moon-wizard",
+      "kind": "room",
+      "title": "Комната лунного мага",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-moon-wizard"
+    },
+    {
+      "seedKey": "room-music-night",
+      "kind": "room",
+      "title": "Музыкальная гостиная · ночь",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-music-night"
+    },
+    {
+      "seedKey": "room-vampire-gallery",
+      "kind": "room",
+      "title": "Галерея вампира",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-vampire-gallery"
+    },
+    {
+      "seedKey": "room-star-night",
+      "kind": "room",
+      "title": "Звёздная студия · ночь",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-star-night"
+    },
+    {
+      "seedKey": "room-secret-crypt",
+      "kind": "room",
+      "title": "Тайная комната скелета",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-secret-crypt"
+    },
+    {
+      "seedKey": "room-game-night",
+      "kind": "room",
+      "title": "Игровая примерочная · ночь",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-game-night"
+    },
+    {
+      "seedKey": "room-fairy-night",
+      "kind": "room",
+      "title": "Галерея сказок · ночь",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-fairy-night"
+    },
+    {
+      "seedKey": "room-vampire-organ",
+      "kind": "room",
+      "title": "Орган вампира",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-vampire-organ"
+    },
+    {
+      "seedKey": "room-gothic-piano",
+      "kind": "room",
+      "title": "Лунный зал с пианино",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-gothic-piano"
+    },
+    {
+      "seedKey": "room-lilac-moon",
+      "kind": "room",
+      "title": "Сиреневая луна",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-lilac-moon"
+    },
+    {
+      "seedKey": "room-monster-platform",
+      "kind": "room",
+      "title": "На языке монстра",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-monster-platform"
+    },
+    {
+      "seedKey": "room-giant-mouth",
+      "kind": "room",
+      "title": "Гигантская пасть",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-giant-mouth"
+    },
+    {
+      "seedKey": "room-ruined-city",
+      "kind": "room",
+      "title": "Город после битвы",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-ruined-city"
+    },
+    {
+      "seedKey": "room-monster-city",
+      "kind": "room",
+      "title": "Монстр за углом",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-monster-city"
+    },
+    {
+      "seedKey": "room-forgotten-crypt",
+      "kind": "room",
+      "title": "Забытая крипта",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-forgotten-crypt"
+    },
+    {
+      "seedKey": "room-monster-tongue",
+      "kind": "room",
+      "title": "Язык монстра · ночь",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-monster-tongue"
+    },
+    {
+      "seedKey": "room-before-monster",
+      "kind": "room",
+      "title": "Перед пастью монстра",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-before-monster"
+    },
+    {
+      "seedKey": "room-crypt-night",
+      "kind": "room",
+      "title": "Крипта под луной",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-crypt-night"
+    },
+    {
+      "seedKey": "room-monster-neon",
+      "kind": "room",
+      "title": "Ночной город монстра",
+      "description": "Фон для твоей примерочной. Подходит к любому персонажу.",
+      "price": 120,
+      "active": true,
+      "room": "room-monster-neon"
+    },
+    {
+      "seedKey": "room-night-hotel-v1",
+      "kind": "room",
+      "title": "Ночной отель",
+      "description": "Таинственная комната: мерцают свечи, за окном молния, иногда появляются необычные гости. Анимации, звуки и музыку можно настроить в примерочной.",
+      "price": 200,
+      "active": true,
+      "room": "room-night-hotel-v1"
+    },
+    {
+      "seedKey": "mart-round",
+      "kind": "outfit",
+      "title": "Март · Nullscape",
+      "description": "Круглый синий Март в шляпе с рогами. Награда из альбома.",
+      "price": 40,
+      "active": true,
+      "character": "mart-round"
+    },
+    {
+      "seedKey": "mart-boy",
+      "kind": "outfit",
+      "title": "Мальчик-Март · приветствие",
+      "description": "Наш герой приподнимает рогатую шляпу и здоровается.",
+      "price": 80,
+      "active": true,
+      "character": "mart-boy",
+      "animation": "mart-boy-wave"
+    },
+    {
+      "seedKey": "mart-live",
+      "kind": "outfit",
+      "title": "Март · весёлый прыжок",
+      "description": "Март подпрыгивает и мягко покачивается. Движение можно остановить.",
+      "price": 80,
+      "active": true,
+      "character": "mart-round",
+      "animation": "mart-bounce"
+    },
+    {
+      "seedKey": "room-mart-islands",
+      "kind": "room",
+      "title": "Острова Марта",
+      "description": "Живой мир Марта: парящие острова, водопады и мягкое свечение кристаллов. Коснись комнаты, чтобы разбудить огоньки.",
+      "price": 200,
+      "active": true,
+      "room": "room-mart-islands"
+    },
+    {
+      "seedKey": "cadence-clock",
+      "kind": "outfit",
+      "title": "Cadence · Nullscape",
+      "description": "Таинственные часы с цветами, цепями и необычными стрелками. Награда из альбома.",
+      "price": 40,
+      "active": true,
+      "character": "cadence-clock"
+    },
+    {
+      "seedKey": "cadence-boy",
+      "kind": "outfit",
+      "title": "Костюм Cadence",
+      "description": "Серебристый наряд хранителя времени с часами и цветами.",
+      "price": 40,
+      "active": true,
+      "character": "cadence-boy"
+    },
+    {
+      "seedKey": "cadence-live",
+      "kind": "outfit",
+      "title": "Cadence · ритм времени",
+      "description": "Часы плавно покачиваются, словно маятник. Движение можно остановить.",
+      "price": 80,
+      "active": true,
+      "character": "cadence-clock",
+      "animation": "cadence-pendulum"
+    },
+    {
+      "seedKey": "room-cadence-observatory",
+      "kind": "room",
+      "title": "Обсерватория времени",
+      "description": "Зал с большими часами, лунным светом и мерцающими огоньками. Коснись комнаты, чтобы разбудить свет.",
+      "price": 200,
+      "active": true,
+      "room": "room-cadence-observatory"
+    },
+    {
+      "seedKey": "vampire-live",
+      "kind": "outfit",
+      "title": "Вампир · оживший плащ",
+      "description": "Вампир расправляет плащ и приветствует тебя.",
+      "price": 80,
+      "active": true,
+      "character": "vampire-boy",
+      "animation": "vampire-cape"
+    },
+    {
+      "seedKey": "fairy-live",
+      "kind": "outfit",
+      "title": "Фея · волшебный полёт",
+      "description": "Фея мягко поднимается и опускается в воздухе.",
+      "price": 80,
+      "active": true,
+      "character": "fairy-boy",
+      "animation": "fairy-float"
+    },
+    {
+      "seedKey": "seek-live",
+      "kind": "outfit",
+      "title": "Сик · движение тени",
+      "description": "Сик покачивается и наклоняется, готовясь к приключению.",
+      "price": 80,
+      "active": true,
+      "character": "seek",
+      "animation": "seek-sway"
+    },
+    {
+      "seedKey": "action-hero-punch",
+      "kind": "outfit",
+      "title": "Супергерой · удар",
+      "description": "Герой готовится, делает один удар и возвращается в стойку.",
+      "price": 80,
+      "active": true,
+      "character": "hero-punch-cover",
+      "animation": "hero-punch"
+    },
+    {
+      "seedKey": "action-hero-hair",
+      "kind": "outfit",
+      "title": "Супергерой · куда делись волосы?",
+      "description": "Волосы разлетаются, герой удивляется — и причёска возвращается.",
+      "price": 80,
+      "active": true,
+      "character": "hero-hair-cover",
+      "animation": "hero-hair"
+    },
+    {
+      "seedKey": "action-claw-show",
+      "kind": "outfit",
+      "title": "Когтистый герой · показывает когти",
+      "description": "Герой поднимает руки и показывает серебристые когти.",
+      "price": 80,
+      "active": true,
+      "character": "claw-show-cover",
+      "animation": "claw-show"
+    },
+    {
+      "seedKey": "action-fairy-swing",
+      "kind": "outfit",
+      "title": "Фея · взмах топориком",
+      "description": "Один озорной взмах топориком в форме сердечка.",
+      "price": 80,
+      "active": true,
+      "character": "fairy-swing-cover",
+      "animation": "fairy-swing"
+    },
+    {
+      "seedKey": "action-fairy-magic",
+      "kind": "outfit",
+      "title": "Фея · волшебные искры",
+      "description": "Волшебный взмах оставляет розовые сердечки и искры.",
+      "price": 80,
+      "active": true,
+      "character": "fairy-magic-cover",
+      "animation": "fairy-magic"
+    },
+    {
+      "seedKey": "action-vampire-juice",
+      "kind": "outfit",
+      "title": "Вампир · красный сок",
+      "description": "Вампир поднимает бокал и делает глоток сока.",
+      "price": 80,
+      "active": true,
+      "character": "vampire-juice-cover",
+      "animation": "vampire-juice"
+    },
+    {
+      "seedKey": "action-vampire-bat",
+      "kind": "outfit",
+      "title": "Вампир · летучая мышь",
+      "description": "Вампир расправляет крылья, превращается в мышь и возвращается.",
+      "price": 80,
+      "active": true,
+      "character": "vampire-bat-cover",
+      "animation": "vampire-bat"
+    },
+    {
+      "seedKey": "action-vampire-awakening",
+      "kind": "outfit",
+      "title": "Вампир · пробуждение",
+      "description": "Глаза становятся красными, плащ раскрывается — и герой снова спокоен.",
+      "price": 80,
+      "active": true,
+      "character": "vampire-awakening-cover",
+      "animation": "vampire-awakening"
+    },
+    {
+      "seedKey": "action-boy-fairy",
+      "kind": "outfit",
+      "title": "Мальчик · превращение в фею",
+      "description": "Розовые ленты превращают исследователя в парящую фею.",
+      "price": 80,
+      "active": true,
+      "character": "boy-fairy-cover",
+      "animation": "boy-fairy"
+    },
+    {
+      "seedKey": "dozer-nightcap",
+      "kind": "outfit",
+      "title": "Дозер в колпаке · Grace",
+      "description": "Сонный Дозер в синем ночном колпаке. Первая наклейка альбома.",
+      "price": 40,
+      "active": true,
+      "character": "dozer-nightcap"
+    },
+    {
+      "seedKey": "dozer-boy",
+      "kind": "outfit",
+      "title": "Мальчик-Дозер",
+      "description": "Наш герой в звёздной пижаме, ночном колпаке и мягких тапочках.",
+      "price": 40,
+      "active": true,
+      "character": "dozer-boy"
+    },
+    {
+      "seedKey": "dozer-boy-live",
+      "kind": "outfit",
+      "title": "Мальчик-Дозер · сонное приветствие",
+      "description": "Герой сонно моргает, зевает и потягивается.",
+      "price": 80,
+      "active": true,
+      "character": "dozer-boy",
+      "animation": "dozer-drowsy"
+    },
+    {
+      "seedKey": "room-dozer-bedroom",
+      "kind": "room",
+      "title": "Сонная спальня Дозера",
+      "description": "Уютная спальня со звёздным одеялом, луной и тихими огоньками. Коснись комнаты, чтобы разбудить звёздочки.",
+      "price": 200,
+      "active": true,
+      "room": "room-dozer-bedroom"
+    },
+    {
+      "seedKey": "rebound-face",
+      "kind": "outfit",
+      "title": "Рибаунд · DOORS",
+      "description": "Синий пушистый Рибаунд с множеством розовых глаз.",
+      "price": 40,
+      "active": true,
+      "character": "rebound-face"
+    },
+    {
+      "seedKey": "rebound-boy",
+      "kind": "outfit",
+      "title": "Мальчик-Рибаунд",
+      "description": "Знакомый герой в пушистом костюме Рибаунда с рожками и глазами на капюшоне.",
+      "price": 40,
+      "active": true,
+      "character": "rebound-boy"
+    },
+    {
+      "seedKey": "rebound-live",
+      "kind": "outfit",
+      "title": "Рибаунд · исчезновение",
+      "description": "Рибаунд растворяется в дымке, появляется снова и иногда летает по комнате.",
+      "price": 80,
+      "active": true,
+      "character": "rebound-face",
+      "animation": "rebound-float"
+    },
+    {
+      "seedKey": "rebound-boy-live",
+      "kind": "outfit",
+      "title": "Мальчик-Рибаунд · живой костюм",
+      "description": "Мальчик летит с разведёнными руками и согнутыми назад ногами, мягко меняет позу и направление полёта.",
+      "price": 80,
+      "active": true,
+      "character": "rebound-boy",
+      "animation": "rebound-boy-idle"
+    },
+    {
+      "seedKey": "room-rebound-hotel",
+      "kind": "room",
+      "title": "Ночной отель Рибаунда",
+      "description": "Сквозняк из треснувшего окна шевелит штору и гасит свечи. Дым и туман плывут по ночному отелю.",
+      "price": 200,
+      "active": true,
+      "room": "room-rebound-hotel"
+    },
+    {
+      "seedKey": "astro-live",
+      "kind": "outfit",
+      "title": "Астро · Dandy’s World",
+      "description": "Сонный лунный герой парит, моргает и покачивает колпаком. Особый подарок за первую серию занятий.",
+      "price": 80,
+      "active": true,
+      "character": "astro",
+      "animation": "astro-idle"
+    },
+    {
+      "seedKey": "room-astro-night",
+      "kind": "room",
+      "title": "Лунная комната Астро",
+      "description": "Ночная обсерватория: тёплые фонарики, падающая звезда и тихая колыбельная. Звуки и музыку можно включить в настройках комнаты.",
+      "price": 200,
+      "active": true,
+      "room": "room-astro-night",
+      "animation": "astro-room-night"
+    }
+  ]
+}

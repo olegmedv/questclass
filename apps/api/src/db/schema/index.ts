@@ -5,6 +5,7 @@ export * from './attemptAnswers';
 export * from './attemptQuestions';
 export * from './attempts';
 export * from './audit';
+export * from './catalog';
 export * from './choreCompletions';
 export * from './ledger';
 export * from './importTokens';

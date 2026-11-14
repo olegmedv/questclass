@@ -7,6 +7,8 @@ import { trustedProxiesFromSettings } from './http/clientIp';
 import { createAttemptsService } from './modules/attempts/service';
 import { createAuditService } from './modules/audit/service';
 import { createAuthService } from './modules/auth/service';
+import { seedCatalog } from './modules/catalog/seed';
+import { createCatalogService } from './modules/catalog/service';
 import { createImportService } from './modules/import/service';
 import { createLedgerService } from './modules/ledger/service';
 import { createMediaService } from './modules/media/service';
@@ -46,6 +48,9 @@ const STARTUP_HOOKS: readonly StartupHook[] = [
   },
   (ctx) => {
     seedRewardReasons(ctx.db);
+  },
+  (ctx) => {
+    seedCatalog(ctx.db, ctx.catalog);
   },
 ];
 
@@ -109,6 +114,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
     });
     const rewards = createRewardsService(db, { audit, ledger, users, subjects, tasks });
     const chores = createChoresService(db, { audit, settings, ledger, tasks, progress });
+    const catalog = createCatalogService(db, { audit });
     const ctx: AppContext = {
       config,
       db,
@@ -130,6 +136,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       imports,
       rewards,
       chores,
+      catalog,
       trustedProxies: trustedProxiesFromSettings(settings),
     };
     return { ctx, closers };

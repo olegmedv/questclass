@@ -99,6 +99,13 @@
       "when": 1794673379082,
       "tag": "0013_chore_completions",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "6",
+      "when": 1794674150548,
+      "tag": "0014_catalog",
+      "breakpoints": true
     }
   ]
 }

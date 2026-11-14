@@ -79,6 +79,8 @@ interface MatrixData {
     readonly toApprove: number;
     readonly toReject: number;
   };
+  /** A seeded shop item. */
+  readonly catalogItem: number;
 }
 
 const prepared = new WeakMap<TwoLearners, MatrixData>();
@@ -296,6 +298,7 @@ function prepare(f: TwoLearners): TwoLearners {
     imports: prepareImports(f),
     rewards: prepareRewards(f),
     chores: prepareChores(f),
+    catalogItem: ctx.catalog.items({ kind: 'outfit', activeOnly: true })[0]?.id ?? 0,
   });
   return f;
 }
@@ -803,6 +806,26 @@ const MATRIX: readonly MatrixRow[] = [
     url: (f) => `/api/admin/chores/reviews/${data(f).chores.toReject}/rejection`,
     body: () => ({ comment: 'Ещё не готово' }),
     expect: adminOnly(201),
+  },
+
+  // catalog
+  { route: 'GET /api/admin/catalog/library', expect: adminOnly(200) },
+  { route: 'GET /api/admin/catalog/items', expect: adminOnly(200) },
+  {
+    route: 'POST /api/admin/catalog/items',
+    body: () => ({ kind: 'outfit', title: 'Матрица', price: 40, characterKey: 'space' }),
+    expect: adminOnly(201),
+  },
+  {
+    route: 'GET /api/admin/catalog/items/:id',
+    url: (f) => `/api/admin/catalog/items/${data(f).catalogItem}`,
+    expect: adminOnly(200),
+  },
+  {
+    route: 'PATCH /api/admin/catalog/items/:id',
+    url: (f) => `/api/admin/catalog/items/${data(f).catalogItem}`,
+    body: () => ({ price: 45 }),
+    expect: adminOnly(200),
   },
 ];
 

@@ -11,6 +11,8 @@ import { auditRoutes } from './modules/audit/routes';
 import type { AuditService } from './modules/audit/service';
 import { authMiddleware, authRoutes } from './modules/auth/routes';
 import type { AuthService } from './modules/auth/service';
+import { catalogRoutes } from './modules/catalog/routes';
+import type { CatalogService } from './modules/catalog/service';
 import { importRoutes, importTokenMiddleware } from './modules/import/routes';
 import type { ImportService } from './modules/import/service';
 import { ledgerRoutes } from './modules/ledger/routes';
@@ -70,6 +72,8 @@ export interface AppContext {
   readonly rewards: RewardsService;
   /** Reports of chores and their review (chore). */
   readonly chores: ChoresService;
+  /** Shared catalog: shop items, heroes, rooms, animations. */
+  readonly catalog: CatalogService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -105,6 +109,7 @@ function collectRoutes(ctx: AppContext): RouteDef[] {
     ...importRoutes(ctx),
     ...rewardsRoutes(ctx),
     ...choreRoutes(ctx),
+    ...catalogRoutes(ctx),
   ];
 }
 
