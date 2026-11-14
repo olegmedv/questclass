@@ -17,6 +17,8 @@ export async function grantCoins(
       xp: 0,
       coins,
       requestId: randomUUID(),
+      // Several grants of the same day are fine in tests (the duplicate guard is for parents).
+      force: true,
     },
   });
   expect(res.status(), await res.text()).toBe(201);

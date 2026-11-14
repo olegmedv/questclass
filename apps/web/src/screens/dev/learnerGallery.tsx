@@ -7,12 +7,14 @@ import {
   Button,
   CategoryFilter,
   Clapperboard,
+  DEFAULT_ROOM_SETTINGS,
   Grid,
   HeroRibbon,
   HeroScene,
   Play,
   House,
   LayoutGrid,
+  LiveRoomPreview,
   Moon,
   Placeholder,
   Send,
@@ -323,5 +325,54 @@ export function HeroSections({ Demo }: { readonly Demo: GalleryDemo }) {
         }}
       />
     </>
+  );
+}
+
+const DOZER_ROOM = {
+  image: '/assets/game/rooms/room-dozer-bedroom.webp',
+  title: 'Сонная спальня Дозера',
+  footAnchor: { x: 50, y: 75 },
+  scene: 'ambient:fairy',
+};
+const DOZER_THUMB = '/assets/game/rooms/room-dozer-bedroom-thumb.webp';
+
+function RoomPreviewDemo() {
+  const [playing, setPlaying] = useState(false);
+  return (
+    <LiveRoomPreview
+      room={DOZER_ROOM}
+      thumb={DOZER_THUMB}
+      alt="Сонная спальня Дозера"
+      playing={playing}
+      onToggle={() => setPlaying((value) => !value)}
+    />
+  );
+}
+
+export function LiveRoomSections({ Demo }: { readonly Demo: GalleryDemo }) {
+  return (
+    <Demo
+      id="live-rooms"
+      title="Живые комнаты"
+      description="Слои выбираются по типу сцены комнаты: ambient (огоньки), «Ночной отель», Astro, Rebound. Касание будит комнату; превью магазина — по кнопке, без звука."
+      states={{
+        default: (
+          <Grid min="md">
+            <HeroScene room={DOZER_ROOM} hero={blueHero} />
+            <RoomPreviewDemo />
+          </Grid>
+        ),
+        disabled: (
+          <HeroScene
+            room={DOZER_ROOM}
+            hero={blueHero}
+            settings={{ ...DEFAULT_ROOM_SETTINGS, animations: false }}
+          />
+        ),
+        loading: { na: 'пока фон грузится — подпись «Загружаем комнату…» поверх прежней' },
+        empty: <HeroScene room={{ ...DOZER_ROOM, scene: 'static' }} hero={blueHero} />,
+        error: { na: 'эффект не загрузился — подпись, остальная комната работает' },
+      }}
+    />
   );
 }

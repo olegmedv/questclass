@@ -154,3 +154,47 @@
     align-items: start;
   }
 }
+
+/* A live room in the shop: the thumbnail until «плей», then the moving room. */
+.qc-room-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.qc-room-preview .qc-scene {
+  height: 100%;
+  border-radius: 0;
+}
+
+.qc-room-preview-thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+.qc-room-preview-toggle {
+  position: absolute;
+  z-index: 5;
+  right: var(--q-space-1);
+  bottom: var(--q-space-1);
+  display: grid;
+  place-items: center;
+  width: var(--q-touch);
+  height: var(--q-touch);
+  border: 1px solid var(--q-cat-teal-border);
+  border-radius: var(--q-radius-round);
+  background: var(--q-cat-teal-bg);
+  color: var(--q-cat-teal);
+}
+
+.qc-room-preview-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.qc-room-preview-toggle[aria-pressed='true'] {
+  border-color: var(--q-cat-teal);
+}

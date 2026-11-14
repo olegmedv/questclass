@@ -62,6 +62,7 @@ const SECTIONS = [
   'wish-card',
   'hero-scene',
   'hero-ribbon',
+  'live-rooms',
 ];
 
 test('gallery shows every component in five states and fits the screen', async ({ page }) => {

@@ -1,0 +1,557 @@
+/* Layers of live rooms share the 3:2 scene coordinates: over the background, under the hero. */
+.qc-room-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+img.qc-room-layer {
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+.qc-room-motion {
+  opacity: 0;
+}
+
+.qc-room-motion-loaded {
+  opacity: 1;
+}
+
+/* A tap anywhere on the room wakes it (the hero lets taps through). */
+.qc-room-touch {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--q-text);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.qc-room-touch[aria-disabled='true'] {
+  cursor: default;
+}
+
+.qc-room-touch:focus-visible {
+  outline: 3px solid var(--q-room-touch-focus);
+  outline-offset: -4px;
+}
+
+.qc-room-hint,
+.qc-room-warning {
+  position: absolute;
+  z-index: 3;
+  bottom: var(--q-space-2);
+  left: 50%;
+  width: max-content;
+  max-width: calc(100% - 24px);
+  padding: var(--q-space-1) var(--q-space-2);
+  border-radius: var(--q-radius-sm);
+  background: var(--q-room-hint-bg);
+  color: var(--q-text);
+  font-size: var(--q-text-sm);
+  font-weight: var(--q-weight-medium);
+  line-height: var(--q-leading-tight);
+  text-align: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.qc-room-warning {
+  bottom: auto;
+  top: var(--q-space-2);
+}
+
+/* Ambient rooms: two breathing lights and drifting motes in the theme's colour. */
+.qc-ambient {
+  --qc-ambient: var(--q-room-embers);
+}
+
+.qc-ambient[data-theme='fairy'] {
+  --qc-ambient: var(--q-room-fairy);
+}
+
+.qc-ambient[data-theme='forest'] {
+  --qc-ambient: var(--q-room-forest);
+}
+
+.qc-ambient[data-theme='water'] {
+  --qc-ambient: var(--q-room-water);
+}
+
+.qc-ambient[data-theme='clock'] {
+  --qc-ambient: var(--q-room-clock);
+}
+
+.qc-ambient-light {
+  position: absolute;
+  top: 12%;
+  width: 42%;
+  height: 65%;
+  background: radial-gradient(
+    ellipse,
+    color-mix(in srgb, var(--qc-ambient) 30%, transparent),
+    transparent 65%
+  );
+  mix-blend-mode: screen;
+  animation: qc-ambient-breathe 5s ease-in-out infinite alternate;
+}
+
+.qc-ambient-light[data-side='left'] {
+  left: -10%;
+}
+
+.qc-ambient-light[data-side='right'] {
+  right: -9%;
+  animation-delay: -2s;
+}
+
+.qc-ambient[data-theme='water'] .qc-ambient-light {
+  top: 30%;
+  width: 35%;
+}
+
+.qc-ambient[data-theme='water'] .qc-ambient-light[data-side='left'] {
+  left: 7%;
+}
+
+.qc-ambient[data-theme='water'] .qc-ambient-light[data-side='right'] {
+  right: 8%;
+}
+
+.qc-ambient-mote {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--qc-ambient) 90%, transparent);
+  box-shadow: 0 0 6px color-mix(in srgb, var(--qc-ambient) 65%, transparent);
+  animation: qc-ambient-drift 4.5s ease-in-out infinite;
+  animation-delay: var(--qc-mote-delay);
+}
+
+.qc-ambient-burst {
+  position: absolute;
+  inset: 0;
+}
+
+.qc-ambient-burst i {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--qc-ambient);
+  box-shadow: 0 0 9px color-mix(in srgb, var(--qc-ambient) 70%, transparent);
+  opacity: 0;
+  animation: qc-ambient-rise 1.5s ease-out both;
+}
+
+@keyframes qc-ambient-breathe {
+  from {
+    opacity: 0.25;
+  }
+
+  to {
+    opacity: 0.85;
+  }
+}
+
+@keyframes qc-ambient-drift {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: translate(0, 8px);
+  }
+
+  50% {
+    opacity: 0.85;
+    transform: translate(var(--qc-mote-drift), -12px);
+  }
+}
+
+@keyframes qc-ambient-rise {
+  10% {
+    opacity: 0.9;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-55px) scale(0.5);
+  }
+}
+
+/* Rebound's hotel: one 24 s gust moves the curtain, the candles, the leaves and the mist. */
+.qc-rebound-warmth {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse at 49% 15%,
+      color-mix(in srgb, var(--q-rebound-warm) 13%, transparent),
+      transparent 48%
+    ),
+    radial-gradient(
+      ellipse at 9% 54%,
+      color-mix(in srgb, var(--q-rebound-warm) 9%, transparent),
+      transparent 22%
+    ),
+    radial-gradient(
+      ellipse at 97% 56%,
+      color-mix(in srgb, var(--q-rebound-warm) 9%, transparent),
+      transparent 24%
+    );
+  animation: qc-rebound-warmth 24s linear infinite;
+}
+
+.qc-rebound-curtain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  clip-path: polygon(
+    75.8% 25.6%,
+    80.4% 24.4%,
+    80.1% 59.8%,
+    79.4% 62.4%,
+    78.5% 59.3%,
+    77.7% 61%,
+    76.7% 57.5%,
+    75.4% 58%,
+    74.8% 54.8%,
+    73.8% 54.4%,
+    72.4% 55%,
+    72.3% 52%,
+    73.9% 43%,
+    75.4% 33%
+  );
+  transform-origin: 78.5% 25.5%;
+  animation: qc-rebound-cloth 24s ease-in-out infinite;
+}
+
+.qc-rebound-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.qc-rebound-glow-in {
+  stop-color: var(--q-rebound-glow);
+  stop-opacity: 0.42;
+}
+
+.qc-rebound-glow-out {
+  stop-color: var(--q-rebound-glow);
+  stop-opacity: 0;
+}
+
+.qc-rebound-flame-life {
+  animation: qc-rebound-flame-life 24s linear infinite;
+  animation-delay: var(--qc-candle-delay);
+}
+
+.qc-rebound-flame {
+  transform-origin: 0 0;
+  animation: qc-rebound-flicker 1.7s ease-in-out infinite;
+}
+
+.qc-rebound-flame-outer {
+  fill: var(--q-rebound-flame);
+}
+
+.qc-rebound-flame-core {
+  fill: var(--q-rebound-flame-core);
+}
+
+.qc-rebound-smoke {
+  fill: none;
+  stroke: var(--q-rebound-smoke);
+  stroke-width: 4;
+  stroke-linecap: round;
+  opacity: 0;
+  animation: qc-rebound-smoke 24s ease-out infinite;
+  animation-delay: var(--qc-candle-delay);
+}
+
+.qc-rebound-draft {
+  position: absolute;
+  top: 36%;
+  left: 65%;
+  width: 27%;
+  height: 22%;
+  border-radius: 50%;
+  background: linear-gradient(
+    155deg,
+    transparent 40%,
+    color-mix(in srgb, var(--q-rebound-draft) 11%, transparent) 52%,
+    transparent 64%
+  );
+  filter: blur(8px);
+  opacity: 0;
+  animation: qc-rebound-draft 24s ease-out infinite;
+}
+
+.qc-rebound-leaf {
+  transform-box: fill-box;
+  transform-origin: center;
+  fill: var(--q-rebound-leaf-olive);
+  stroke: var(--q-rebound-leaf-edge);
+  stroke-width: 1.5;
+  animation: qc-rebound-leaf 2.6s linear infinite;
+}
+
+.qc-rebound-leaf[data-tone='brown'] {
+  fill: var(--q-rebound-leaf-brown);
+}
+
+.qc-rebound-leaf-vein {
+  fill: none;
+  stroke: var(--q-rebound-leaf-vein);
+  stroke-width: 1.4;
+}
+
+.qc-rebound-mist {
+  position: absolute;
+  top: 69%;
+  left: -20%;
+  width: 140%;
+  height: 24%;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      ellipse at 25% 65%,
+      color-mix(in srgb, var(--q-rebound-mist) 34%, transparent),
+      transparent 33%
+    ),
+    radial-gradient(
+      ellipse at 65% 50%,
+      color-mix(in srgb, var(--q-rebound-mist-violet) 34%, transparent),
+      transparent 35%
+    );
+  filter: blur(5px);
+  opacity: 0.45;
+  animation: qc-rebound-mist 24s ease-in-out infinite;
+}
+
+.qc-rebound-mist[data-layer='two'] {
+  top: 76%;
+  height: 17%;
+  opacity: 0.3;
+  scale: -1 1;
+}
+
+@keyframes qc-rebound-cloth {
+  0%,
+  10%,
+  100% {
+    transform: skewX(0deg);
+  }
+
+  17% {
+    transform: skewX(1.6deg);
+  }
+
+  22% {
+    transform: skewX(3deg);
+  }
+
+  29% {
+    transform: skewX(0.7deg);
+  }
+
+  34% {
+    transform: skewX(1.2deg);
+  }
+
+  43%,
+  85% {
+    transform: skewX(0deg);
+  }
+
+  92% {
+    transform: skewX(0.3deg);
+  }
+}
+
+@keyframes qc-rebound-flame-life {
+  0%,
+  12%,
+  100% {
+    opacity: 1;
+    transform: skewX(0) scaleY(1);
+  }
+
+  17% {
+    opacity: 1;
+    transform: skewX(26deg) scaleY(0.7);
+  }
+
+  21% {
+    opacity: 1;
+    transform: skewX(48deg) scaleY(0.35);
+  }
+
+  23%,
+  74% {
+    opacity: 0;
+    transform: skewX(45deg) scaleY(0.08);
+  }
+
+  78% {
+    opacity: 0.35;
+    transform: skewX(0) scaleY(0.25);
+  }
+
+  84% {
+    opacity: 1;
+    transform: skewX(0) scaleY(1);
+  }
+}
+
+@keyframes qc-rebound-flicker {
+  0%,
+  100% {
+    transform: scale(0.95, 1);
+  }
+
+  35% {
+    transform: scale(1.08, 0.93) rotate(3deg);
+  }
+
+  68% {
+    transform: scale(0.98, 1.06) rotate(-3deg);
+  }
+}
+
+@keyframes qc-rebound-smoke {
+  0%,
+  21%,
+  42%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.4);
+  }
+
+  24% {
+    opacity: 0.55;
+    transform: translate(-3px, -3px) scale(0.55);
+  }
+
+  31% {
+    opacity: 0.35;
+    transform: translate(-22px, -18px) scale(1.2);
+  }
+
+  40% {
+    opacity: 0;
+    transform: translate(-55px, -32px) scale(1.5);
+  }
+}
+
+@keyframes qc-rebound-warmth {
+  0%,
+  13%,
+  100% {
+    opacity: 1;
+  }
+
+  23%,
+  74% {
+    opacity: 0;
+  }
+
+  84% {
+    opacity: 1;
+  }
+}
+
+@keyframes qc-rebound-draft {
+  0%,
+  11%,
+  43%,
+  100% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+
+  18% {
+    opacity: 0.8;
+    transform: translate(-15%, 12%);
+  }
+
+  36% {
+    opacity: 0;
+    transform: translate(-100%, 65%);
+  }
+}
+
+@keyframes qc-rebound-mist {
+  0%,
+  100% {
+    translate: 3% 0;
+    opacity: 0.4;
+  }
+
+  16% {
+    translate: 1% 0;
+    opacity: 0.5;
+  }
+
+  29% {
+    translate: -8% 2%;
+    opacity: 0.7;
+  }
+
+  55% {
+    translate: -4% 0;
+    opacity: 0.35;
+  }
+
+  80% {
+    translate: 0 0;
+    opacity: 0.4;
+  }
+}
+
+@keyframes qc-rebound-leaf {
+  0% {
+    transform: rotate(0deg) scaleY(0.9);
+  }
+
+  27% {
+    transform: rotate(95deg) scaleY(0.22);
+  }
+
+  58% {
+    transform: rotate(208deg) scaleY(0.85);
+  }
+
+  82% {
+    transform: rotate(296deg) scaleY(0.35);
+  }
+
+  100% {
+    transform: rotate(360deg) scaleY(0.9);
+  }
+}
+
+/* Reduced motion: rooms stand still (the components do not even start). */
+@media (prefers-reduced-motion: reduce) {
+  .qc-ambient,
+  .qc-rebound,
+  .qc-hotel-layer,
+  .qc-room-motion {
+    display: none;
+  }
+}

@@ -28,7 +28,7 @@ import {
   type RibbonCard,
   type TabItem,
 } from '@questclass/ui';
-import { useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useHeroAnimation } from '../../features/animation/AnimationManager';
 import { HeroSettings, useHeroPreferences } from '../../features/character/HeroSettings';
 import {
@@ -99,7 +99,7 @@ function Fitting({ character }: { readonly character: CharacterDto }) {
   const dressing = useDressing(character.look, { motion: prefs.characterMotion && !reduced });
   const shown = dressing.shown;
   const art = shown ? lookArt(shown) : null;
-  const room = roomOf(character.room);
+  const room = useMemo(() => roomOf(character.room), [character.room]);
   const idle = dressing.phase === 'idle';
 
   const heroRef = useRef<HTMLElement>(null);
@@ -169,6 +169,14 @@ function Fitting({ character }: { readonly character: CharacterDto }) {
             room={room}
             footOffset={art?.footOffset}
             phase={dressing.phase}
+            // The room rests while the settings are open or the hero changes clothes.
+            active={idle && !settingsOpen}
+            settings={{
+              animations: prefs.roomAnimations,
+              sounds: prefs.roomSounds,
+              atmosphere: prefs.atmosphere,
+              music: prefs.music,
+            }}
             hero={
               art && (
                 <AnimatedHero

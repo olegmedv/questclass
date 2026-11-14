@@ -85,6 +85,27 @@
   --q-cat-teal-bg: #0f3f42;
   --q-cat-teal-border: #42bcb0;
 
+  /* Live rooms: light of ambient themes, hints over the scene, Rebound's hotel */
+  --q-room-embers: #ffb858;
+  --q-room-fairy: #f2a5ff;
+  --q-room-forest: #c0f470;
+  --q-room-water: #6de9ff;
+  --q-room-clock: #f6dc9a;
+  --q-room-hint-bg: #14223deb;
+  --q-room-touch-focus: #ffda80;
+  --q-rebound-flame: #f9a53e;
+  --q-rebound-flame-core: #fff1b2;
+  --q-rebound-glow: #ffbe66;
+  --q-rebound-warm: #ffb46d;
+  --q-rebound-smoke: #c4cde2;
+  --q-rebound-draft: #b2c7ef;
+  --q-rebound-mist: #c2d0f8;
+  --q-rebound-mist-violet: #ad96d9;
+  --q-rebound-leaf-olive: #9a9e65;
+  --q-rebound-leaf-brown: #ac7950;
+  --q-rebound-leaf-edge: #504b35;
+  --q-rebound-leaf-vein: #d2b481;
+
   /* Status */
   --q-success: #a6e2c4;
   --q-success-bg: #1e403a;

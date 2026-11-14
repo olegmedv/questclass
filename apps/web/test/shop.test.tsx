@@ -249,6 +249,27 @@ describe('shop', () => {
     expect(screen.getByRole('button', { name: 'Купить «Космонавт» за 40 монет' })).toBeEnabled();
   });
 
+  it('a live room plays its scene by the button, without touch and sound', async () => {
+    mockApi(shopApi(500));
+    renderRoute('/shop');
+    const card = (await screen.findByRole('heading', { name: 'Ночной отель' })).closest('article');
+    if (!card) throw new Error('no card');
+    expect(within(card).getByRole('img', { name: 'Ночной отель' })).toHaveAttribute(
+      'src',
+      '/assets/game/rooms/night-hotel-thumb.webp',
+    );
+    await userEvent.click(
+      within(card).getByRole('button', { name: 'Посмотреть анимацию комнаты' }),
+    );
+    const scene = card.querySelector('.qc-scene');
+    expect(scene).toHaveAttribute('data-room-scene', 'night-hotel');
+    expect(within(card).queryByRole('button', { name: /Оживить комнату/ })).toBeNull();
+    await userEvent.click(
+      within(card).getByRole('button', { name: 'Остановить анимацию комнаты' }),
+    );
+    expect(card.querySelector('.qc-scene')).toBeNull();
+  });
+
   it('the name opens «Подробнее» with the description', async () => {
     mockApi(shopApi(100));
     renderRoute('/shop');

@@ -1,4 +1,17 @@
-import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { Play, Square } from 'lucide-react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode, type Ref } from 'react';
+import { AmbientScene, type AmbientTheme } from '../scenes/Ambient';
+import { AstroScene } from '../scenes/Astro';
+import {
+  DEFAULT_ROOM_SETTINGS,
+  useRoomMotion,
+  type LiveRoomProps,
+  type RoomSceneAssets,
+  type RoomSceneSettings,
+} from '../scenes/common';
+import { NightHotelScene } from '../scenes/NightHotel';
+import { ReboundScene } from '../scenes/Rebound';
+import { StaticScene } from '../scenes/Static';
 import { DressEffect, type DressPhase } from './DressEffect';
 import './Scene.css';
 
@@ -8,11 +21,15 @@ export interface SceneFootAnchor {
   readonly y: number;
 }
 
-/** The room of a scene (a still background for now; live scenes choose by `scene`). */
+/** The room of a scene; its live layers are chosen by `scene` (never by the room's id). */
 export interface SceneRoom {
   readonly image: string;
   readonly title: string;
   readonly footAnchor: SceneFootAnchor;
+  /** `static`, `ambient:<theme>`, `night-hotel`, `astro` or `rebound` (default `static`). */
+  readonly scene?: string;
+  /** Files of the scene as URLs. */
+  readonly assets?: RoomSceneAssets;
 }
 
 export interface HeroSceneProps {
@@ -27,7 +44,34 @@ export interface HeroSceneProps {
   readonly children?: ReactNode;
   /** The background could not be loaded (the previous one stays). */
   readonly onBackdropError?: () => void;
+  /** Room settings of this device (motion and sounds). */
+  readonly settings?: RoomSceneSettings;
+  /** False while something holds the room (settings dialog, dressing): it rests. */
+  readonly active?: boolean;
+  /** A preview: the room moves but has no touch and no sound. */
+  readonly preview?: boolean;
 }
+
+const AMBIENT_THEMES: readonly AmbientTheme[] = ['embers', 'fairy', 'forest', 'water', 'clock'];
+
+/** The live layers of a room, chosen by its scene type. */
+export function RoomLayers({
+  scene = 'static',
+  ...props
+}: LiveRoomProps & { readonly scene?: string }) {
+  if (scene === 'night-hotel') return <NightHotelScene {...props} />;
+  if (scene === 'astro') return <AstroScene {...props} />;
+  if (scene === 'rebound' || scene === 'ambient:rebound') return <ReboundScene {...props} />;
+  const theme = scene.startsWith('ambient:')
+    ? (scene.slice('ambient:'.length) as AmbientTheme)
+    : null;
+  if (theme && AMBIENT_THEMES.includes(theme)) return <AmbientScene theme={theme} {...props} />;
+  return <StaticScene {...props} />;
+}
+
+/** Whether a scene type moves at all (a still room without its own animation does not). */
+const movesBy = (room: SceneRoom) =>
+  (room.scene ?? 'static') !== 'static' || Boolean(room.assets?.motion);
 
 /**
  * Keeps the previous background until the next one has loaded, so changing rooms never flashes
@@ -76,15 +120,25 @@ export function HeroScene({
   phase = 'idle',
   children,
   onBackdropError,
+  settings = DEFAULT_ROOM_SETTINGS,
+  active = true,
+  preview = false,
 }: HeroSceneProps) {
   const { shown, loading, failed } = useShownImage(room?.image ?? null, onBackdropError);
+  const ready = room !== null && !loading && !failed;
+  const motion = useRoomMotion(active && ready, settings) && room !== null && movesBy(room);
   const actorStyle = {
     '--qc-foot-x': `${room?.footAnchor.x ?? 50}%`,
     '--qc-foot-bottom': `${100 - (room?.footAnchor.y ?? 75)}%`,
     '--qc-foot-offset': `${footOffset}%`,
   } as CSSProperties;
   return (
-    <div className="qc-scene" data-phase={phase}>
+    <div
+      className="qc-scene"
+      data-phase={phase}
+      data-room-scene={room?.scene ?? 'static'}
+      data-room-motion={motion ? 'on' : 'off'}
+    >
       {shown && (
         <img
           className="qc-scene-backdrop"
@@ -93,6 +147,16 @@ export function HeroScene({
           width={1536}
           height={1024}
           draggable={false}
+        />
+      )}
+      {ready && (
+        <RoomLayers
+          key={room.image}
+          scene={room.scene}
+          assets={room.assets ?? {}}
+          settings={settings}
+          active={active}
+          preview={preview}
         />
       )}
       {hero && (
@@ -151,5 +215,49 @@ export function FittingRoom({ title, tools, scene, caption, wardrobe, status }: 
         {status}
       </div>
     </section>
+  );
+}
+
+export interface LiveRoomPreviewProps {
+  /** The room with its scene; its still thumbnail shows until it plays. */
+  readonly room: SceneRoom;
+  readonly thumb: string;
+  readonly alt: string;
+  /** Decided by the app's animation manager: one animation at a time. */
+  readonly playing: boolean;
+  readonly onToggle: () => void;
+  readonly settings?: RoomSceneSettings;
+  readonly ref?: Ref<HTMLDivElement>;
+}
+
+/** A live room in the shop: the thumbnail, and the moving room (no touch, no sound) by «плей». */
+export function LiveRoomPreview({
+  room,
+  thumb,
+  alt,
+  playing,
+  onToggle,
+  settings,
+  ref,
+}: LiveRoomPreviewProps) {
+  const label = playing ? 'Остановить анимацию комнаты' : 'Посмотреть анимацию комнаты';
+  return (
+    <div ref={ref} className="qc-room-preview" data-playing={playing || undefined}>
+      {playing ? (
+        <HeroScene room={room} settings={settings} preview />
+      ) : (
+        <img className="qc-room-preview-thumb" src={thumb} alt={alt} draggable={false} />
+      )}
+      <button
+        type="button"
+        className="qc-room-preview-toggle"
+        aria-pressed={playing}
+        aria-label={label}
+        title={label}
+        onClick={onToggle}
+      >
+        {playing ? <Square aria-hidden="true" /> : <Play aria-hidden="true" />}
+      </button>
+    </div>
   );
 }

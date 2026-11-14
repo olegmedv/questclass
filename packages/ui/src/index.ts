@@ -176,9 +176,32 @@ export { HeroRibbon, type HeroRibbonProps, type RibbonCard } from './hero/Ribbon
 export {
   FittingRoom,
   HeroScene,
+  LiveRoomPreview,
+  RoomLayers,
   type FittingRoomProps,
   type HeroSceneProps,
+  type LiveRoomPreviewProps,
   type SceneFootAnchor,
   type SceneRoom,
 } from './hero/Scene';
 export { usePrefersReducedMotion } from './internal/useReducedMotion';
+export { AmbientScene, type AmbientTheme } from './scenes/Ambient';
+export { AstroScene } from './scenes/Astro';
+export {
+  DEFAULT_ROOM_SETTINGS,
+  type LiveRoomProps,
+  type RoomSceneAssets,
+  type RoomSceneSettings,
+} from './scenes/common';
+export {
+  canRunRoomEvents,
+  createRoomSchedule,
+  NIGHT_HOTEL_EVENTS,
+  NightHotelDirector,
+  ROOM_TAP_COOLDOWN_MS,
+  type RoomEvent,
+} from './scenes/eventScheduler';
+export { NightHotelScene } from './scenes/NightHotel';
+export { ReboundScene } from './scenes/Rebound';
+export { createRoomAudio, soundResolver, type RoomAudio } from './scenes/roomAudio';
+export { RoomMotionLayer, StaticScene } from './scenes/Static';

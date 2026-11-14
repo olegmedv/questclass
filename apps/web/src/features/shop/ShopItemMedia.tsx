@@ -3,6 +3,7 @@
 import type { PurchaseSnapshot } from '@questclass/shared/shop/dto';
 import { Placeholder, SpriteImage } from '@questclass/ui';
 import { LiveHero } from '../animation/LiveHero';
+import { RoomPreview } from './RoomPreview';
 
 export interface ShopItemMediaProps {
   readonly item: PurchaseSnapshot & { readonly title: string };
@@ -30,7 +31,12 @@ export function ShopItemMedia({ item, controls = true }: ShopItemMediaProps) {
     );
   }
   if (item.room) {
-    return item.room.thumb ? <SpriteImage src={item.room.thumb} alt={item.title} /> : missing;
+    if (!item.room.thumb) return missing;
+    // A room that moves plays by its button (no touch and no sound in the shop).
+    if (item.animated && controls) {
+      return <RoomPreview room={item.room} animation={item.animation} title={item.title} />;
+    }
+    return <SpriteImage src={item.room.thumb} alt={item.title} />;
   }
   if (item.ticket) {
     return item.ticket.image ? (

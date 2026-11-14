@@ -1,17 +1,20 @@
 // The learner's hero (`GET /api/me/character`, `PUT /api/me/character/{look,room,name}`) and the
 // changing of clothes: save first, then the puff hides the old hero (260 ms), the new one shows
 // (380 ms). A failed save leaves the old hero on screen.
+import type { SceneAssets } from '@questclass/shared/catalog/dto';
 import type { CharacterDto, OwnedItemDto } from '@questclass/shared/character/dto';
 import {
   DRESS_COVER_MS,
   DRESS_REVEAL_MS,
   type AnimatedHeroProps,
   type DressPhase,
+  type RoomSceneAssets,
   type SceneRoom,
 } from '@questclass/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useRef, useState } from 'react';
 import { api } from '../../api/client';
+import { browserFormat, type AudioFormat } from '../sound/SoundManager';
 
 export const characterKeys = { character: ['me', 'character'] as const };
 
@@ -64,7 +67,24 @@ export function lookArt(look: OwnedItemDto): LookArt | null {
   };
 }
 
-/** The room of a look list entry as the scene needs it (null without art). */
+/** Files of a live room as URLs; sounds in the device's format (MP3 on iPhone and iPad). */
+export function sceneAssetUrls(
+  assets: SceneAssets | null,
+  motion: string | null,
+  format: AudioFormat = browserFormat(),
+): RoomSceneAssets {
+  const sound = (key: string) => `/assets/${format === 'mp3' ? key.replace(/.ogg$/, '.mp3') : key}`;
+  return {
+    layers: Object.fromEntries(
+      Object.entries(assets?.layers ?? {}).map(([name, key]) => [name, `/assets/${key}`]),
+    ),
+    ambient: (assets?.audio?.ambient ?? []).map(sound),
+    events: (assets?.audio?.events ?? []).map(sound),
+    motion,
+  };
+}
+
+/** The room of a wardrobe entry as the scene needs it (null without art). */
 export function roomOf(room: OwnedItemDto | null): (SceneRoom & { readonly thumb: string }) | null {
   if (!room?.room?.image) return null;
   return {
@@ -72,6 +92,8 @@ export function roomOf(room: OwnedItemDto | null): (SceneRoom & { readonly thumb
     thumb: room.room.thumb || room.room.image,
     title: room.title,
     footAnchor: room.room.footAnchor,
+    scene: room.room.scene,
+    assets: sceneAssetUrls(room.room.sceneAssets, room.animation?.src ?? null),
   };
 }
 
