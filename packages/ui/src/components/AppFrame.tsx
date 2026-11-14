@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useLayoutEffect, useRef, type ReactNode } from 'react';
 import { cx } from '../internal/cx';
 import { UiLink } from './Link';
 import './AppFrame.css';
@@ -132,9 +132,21 @@ export interface SideNavProps {
 
 /** Sections of the admin area: a column on wide screens, a scrolling row on phones. */
 export function SideNav({ label, items }: SideNavProps) {
+  const listRef = useRef<HTMLUListElement>(null);
+  const activeId = items.find((item) => item.active)?.id;
+  // On a phone the sections are one horizontal row; bring the current one into view (centred)
+  // without scrolling the page itself.
+  useLayoutEffect(() => {
+    const list = listRef.current;
+    if (!list || list.scrollWidth <= list.clientWidth) return;
+    const current = list.querySelector<HTMLElement>('[aria-current="page"]');
+    if (!current) return;
+    const centred = current.offsetLeft - (list.clientWidth - current.offsetWidth) / 2;
+    list.scrollLeft = Math.max(0, Math.min(centred, list.scrollWidth - list.clientWidth));
+  }, [activeId]);
   return (
     <nav className="qc-side-nav" aria-label={label}>
-      <ul className="qc-side-nav-list">
+      <ul className="qc-side-nav-list" ref={listRef}>
         {items.map((item) => (
           <li key={item.id}>
             <UiLink
