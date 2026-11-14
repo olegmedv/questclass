@@ -65,6 +65,12 @@ interface MatrixData {
     readonly toAccept: number;
     readonly toReject: number;
   };
+  readonly rewards: {
+    /** A seeded reward reason. */
+    readonly reasonId: number;
+    /** An award of learner A (cancelled by its row). */
+    readonly awardA: number;
+  };
 }
 
 const prepared = new WeakMap<TwoLearners, MatrixData>();
@@ -211,6 +217,25 @@ function prepareImports(f: TwoLearners): MatrixData['imports'] {
   };
 }
 
+/** A seeded reason and an award of learner A. */
+function prepareRewards(f: TwoLearners): MatrixData['rewards'] {
+  const { ctx } = f.runtime;
+  const reasonId = ctx.rewards.listReasons()[0]?.id ?? 0;
+  const award = ctx.rewards.grant(
+    f.ids.learnerA,
+    {
+      reasonId,
+      title: 'Матрица',
+      date: '2026-11-14',
+      xp: 5,
+      coins: 5,
+      requestId: 'matrix-prep-0001',
+    },
+    f.ids.admin,
+  ).award;
+  return { reasonId, awardA: award.id };
+}
+
 /** Adds the domain data rows need (task types beyond the built-ins come from fixtures). */
 function prepare(f: TwoLearners): TwoLearners {
   const { ctx } = f.runtime;
@@ -243,6 +268,7 @@ function prepare(f: TwoLearners): TwoLearners {
     mediaA: mediaA.id,
     video: prepareVideos(f),
     imports: prepareImports(f),
+    rewards: prepareRewards(f),
   });
   return f;
 }
@@ -686,6 +712,45 @@ const MATRIX: readonly MatrixRow[] = [
     url: (f) => `/api/admin/task-revisions/${data(f).imports.toReject}/rejection`,
     expect: adminOnly(200),
   },
+
+  // reward reasons and manual awards
+  { route: 'GET /api/admin/reward-reasons', expect: adminOnly(200) },
+  {
+    route: 'POST /api/admin/reward-reasons',
+    body: () => ({ name: 'Матричная причина', xp: 5, coins: 5 }),
+    expect: adminOnly(201),
+  },
+  {
+    route: 'PATCH /api/admin/reward-reasons/:id',
+    url: (f) => `/api/admin/reward-reasons/${data(f).rewards.reasonId}`,
+    body: () => ({ xp: 60 }),
+    expect: adminOnly(200),
+  },
+  {
+    route: 'GET /api/admin/learners/:id/awards',
+    url: (f) => `/api/admin/learners/${f.ids.learnerA}/awards`,
+    expect: adminOnly(200),
+  },
+  {
+    route: 'POST /api/admin/learners/:id/awards',
+    url: (f) => `/api/admin/learners/${f.ids.learnerA}/awards`,
+    body: () => ({
+      reasonId: 'custom',
+      title: 'Матрица: начисление',
+      date: '2026-11-14',
+      xp: 1,
+      coins: 1,
+      requestId: 'matrix-award-0001',
+    }),
+    expect: adminOnly(201),
+  },
+  {
+    route: 'POST /api/admin/learners/:id/awards/:awardId/cancellation',
+    url: (f) =>
+      `/api/admin/learners/${f.ids.learnerA}/awards/${data(f).rewards.awardA}/cancellation`,
+    expect: adminOnly(201),
+  },
+  { route: 'GET /api/me/awards', expect: learnerOnly(200) },
 ];
 
 function splitRoute(key: string): { method: string; path: string } {

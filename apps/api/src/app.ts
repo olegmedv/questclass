@@ -19,6 +19,8 @@ import type { MediaService } from './modules/media/service';
 import { progressRoutes } from './modules/progress/routes';
 import type { ProgressService } from './modules/progress/service';
 import { questionsRoutes } from './modules/questions/routes';
+import { rewardsRoutes } from './modules/rewards/routes';
+import type { RewardsService } from './modules/rewards/service';
 import type { QuestionsService } from './modules/questions/service';
 import type { LedgerService } from './modules/ledger/service';
 import type { Keyring } from './modules/settings/crypto';
@@ -62,6 +64,8 @@ export interface AppContext {
   readonly watch: WatchService;
   /** Import tokens, lesson packages, uploads and revisions. */
   readonly imports: ImportService;
+  /** Reward reasons and manual awards. */
+  readonly rewards: RewardsService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -95,6 +99,7 @@ function collectRoutes(ctx: AppContext): RouteDef[] {
     ...mediaRoutes(ctx),
     ...videoLessonRoutes(ctx),
     ...importRoutes(ctx),
+    ...rewardsRoutes(ctx),
   ];
 }
 

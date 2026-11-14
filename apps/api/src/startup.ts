@@ -12,6 +12,8 @@ import { createLedgerService } from './modules/ledger/service';
 import { createMediaService } from './modules/media/service';
 import { createProgressService } from './modules/progress/service';
 import { createQuestionsService } from './modules/questions/service';
+import { seedRewardReasons } from './modules/rewards/seed';
+import { createRewardsService } from './modules/rewards/service';
 import { createKeyring } from './modules/settings/crypto';
 import { loadOrCreateMasterKey } from './modules/settings/masterKey';
 import { createSettingsService } from './modules/settings/service';
@@ -40,6 +42,9 @@ const STARTUP_HOOKS: readonly StartupHook[] = [
   },
   (ctx) => {
     seedSubjectsOnFirstStart(ctx.db);
+  },
+  (ctx) => {
+    seedRewardReasons(ctx.db);
   },
 ];
 
@@ -101,6 +106,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       media,
       taskTypes,
     });
+    const rewards = createRewardsService(db, { audit, ledger, users, subjects, tasks });
     const ctx: AppContext = {
       config,
       db,
@@ -120,6 +126,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       media,
       watch,
       imports,
+      rewards,
       trustedProxies: trustedProxiesFromSettings(settings),
     };
     return { ctx, closers };

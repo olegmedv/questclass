@@ -14,6 +14,7 @@ export * from './progressResets';
 export * from './questions';
 export * from './retryGrants';
 export * from './retryRequests';
+export * from './rewardReasons';
 export * from './secrets';
 export * from './sessions';
 export * from './settings';

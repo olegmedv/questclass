@@ -565,7 +565,14 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Одобрение → ledger `idem_key = chore:<completion_id>`. Отклонение с комментарием. `GET /api/admin/chores/reviews?status=pending`. Строки FEAT-049.
 
 ### FEAT-016 — Причины наград и ручные начисления
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Маршруты. Admin: `GET/POST /api/admin/reward-reasons`, `PATCH /api/admin/reward-reasons/:id` (`{name?, xp?, coins?, archived?}`), `GET/POST /api/admin/learners/:id/awards` (201 — новое, 200 — повтор `requestId`), `POST /api/admin/learners/:id/awards/:awardId/cancellation` (201 / 200 повтор). Learner: `GET /api/me/awards` («От родителя», новые первыми, `?cursor&limit`).
+  - Причины не удаляются физически (как в оригинале: «удаление — это архивирование»), «D» в CRUD — `PATCH {archived:true}`; восстановление проверяет уникальность имени. Имя 1–60, уникально среди активных без учёта регистра и повторных пробелов (частичный UNIQUE `name_key WHERE archived_at IS NULL`), XP и монеты 0–1000, хотя бы одно > 0. Лимита 100 причин нет (PARITY 02-013). Сид по `seed_key` (`attendance`, `homework`) — хук старта на каждом запуске вставляет только отсутствующие ключи, строки не меняет, поэтому правки и архив админа переживают перезапуск.
+  - Начисление: таблица `awards` (сверх DoD, в том же `schema/rewardReasons.ts`, как `media_files` у FEAT-011) — снимки `reason_name` и `subject_name`, `title_key`, `date`, необязательный `task_id` (PARITY 02-014), `note`. Строка не меняется: оплата — строка ledger `award:<learner>:<requestId>` с `source_id` = id начисления, отмена — компенсирующая строка `ledger.reverse` (видна через `reverses_id`, `cancelledAt` — время отмены). `reasonId` — id причины или `"custom"` («Своя награда»); `subjectKey` архивного/неизвестного предмета → 400 `unknown_subject`, неизвестное задание → 400 `unknown_task`, архивная причина → 400 `unknown_reason`. Повтор `requestId` возвращает первое начисление до любых проверок.
+  - Дубль (та же причина, дата, предмет и нормализованное название среди неотменённых начислений ученика) → 409 `duplicate_award` `{awardId, force:true}`; с `force:true` проходит (в audit `forced`). Audit: `reward_reason.created|updated`, `award.granted|cancelled` (с `learnerId`).
+  - Вне Scope: `packages/shared/src/rewards/dto.ts` (схемы запросов и DTO для web), регистрация в `app.ts`, `startup.ts` (`ctx.rewards`, хук сида), `schema/index.ts`. Строки FEAT-049 добавлены (7 маршрутов). Тестов 647 (+2 пропущено), было 627.
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: spec/02 §2.3; Critique 1 MED#2, LOW (дефолтные причины, поля, защита от дубля).
