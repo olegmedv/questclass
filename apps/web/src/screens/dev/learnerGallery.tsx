@@ -2,11 +2,15 @@
 // UiGallery.tsx so the gallery file only grows by one line per group; rendered at the end of
 // /dev/ui (new sections go last: inserting above shifts every section below).
 import {
+  AnimatedHero,
   Badge,
   Button,
   CategoryFilter,
   Clapperboard,
   Grid,
+  HeroRibbon,
+  HeroScene,
+  Play,
   House,
   LayoutGrid,
   Moon,
@@ -225,6 +229,97 @@ export function ShopSections({ Demo }: { readonly Demo: GalleryDemo }) {
             />
           ),
           error: { na: 'ошибка просьбы — Notice под кнопкой' },
+        }}
+      />
+    </>
+  );
+}
+
+const FITTING_ROOM = {
+  image: '/assets/game/fitting-room/room-bright.webp',
+  title: 'Уютная примерочная',
+  footAnchor: { x: 50, y: 75 },
+};
+const BLUE = '/assets/game/fitting-room/blue-original.webp';
+const PURPLE = '/assets/game/fitting-room/purple-original.webp';
+
+const blueHero = <AnimatedHero poster={BLUE} alt="Синий исследователь" playing={false} />;
+
+const WARDROBE_TABS = [
+  { id: 'ordinary', label: 'Обычные', icon: <Shirt aria-hidden="true" /> },
+  { id: 'live', label: 'Живые', icon: <Play aria-hidden="true" /> },
+  { id: 'rooms', label: 'Комнаты', icon: <House aria-hidden="true" /> },
+] as const;
+
+const WARDROBE_CARDS = [
+  { id: 'blue', title: 'Синий исследователь', picture: <SpriteImage src={BLUE} alt="" /> },
+  { id: 'purple', title: 'Фиолетовый исследователь', picture: <SpriteImage src={PURPLE} alt="" /> },
+  { id: 'space', title: 'Космонавт', picture: <SpriteImage src={SPACE} alt="" />, live: true },
+];
+
+function RibbonDemo({ disabled = false }: { readonly disabled?: boolean }) {
+  const [tab, setTab] = useState<(typeof WARDROBE_TABS)[number]['id']>('ordinary');
+  const [worn, setWorn] = useState('blue');
+  return (
+    <HeroRibbon
+      label="Персонажи и комнаты (демо)"
+      tabs={WARDROBE_TABS}
+      tab={tab}
+      onTabChange={setTab}
+      listLabel="Персонажи (демо)"
+      cards={WARDROBE_CARDS.map((card) => ({
+        ...card,
+        current: card.id === worn,
+        label: card.id === worn ? `${card.title}, надет` : card.title,
+      }))}
+      onChoose={setWorn}
+      disabled={disabled}
+    />
+  );
+}
+
+export function HeroSections({ Demo }: { readonly Demo: GalleryDemo }) {
+  return (
+    <>
+      <Demo
+        id="hero-scene"
+        title="HeroScene и DressEffect"
+        description="Сцена 3:2: комната (cover, пиксели без сглаживания), герой стоит на точке опоры комнаты; дымка переодевания."
+        states={{
+          default: (
+            <Grid min="md">
+              <HeroScene room={FITTING_ROOM} hero={blueHero} />
+              <HeroScene room={FITTING_ROOM} hero={blueHero} phase="cover" />
+            </Grid>
+          ),
+          disabled: { na: 'сцена не нажимается (живые комнаты — FEAT-036)' },
+          loading: <HeroScene room={null} />,
+          empty: <HeroScene room={FITTING_ROOM} />,
+          error: { na: 'фон не загрузился — подпись поверх прежней комнаты' },
+        }}
+      />
+
+      <Demo
+        id="hero-ribbon"
+        title="HeroRibbon"
+        description="Гардероб: «Обычные / Живые / Комнаты», один тап надевает; метки «Надет» и «Живой»."
+        states={{
+          default: <RibbonDemo />,
+          disabled: <RibbonDemo disabled />,
+          loading: { na: 'пока персонаж грузится — Skeleton' },
+          empty: (
+            <HeroRibbon
+              label="Гардероб (пусто)"
+              tabs={WARDROBE_TABS}
+              tab="live"
+              onTabChange={() => {}}
+              listLabel="Живые (демо)"
+              cards={[]}
+              onChoose={() => {}}
+              empty={<Text>Живые скины можно получить в магазине.</Text>}
+            />
+          ),
+          error: { na: 'ошибка сохранения — Notice под гардеробом' },
         }}
       />
     </>

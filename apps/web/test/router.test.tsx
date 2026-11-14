@@ -25,7 +25,7 @@ describe('routes', () => {
   it.each([
     ['/', 'Саша, начнём?'],
     ['/tasks/7', 'Задание не найдено'],
-    ['/hero', 'Герой'],
+    ['/hero', 'Примерка'],
     ['/shop', 'Магазин желаний'],
     ['/rewards', 'Мои награды'],
   ])('learner opens %s', async (path, title) => {

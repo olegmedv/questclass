@@ -2,6 +2,7 @@ import { EmptyState } from '@questclass/ui';
 import { createBrowserRouter, type RouteObject } from 'react-router';
 import { Login } from '../screens/auth/Login';
 import { Setup } from '../screens/auth/Setup';
+import { Hero } from '../screens/learner/Hero';
 import { Home } from '../screens/learner/Home';
 import { Shop } from '../screens/learner/Shop';
 import { TaskScreen } from '../screens/learner/TaskScreen';
@@ -50,7 +51,7 @@ export const routes: RouteObject[] = [
                 element: <LearnerLayout />,
                 children: [
                   { path: '/', element: <Home /> },
-                  { path: '/hero', element: <LearnerStub title="Герой" /> },
+                  { path: '/hero', element: <Hero /> },
                   { path: '/shop', element: <Shop /> },
                   { path: '/rewards', element: <LearnerStub title="Мои награды" /> },
                   { path: '/wishes', element: <Wishes /> },

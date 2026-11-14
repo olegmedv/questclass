@@ -60,6 +60,8 @@ const SECTIONS = [
   'category-filter',
   'shop-item-card',
   'wish-card',
+  'hero-scene',
+  'hero-ribbon',
 ];
 
 test('gallery shows every component in five states and fits the screen', async ({ page }) => {

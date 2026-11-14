@@ -1,0 +1,104 @@
+.qc-dress {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  contain: layout;
+}
+
+.qc-dress-core {
+  position: absolute;
+  inset: 12% 13% 6%;
+  background: var(--q-text);
+  clip-path: polygon(
+    20% 0,
+    80% 0,
+    80% 10%,
+    90% 10%,
+    90% 22%,
+    100% 22%,
+    100% 72%,
+    90% 72%,
+    90% 88%,
+    78% 88%,
+    78% 100%,
+    22% 100%,
+    22% 90%,
+    10% 90%,
+    10% 74%,
+    0 74%,
+    0 23%,
+    10% 23%,
+    10% 10%,
+    20% 10%
+  );
+}
+
+.qc-dress-pixel {
+  position: absolute;
+  display: block;
+  width: 9%;
+  height: 9%;
+  border: 2px solid var(--q-gold);
+  background: var(--q-coin);
+}
+
+.qc-dress-pixel:nth-of-type(3n) {
+  border-color: var(--q-text);
+  background: var(--q-blue);
+}
+
+.qc-dress[data-phase='cover'] {
+  animation: qc-dress-puff-in var(--q-duration) steps(5, end) both;
+}
+
+.qc-dress[data-phase='reveal'] .qc-dress-core {
+  animation: qc-dress-puff-out var(--q-duration-slow) steps(6, end) both;
+}
+
+.qc-dress[data-phase='reveal'] .qc-dress-pixel {
+  animation: qc-dress-pixel-out 340ms steps(6, end) both;
+  animation-delay: var(--qc-delay);
+}
+
+@keyframes qc-dress-puff-in {
+  from {
+    opacity: 0;
+    transform: scale(0.45);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes qc-dress-puff-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.17);
+  }
+}
+
+@keyframes qc-dress-pixel-out {
+  from {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate(var(--qc-dx), var(--qc-dy));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qc-dress {
+    display: none;
+  }
+}

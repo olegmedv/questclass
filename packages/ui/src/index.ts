@@ -171,3 +171,14 @@ export {
   type HeadingProps,
   type TextProps,
 } from './components/Typography';
+export { DRESS_COVER_MS, DRESS_REVEAL_MS, DressEffect, type DressPhase } from './hero/DressEffect';
+export { HeroRibbon, type HeroRibbonProps, type RibbonCard } from './hero/Ribbon';
+export {
+  FittingRoom,
+  HeroScene,
+  type FittingRoomProps,
+  type HeroSceneProps,
+  type SceneFootAnchor,
+  type SceneRoom,
+} from './hero/Scene';
+export { usePrefersReducedMotion } from './internal/useReducedMotion';

@@ -1,22 +1,8 @@
 // FEAT-033: the shop and «Мои желания» against the real API — buying a hero, a room and a ticket,
 // the ticket opening the wishes, «Хочу использовать», the parent handing out Robux and the history.
 import { randomUUID } from 'node:crypto';
-import type { APIRequestContext } from '@playwright/test';
 import { expect, expectNoHorizontalScroll, expectScreenshot, test } from './fixtures/learning';
-
-async function grantCoins(admin: APIRequestContext, learnerId: number, coins: number) {
-  const res = await admin.post(`/api/admin/learners/${learnerId}/awards`, {
-    data: {
-      reasonId: 'custom',
-      title: 'Монеты для магазина',
-      date: '2026-11-14',
-      xp: 0,
-      coins,
-      requestId: randomUUID(),
-    },
-  });
-  expect(res.status(), await res.text()).toBe(201);
-}
+import { grantCoins } from './fixtures/wardrobe';
 
 test('buys a hero, a room and a ticket; the ticket opens «Мои желания»', async ({
   page,

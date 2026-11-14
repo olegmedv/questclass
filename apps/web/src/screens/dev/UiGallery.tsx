@@ -85,7 +85,7 @@ import { useState, type ReactNode } from 'react';
 import { LiveHero } from '../../features/animation/LiveHero';
 import { INTERFACE_SOUNDS, soundUrl, type InterfaceSound } from '../../features/sound/SoundManager';
 import { useSound } from '../../features/sound/useSound';
-import { ShopSections } from './learnerGallery';
+import { HeroSections, ShopSections } from './learnerGallery';
 import { describeHero, LIVE_HEROES } from './liveHeroes';
 
 type StateName = 'default' | 'disabled' | 'loading' | 'empty' | 'error';
@@ -2059,6 +2059,7 @@ export function UiGallery() {
           <ResultSections />
           <MediaSection />
           <ShopSections Demo={Demo} />
+          <HeroSections Demo={Demo} />
         </Stack>
       </Container>
     </ToastProvider>
