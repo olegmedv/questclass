@@ -4,6 +4,8 @@ import { openDatabase } from './db/client';
 import { runMigrations } from './db/migrate';
 import { snapshotsDir } from './db/snapshot';
 import { trustedProxiesFromSettings } from './http/clientIp';
+import { retentionJob } from './jobs/retention';
+import { createScheduler } from './jobs/scheduler';
 import { createAttemptsService } from './modules/attempts/service';
 import { createAuditService } from './modules/audit/service';
 import { createAuthService } from './modules/auth/service';
@@ -56,6 +58,9 @@ const STARTUP_HOOKS: readonly StartupHook[] = [
   },
   (ctx) => {
     seedCatalog(ctx.db, ctx.catalog);
+  },
+  (ctx) => {
+    ctx.scheduler.start();
   },
 ];
 
@@ -128,6 +133,12 @@ export async function openRuntime(config: Config): Promise<Runtime> {
     const shop = createShopService(db, { catalog, ledger });
     const wishes = createWishesService(db, { audit, users });
     const character = createCharacterService(db, { ownership: shop.ownership });
+    const scheduler = createScheduler(db, [
+      retentionJob({ db, media, tasks, progress, users, settings }),
+    ]);
+    closers.push(() => {
+      scheduler.stop();
+    });
     const ctx: AppContext = {
       config,
       db,
@@ -154,6 +165,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       shop,
       wishes,
       character,
+      scheduler,
       trustedProxies: trustedProxiesFromSettings(settings),
     };
     return { ctx, closers };

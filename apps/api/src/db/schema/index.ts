@@ -12,6 +12,7 @@ export * from './ledger';
 export * from './fulfillmentAllocations';
 export * from './fulfillments';
 export * from './importTokens';
+export * from './jobRuns';
 export * from './loginThrottle';
 export * from './media';
 export * from './progress';

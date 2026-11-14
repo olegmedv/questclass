@@ -3,6 +3,7 @@ import type { Config } from './config';
 import type { Db } from './db/client';
 import { clientIpMiddleware, type TrustedProxiesSource } from './http/clientIp';
 import { handleError, handleNotFound } from './http/errors';
+import type { Scheduler } from './jobs/scheduler';
 import { sameOriginOnly } from './http/origin';
 import { mountRoutes, type AppEnv, type RouteDef } from './http/route';
 import { attemptsRoutes } from './modules/attempts/routes';
@@ -90,6 +91,8 @@ export interface AppContext {
   readonly wishes: WishesService;
   /** The learner's hero: look, room, name. */
   readonly character: CharacterService;
+  /** Background jobs of the process (started by the server only). */
+  readonly scheduler: Scheduler;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }

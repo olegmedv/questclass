@@ -1,6 +1,7 @@
 import type { VideoLessonConfig } from '@questclass/shared/task-types/video_lesson/contract';
 import { and, eq } from 'drizzle-orm';
 import type { Db } from '../../db/client';
+import { media } from '../../db/schema/media';
 import { watchProgress, type WatchProgressRow } from '../../db/schema/watchProgress';
 import type { SettingsService } from '../../modules/settings/service';
 import type { CanStartInput, CanStartResult } from '../registry';
@@ -47,14 +48,26 @@ export function watchSatisfied(
   return row.completedAt !== null || row.percent >= requiredPercent(config, settings);
 }
 
-/** The questions of a video lesson open only once the video is watched by the lesson's rule. */
+/** The lesson's video was removed by retention (FEAT-022): nothing is left to watch. */
+function videoDeleted(db: Db, mediaId: number | null): boolean {
+  if (mediaId === null) {
+    return false;
+  }
+  const row = db.select({ status: media.status }).from(media).where(eq(media.id, mediaId)).get();
+  return row?.status === 'deleted';
+}
+
+/**
+ * The questions of a video lesson open only once the video is watched by the lesson's rule.
+ * Once the video is deleted (retention), the questions open without watching.
+ */
 export function canStartVideoLesson({
   task,
   learnerId,
   deps,
 }: CanStartInput<VideoLessonConfig>): CanStartResult {
   const { config } = task;
-  if (config.watchMode === 'none') {
+  if (config.watchMode === 'none' || videoDeleted(deps.db, config.mediaId)) {
     return { ok: true };
   }
   const row =
