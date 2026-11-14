@@ -16,4 +16,4 @@ dist/
 coverage/
 *.tsbuildinfo
 /data/
-/.data/
+.data/

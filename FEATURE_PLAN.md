@@ -141,7 +141,13 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Пункт выполняется **первым**, как только пользователь даст доступ по SSH.
 
 ### FEAT-002 — Скелет API
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Вне перечня Scope, но требуется DoD: `packages/shared/src/net.ts` (`DEFAULT_TRUSTED_PROXIES`), зависимости в `apps/api/package.json` (hono, @hono/node-server, zod), `.gitignore` (`.data/` — дефолтный DATA_DIR в dev).
+  - Реестр маршрутов: `createApp(ctx).routes`; `buildApp(ctx, routes, {middlewares})` — для тестов HTTP-слоя и подключения auth (FEAT-004).
+  - SIGTERM проверяется в процессе (инъекция источника сигналов): на Windows сигнал дочернему процессу не перехватывается. Закрытие БД добавит FEAT-003 (closer в `startup.ts`).
+  - `node scripts/measure-rss.mjs` (после `pnpm build`): RSS в простое 61 МиБ (Windows, prod-бандл).
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: CLAUDE.md 3, 7, 11, 13; Critique 1 MED#15, LOW (SIGTERM).
