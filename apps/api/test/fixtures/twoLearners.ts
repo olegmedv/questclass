@@ -17,12 +17,6 @@ import { createTestRuntime, type TestRuntime } from '../helpers/db';
 export type Persona = 'anon' | 'import' | 'learnerA' | 'learnerB' | 'admin';
 export const PERSONAS: readonly Persona[] = ['anon', 'import', 'learnerA', 'learnerB', 'admin'];
 
-/**
- * Until import tokens exist (FEAT-012) the `import` persona can only present a token the
- * server does not know; it must therefore get exactly what an anonymous caller gets.
- */
-export const FAKE_IMPORT_TOKEN = 'qc_import_not_issued';
-
 export interface TwoLearners {
   readonly runtime: TestRuntime;
   readonly app: Hono<AppEnv>;
@@ -35,6 +29,8 @@ export interface TwoLearners {
     readonly device: number;
     /** A second trusted device nobody uses (safe to revoke). */
     readonly spareDevice: number;
+    /** The import token the `import` persona presents. */
+    readonly importToken: number;
   };
   /** A fresh browser carrying the persona's cookies; cookie changes do not leak back. */
   as(persona: Persona): TestClient;
@@ -86,6 +82,9 @@ export async function createTwoLearners(): Promise<TwoLearners> {
       return browser;
     };
 
+    // The lesson-prep tool: a real token, no cookies.
+    const issued = runtime.ctx.imports.createToken('lesson-prep', admin);
+
     const jars: Record<Persona, Map<string, string>> = {
       anon: new Map(),
       import: new Map(),
@@ -98,14 +97,14 @@ export async function createTwoLearners(): Promise<TwoLearners> {
       runtime,
       app,
       routes: built.routes,
-      ids: { admin, learnerA, learnerB, device, spareDevice },
+      ids: { admin, learnerA, learnerB, device, spareDevice, importToken: issued.id },
       as(persona) {
         const browser = createClient(app);
         for (const [name, value] of jars[persona]) {
           browser.cookies.set(name, value);
         }
         return persona === 'import'
-          ? withHeaders(browser, { authorization: `Bearer ${FAKE_IMPORT_TOKEN}` })
+          ? withHeaders(browser, { authorization: `Bearer ${issued.token}` })
           : browser;
       },
       close: () => runtime.close(),

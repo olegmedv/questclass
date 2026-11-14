@@ -7,6 +7,7 @@ import { trustedProxiesFromSettings } from './http/clientIp';
 import { createAttemptsService } from './modules/attempts/service';
 import { createAuditService } from './modules/audit/service';
 import { createAuthService } from './modules/auth/service';
+import { createImportService } from './modules/import/service';
 import { createLedgerService } from './modules/ledger/service';
 import { createMediaService } from './modules/media/service';
 import { createProgressService } from './modules/progress/service';
@@ -91,6 +92,15 @@ export async function openRuntime(config: Config): Promise<Runtime> {
     });
     const media = createMediaService(db, { dataDir: config.dataDir, tasks });
     const watch = createWatchService(db, { audit, settings, users, tasks, progress, media });
+    const imports = createImportService(db, {
+      audit,
+      settings,
+      tasks,
+      subjects,
+      questions,
+      media,
+      taskTypes,
+    });
     const ctx: AppContext = {
       config,
       db,
@@ -109,6 +119,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       attempts,
       media,
       watch,
+      imports,
       trustedProxies: trustedProxiesFromSettings(settings),
     };
     return { ctx, closers };

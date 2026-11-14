@@ -11,6 +11,8 @@ import { auditRoutes } from './modules/audit/routes';
 import type { AuditService } from './modules/audit/service';
 import { authMiddleware, authRoutes } from './modules/auth/routes';
 import type { AuthService } from './modules/auth/service';
+import { importRoutes, importTokenMiddleware } from './modules/import/routes';
+import type { ImportService } from './modules/import/service';
 import { ledgerRoutes } from './modules/ledger/routes';
 import { mediaRoutes } from './modules/media/routes';
 import type { MediaService } from './modules/media/service';
@@ -58,6 +60,8 @@ export interface AppContext {
   readonly media: MediaService;
   /** Watching of lesson videos (video_lesson). */
   readonly watch: WatchService;
+  /** Import tokens, lesson packages, uploads and revisions. */
+  readonly imports: ImportService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -90,12 +94,13 @@ function collectRoutes(ctx: AppContext): RouteDef[] {
     ...attemptsRoutes(ctx),
     ...mediaRoutes(ctx),
     ...videoLessonRoutes(ctx),
+    ...importRoutes(ctx),
   ];
 }
 
 /** Request middlewares contributed by modules (session → actor, etc.). */
 function collectMiddlewares(ctx: AppContext): MiddlewareHandler<AppEnv>[] {
-  return [authMiddleware(ctx)];
+  return [authMiddleware(ctx), importTokenMiddleware(ctx)];
 }
 
 /** What the HTTP layer itself needs (routes and middlewares bring their own dependencies). */

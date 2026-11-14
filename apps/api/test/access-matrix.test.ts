@@ -4,10 +4,12 @@
  * Every item that adds routes adds rows here. Rows for a learner's own data must point the URL
  * at learner A's resource and set `learnerOwned: true`; learner B must then get 404.
  */
+import { createHash } from 'node:crypto';
 import { writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { QuestionContent } from '@questclass/shared/questions/schema';
+import { taskRevisions } from '../src/db/schema/taskRevisions';
 import { ROLES } from '../src/http/route';
 import { NOTE_TYPE, READY_NOTE, noteTaskType } from './fixtures/noteTaskType';
 import {
@@ -51,6 +53,17 @@ interface MatrixData {
     /** Opened by learner A: the session accepts batches. */
     readonly watched: number;
     readonly session: number;
+  };
+  readonly imports: {
+    /** A media waiting for its one declared file. */
+    readonly uploading: number;
+    /** A picture media whose file is on disk (ready to be completed). */
+    readonly uploaded: number;
+    /** An import token nobody uses (safe to revoke). */
+    readonly spareToken: number;
+    /** Pending revisions of published video lessons. */
+    readonly toAccept: number;
+    readonly toReject: number;
   };
 }
 
@@ -113,33 +126,88 @@ function prepareQuizzes(f: TwoLearners): MatrixData['quiz'] {
   };
 }
 
-/** Video lessons assigned to learner A, with a ready video and a bank. */
-function prepareVideos(f: TwoLearners): MatrixData['video'] {
+/** A published video lesson assigned to learner A, with a ready video and a bank. */
+function publishedVideo(f: TwoLearners, title: string): number {
   const { ctx } = f.runtime;
   const admin = f.ids.admin;
-  const video = (title: string): number => {
-    const id = ctx.tasks.create({ type: 'video_lesson', title }, admin).id;
-    const media = ctx.media.create({ taskId: id, role: 'video', kind: 'hls' });
-    writeFileSync(path.join(ctx.media.dirOf(media), 'master.m3u8'), '#EXTM3U');
-    ctx.media.markReady(media.id, { sizeBytes: 7, durationSec: 60 });
-    const config = {
-      mediaId: media.id,
-      watchMode: 'percent',
-      shutter: { enabled: true, heightPct: 9 },
-    };
-    ctx.tasks.update(id, { config }, admin);
-    for (const key of ['v1', 'v2', 'v3']) {
-      ctx.questions.create(id, { key, ...SAMPLE_QUESTION }, admin);
-    }
-    ctx.tasks.update(id, { status: 'published' }, admin);
-    ctx.tasks.assign(id, f.ids.learnerA, admin);
-    return id;
+  const id = ctx.tasks.create({ type: 'video_lesson', title }, admin).id;
+  const media = ctx.media.create({ taskId: id, role: 'video', kind: 'hls' });
+  writeFileSync(path.join(ctx.media.dirOf(media), 'master.m3u8'), '#EXTM3U');
+  ctx.media.markReady(media.id, { sizeBytes: 7, durationSec: 60 });
+  const config = {
+    mediaId: media.id,
+    watchMode: 'percent',
+    shutter: { enabled: true, heightPct: 9 },
   };
-  const watched = video('Видео: открытая сессия');
+  ctx.tasks.update(id, { config }, admin);
+  for (const key of ['v1', 'v2', 'v3']) {
+    ctx.questions.create(id, { key, ...SAMPLE_QUESTION }, admin);
+  }
+  ctx.tasks.update(id, { status: 'published' }, admin);
+  ctx.tasks.assign(id, f.ids.learnerA, admin);
+  return id;
+}
+
+/** Video lessons for the watching rows. */
+function prepareVideos(f: TwoLearners): MatrixData['video'] {
+  const watched = publishedVideo(f, 'Видео: открытая сессия');
   return {
-    fresh: video('Видео: не открыто'),
+    fresh: publishedVideo(f, 'Видео: не открыто'),
     watched,
-    session: ctx.watch.startSession(f.ids.learnerA, watched).sessionId,
+    session: f.runtime.ctx.watch.startSession(f.ids.learnerA, watched).sessionId,
+  };
+}
+
+const sha256 = (content: string) => createHash('sha256').update(content).digest('hex');
+/** What the PUT row uploads (the matrix sends bodies as JSON). */
+const CHUNK = 'chunk';
+const CHUNK_BYTES = JSON.stringify(CHUNK);
+
+/** A lesson package of the import tool (one playlist, three questions). */
+function lessonManifest(externalId: string): unknown {
+  return {
+    externalId,
+    subjectKey: 'math',
+    title: 'Импортированный урок',
+    questions: ['i1', 'i2', 'i3'].map((key) => ({ key, ...SAMPLE_QUESTION })),
+    media: { kind: 'hls', files: [{ path: 'master.m3u8', size: 7, sha256: sha256('#EXTM3U') }] },
+  };
+}
+
+/** Media for the upload rows and pending revisions of published video lessons. */
+function prepareImports(f: TwoLearners): MatrixData['imports'] {
+  const { ctx } = f.runtime;
+  const uploading = ctx.media.create({
+    taskId: null,
+    role: 'video',
+    kind: 'hls',
+    files: [{ path: 'master.m3u8', sizeBytes: CHUNK_BYTES.length, sha256: sha256(CHUNK_BYTES) }],
+  });
+  const uploaded = ctx.media.create({
+    taskId: null,
+    role: 'question_image',
+    kind: 'image',
+    files: [{ path: 'q1.webp', sizeBytes: 4, sha256: sha256('RIFF') }],
+  });
+  writeFileSync(path.join(ctx.media.dirOf(uploaded), 'q1.webp'), 'RIFF');
+  /** A revision proposing one new question (the video stays). */
+  const revision = (title: string): number => {
+    const taskId = publishedVideo(f, title);
+    const outcome = ctx.questions.importVersions(taskId, [{ key: 'r1', ...SAMPLE_QUESTION }], {
+      state: 'pending',
+    });
+    return ctx.db
+      .insert(taskRevisions)
+      .values({ taskId, questions: { ...outcome, proposals: {} }, createdAt: Date.now() })
+      .returning()
+      .get().id;
+  };
+  return {
+    uploading: uploading.id,
+    uploaded: uploaded.id,
+    spareToken: ctx.imports.createToken('Запасной', f.ids.admin).id,
+    toAccept: revision('Видео: ревизия'),
+    toReject: revision('Видео: отклонить ревизию'),
   };
 }
 
@@ -174,6 +242,7 @@ function prepare(f: TwoLearners): TwoLearners {
     quiz: prepareQuizzes(f),
     mediaA: mediaA.id,
     video: prepareVideos(f),
+    imports: prepareImports(f),
   });
   return f;
 }
@@ -198,9 +267,10 @@ const everyone = (status: number): Expectation => ({
   learnerB: status,
   admin: status,
 });
+// The import token is a valid credential of role `import`: any other route answers it 403.
 const adminOnly = (ok: number): Expectation => ({
   anon: 401,
-  import: 401,
+  import: 403,
   learnerA: 403,
   learnerB: 403,
   admin: ok,
@@ -208,7 +278,7 @@ const adminOnly = (ok: number): Expectation => ({
 /** Routes about the caller's own learner data (`/api/me/...`). */
 const learnerOnly = (ok: number): Expectation => ({
   anon: 401,
-  import: 401,
+  import: 403,
   learnerA: ok,
   learnerB: ok,
   admin: 403,
@@ -216,17 +286,26 @@ const learnerOnly = (ok: number): Expectation => ({
 /** A learner-only route addressing learner A's data: learner B must not learn it exists. */
 const ownedByA = (ok: number): Expectation => ({
   anon: 401,
-  import: 401,
+  import: 403,
   learnerA: ok,
   learnerB: 404,
   admin: 403,
 });
 const signedIn = (ok: number): Expectation => ({
   anon: 401,
-  import: 401,
+  import: 403,
   learnerA: ok,
   learnerB: ok,
   admin: ok,
+});
+
+/** lesson-prep with its import token: `/api/import/*` only. */
+const importOnly = (ok: number): Expectation => ({
+  anon: 401,
+  import: ok,
+  learnerA: 403,
+  learnerB: 403,
+  admin: 403,
 });
 
 const MATRIX: readonly MatrixRow[] = [
@@ -532,7 +611,7 @@ const MATRIX: readonly MatrixRow[] = [
     route: 'GET /api/media/:id/*',
     url: (f) => `/api/media/${data(f).mediaA}/master.m3u8`,
     learnerOwned: true,
-    expect: { anon: 401, import: 401, learnerA: 200, learnerB: 404, admin: 200 },
+    expect: { anon: 401, import: 403, learnerA: 200, learnerB: 404, admin: 200 },
   },
 
   // video lessons: watching
@@ -553,6 +632,59 @@ const MATRIX: readonly MatrixRow[] = [
     route: 'POST /api/admin/learners/:id/watch/:taskId/confirmation',
     url: (f) => `/api/admin/learners/${f.ids.learnerA}/watch/${data(f).video.fresh}/confirmation`,
     expect: adminOnly(201),
+  },
+
+  // import tokens, lesson packages, uploads
+  { route: 'GET /api/admin/import-tokens', expect: adminOnly(200) },
+  {
+    route: 'POST /api/admin/import-tokens',
+    body: () => ({ name: 'Ноутбук' }),
+    expect: adminOnly(201),
+  },
+  {
+    route: 'DELETE /api/admin/import-tokens/:id',
+    url: (f) => `/api/admin/import-tokens/${data(f).imports.spareToken}`,
+    expect: adminOnly(204),
+  },
+  {
+    route: 'POST /api/import/lessons',
+    body: () => lessonManifest('matrix-lesson-1'),
+    expect: importOnly(201),
+  },
+  {
+    route: 'GET /api/import/media/:id',
+    url: (f) => `/api/import/media/${data(f).imports.uploading}`,
+    expect: importOnly(200),
+  },
+  {
+    route: 'PUT /api/import/media/:id/files/*',
+    url: (f) => `/api/import/media/${data(f).imports.uploading}/files/master.m3u8?offset=0`,
+    body: () => CHUNK,
+    expect: importOnly(200),
+  },
+  {
+    route: 'POST /api/import/media/:id/completion',
+    url: (f) => `/api/import/media/${data(f).imports.uploaded}/completion`,
+    body: () => ({}),
+    expect: importOnly(200),
+  },
+
+  // revisions of published tasks
+  { route: 'GET /api/admin/task-revisions', expect: adminOnly(200) },
+  {
+    route: 'GET /api/admin/task-revisions/:id',
+    url: (f) => `/api/admin/task-revisions/${data(f).imports.toAccept}`,
+    expect: adminOnly(200),
+  },
+  {
+    route: 'POST /api/admin/task-revisions/:id/acceptance',
+    url: (f) => `/api/admin/task-revisions/${data(f).imports.toAccept}/acceptance`,
+    expect: adminOnly(200),
+  },
+  {
+    route: 'POST /api/admin/task-revisions/:id/rejection',
+    url: (f) => `/api/admin/task-revisions/${data(f).imports.toReject}/rejection`,
+    expect: adminOnly(200),
   },
 ];
 
