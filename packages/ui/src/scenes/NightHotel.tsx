@@ -3,6 +3,7 @@ import { usePrefersReducedMotion } from '../internal/useReducedMotion';
 import { usePageVisible, useUserGesture, type LiveRoomProps } from './common';
 import {
   IDLE_VIEW,
+  NIGHT_HOTEL_EVENTS,
   NightHotelDirector,
   type NightHotelConditions,
   type NightHotelView,
@@ -55,8 +56,13 @@ export function NightHotelScene({ assets, settings, active, preview = false }: L
     const layers = { ...parsed.layers };
     delete layers[CANDLES];
     const resolve = soundResolver([...(parsed.ambient ?? []), ...(parsed.events ?? [])]);
+    const durations = parsed.layerDurations ?? {};
     const instance: NightHotelDirector = new NightHotelDirector({
       layers,
+      events: NIGHT_HOTEL_EVENTS.map((event) => ({
+        ...event,
+        durationMs: durations[event.id] ?? event.durationMs,
+      })),
       createAudio: () => createRoomAudio({ resolve, onBlocked: () => instance.audioBlocked() }),
       onChange: setView,
     });

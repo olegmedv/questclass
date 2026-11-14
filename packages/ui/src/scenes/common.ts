@@ -13,6 +13,8 @@ export interface RoomSceneAssets {
   readonly events?: readonly string[];
   /** An animated WebP of the whole room (Astro, or an admin's upload). */
   readonly motion?: string | null;
+  /** Length of a layer's clip, ms, when it differs from the scene's own timing (a replaced file). */
+  readonly layerDurations?: Readonly<Record<string, number>>;
 }
 
 /** The learner's room settings on this device («Настройки героя»). */

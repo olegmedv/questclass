@@ -135,6 +135,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       audit,
       describeUpload: (id) => uploads.describe(id),
       hasPurchases: (id) => itemHasPurchases(db, id),
+      replacedDurationMs: (file) => appearance.durationOf(file),
     });
     const shop = createShopService(db, { catalog, ledger });
     const wishes = createWishesService(db, { audit, users });

@@ -16,6 +16,11 @@ export function assetUrl(key: string): string {
   return `/assets/${key}`;
 }
 
+/** Length of a built-in animated file (undefined for a still or an unknown file). */
+export function builtinDurationMs(key: string): number | undefined {
+  return manifest[key]?.durationMs;
+}
+
 /** Length of an animated asset from the manifest. */
 export function assetDurationMs(key: string): number {
   const duration = manifest[key]?.durationMs;
@@ -43,9 +48,12 @@ export const STARTER_HERO = {
   alt: 'Твой герой',
 } as const;
 
+/** The streak bonus movie (FEAT-038): its file, the admin may replace it («Оформление»). */
+export const STREAK_MOVIE_FILE = 'celebrations/streak-five-v1.webp';
+
 /** The streak bonus movie (FEAT-038) for the preview on the streak card. */
 export const STREAK_MOVIE = {
-  src: assetUrl('celebrations/streak-five-v1.webp'),
+  src: assetUrl(STREAK_MOVIE_FILE),
   poster: assetUrl('celebrations/streak-five-poster.webp'),
-  durationMs: assetDurationMs('celebrations/streak-five-v1.webp'),
+  durationMs: assetDurationMs(STREAK_MOVIE_FILE),
 } as const;

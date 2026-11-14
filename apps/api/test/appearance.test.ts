@@ -124,6 +124,19 @@ describe('replacing built-in files', () => {
     expect(runtime.ctx.appearance.durationOf(MOVIE)).toBe(3000);
   });
 
+  it('a hero animation of the library keeps its own length in the catalog', async () => {
+    const animation = runtime.ctx.catalog
+      .library()
+      .animations.find((a) => a.src?.startsWith('/assets/game/animated/'));
+    if (!animation?.src) throw new Error('No built-in hero animation in the catalog');
+    const file = animation.src.slice('/assets/'.length);
+    const own = await upload(webpAnimation(64, 64, frames(12, 125)), file);
+    expect((await replace(file, own.id)).status).toBe(200);
+    const after = runtime.ctx.catalog.library().animations.find((a) => a.key === animation.key);
+    expect(after?.durationMs).toBe(1500);
+    expect(after?.durationMs).not.toBe(animation.durationMs);
+  });
+
   it('refuses a file of another kind, a missing upload and an unknown slot', async () => {
     const still = await upload(png(32, 32), LOGO);
     const wrong = await replace(MOVIE, still.id);
