@@ -181,6 +181,12 @@ export const routes: RouteObject[] = [
                       Component: (await import('../screens/admin/WishFulfillment')).WishFulfillment,
                     }),
                   },
+                  {
+                    path: 'history',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/History')).History,
+                    }),
+                  },
                   { path: '*', element: <AdminStub title="Такой страницы нет" /> },
                 ],
               },

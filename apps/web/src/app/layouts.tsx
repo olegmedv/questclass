@@ -3,6 +3,7 @@ import {
   BookOpen,
   ClipboardCheck,
   Gift,
+  History,
   House,
   ListChecks,
   Settings,
@@ -60,6 +61,12 @@ export const ADMIN_SECTIONS: readonly AdminSection[] = [
     label: 'Выдача желаний',
     href: '/admin/wishes',
     icon: <Ticket aria-hidden="true" />,
+  },
+  {
+    id: 'history',
+    label: 'История',
+    href: '/admin/history',
+    icon: <History aria-hidden="true" />,
   },
   {
     id: 'settings',
