@@ -2,7 +2,16 @@
 // error (CLAUDE.md rule 8). Built only from @questclass/ui; no CSS of its own.
 import {
   Accordion,
+  ActionList,
+  MediaPlayer,
+  type ShutterState,
+  AnswerReview,
+  ResultSummary,
+  RewardLine,
   AnimatedHero,
+  ChoiceTile,
+  LessonCard,
+  StreakCard,
   AuthFrame,
   Notice,
   Avatar,
@@ -272,6 +281,316 @@ const STREAK_MOVIE = {
   poster: '/assets/celebrations/streak-five-poster.webp',
   durationMs: 10_083,
 };
+
+const MATH_ICON = '/assets/game/subjects-pixel/math.webp';
+const BLUE_HERO = '/assets/game/animated/repaired/blue-idle-cover.webp';
+
+/** Components of the learner's home: lesson card, streak card, choice tiles, lesson list. */
+function HomeSections() {
+  const [expanded, setExpanded] = useState(true);
+  const [subject, setSubject] = useState('all');
+  const lessonSteps = (status: 'current' | 'done') => [
+    { id: 'video', label: 'Видео', icon: <Play />, status },
+    {
+      id: 'quiz',
+      label: 'Вопросы',
+      icon: <CircleQuestionMark />,
+      status: status === 'done' ? status : ('todo' as const),
+    },
+    {
+      id: 'reward',
+      label: 'Награда',
+      icon: <Gift />,
+      status: status === 'done' ? status : ('todo' as const),
+    },
+  ];
+  return (
+    <>
+      <Demo
+        id="lesson-card"
+        title="LessonCard"
+        description="Следующий урок на главной: предмет, название, герой, кнопка «Начать», шаги значками."
+        states={{
+          default: (
+            <LessonCard
+              subject={{ name: 'Математика', icon: <img src={MATH_ICON} alt="" /> }}
+              title="Сложение и вычитание в пределах 100"
+              meta="Урок от 12.11.2026 · Задание от родителя"
+              hero={<AnimatedHero poster={BLUE_HERO} alt="Твой герой" playing={false} />}
+              action={
+                <Button variant="start" size="lg" block icon={<Flag />}>
+                  Начать урок
+                </Button>
+              }
+              steps={lessonSteps('current')}
+            />
+          ),
+          disabled: (
+            <LessonCard
+              subject={{
+                name: 'Чтение',
+                icon: <Placeholder kind="subject" label="Значок предмета" size="sm" />,
+              }}
+              title="Устное народное творчество"
+              hero={<AnimatedHero poster={BLUE_HERO} alt="Твой герой" playing={false} />}
+              action={
+                <Button variant="start" size="lg" block icon={<Flag />}>
+                  Посмотреть результат
+                </Button>
+              }
+              steps={lessonSteps('done')}
+            />
+          ),
+          loading: <LessonCard loading title="" />,
+          empty: { na: 'без урока главная показывает EmptyState «Все уроки пройдены!»' },
+          error: { na: 'ошибку загрузки главная показывает через EmptyState' },
+        }}
+      />
+      <Demo
+        id="streak-card"
+        title="StreakCard"
+        description="«Серия занятий N/5»: компактная строка раскрывается в дни, бонус и правило."
+        states={{
+          default: (
+            <StreakCard
+              progress={3}
+              cycleDays={5}
+              reward={{ coins: 200, xp: 200 }}
+              expanded={expanded}
+              onToggle={() => setExpanded(!expanded)}
+            >
+              <Text tone="muted" size="sm">
+                День засчитывается, когда ты завершаешь тест урока. Ошибки не мешают серии.
+              </Text>
+              <Inline>
+                <Button size="sm" variant="ghost" icon={<Play />}>
+                  Предпросмотр награды за серию
+                </Button>
+              </Inline>
+            </StreakCard>
+          ),
+          disabled: { na: 'карточку можно раскрыть всегда' },
+          loading: (
+            <StreakCard
+              progress={0}
+              cycleDays={5}
+              reward={{ coins: 0, xp: 0 }}
+              expanded={false}
+              onToggle={() => {}}
+              loading
+            />
+          ),
+          empty: (
+            <StreakCard
+              progress={0}
+              cycleDays={5}
+              reward={{ coins: 200, xp: 200 }}
+              expanded={false}
+              onToggle={() => {}}
+            />
+          ),
+          error: { na: 'без данных серии главная её не показывает' },
+        }}
+      />
+      <Demo
+        id="choice-tile"
+        title="ChoiceTile"
+        description="Плитка выбора: предметы в окне «Выбери урок»."
+        states={{
+          default: (
+            <Grid min="sm" gap="sm">
+              <ChoiceTile
+                icon={<BookOpen />}
+                label="Все предметы"
+                selected={subject === 'all'}
+                onClick={() => setSubject('all')}
+              />
+              <ChoiceTile
+                icon={<img src={MATH_ICON} alt="" />}
+                label="Математика"
+                selected={subject === 'math'}
+                onClick={() => setSubject('math')}
+              />
+            </Grid>
+          ),
+          disabled: (
+            <Grid min="sm" gap="sm">
+              <ChoiceTile icon={<BookOpen />} label="Нет уроков" disabled />
+            </Grid>
+          ),
+          loading: { na: 'предметы приходят вместе с уроками' },
+          empty: (
+            <Grid min="sm" gap="sm">
+              <ChoiceTile
+                icon={<Placeholder kind="subject" label="Значок предмета" size="sm" />}
+                label="Новый предмет"
+              />
+            </Grid>
+          ),
+          error: { na: 'плитка не загружает данные' },
+        }}
+      />
+      <Demo
+        id="action-list"
+        title="ActionList"
+        description="Список уроков со статусом: открыть, выполнено, недоступно."
+        states={{
+          default: (
+            <ActionList
+              label="Уроки"
+              items={[
+                {
+                  id: '1',
+                  title: 'Что нас окружает. Повторение',
+                  description: 'Окружающий мир · Можно открыть',
+                  href: '/dev/ui',
+                },
+                {
+                  id: '2',
+                  title: 'Устное народное творчество',
+                  description: 'Чтение · Выполнено',
+                  status: 'done',
+                  href: '/dev/ui',
+                },
+              ]}
+            />
+          ),
+          disabled: (
+            <ActionList
+              label="Уроки"
+              items={[
+                {
+                  id: '3',
+                  title: 'Входная проверочная работа',
+                  description: 'Русский язык · После предыдущего урока',
+                  status: 'locked',
+                },
+              ]}
+            />
+          ),
+          loading: { na: 'список показывается, когда уроки загружены' },
+          empty: <ActionList label="Уроки" items={[]} empty="Здесь пока нет открытых уроков." />,
+          error: { na: 'ошибку загрузки показывает экран' },
+        }}
+      />
+    </>
+  );
+}
+
+/** The result of a task: summary with the reward, and the review of the answers. */
+function ResultSections() {
+  const review = [
+    {
+      id: '1',
+      question: 'Сколько будет 2 + 3?',
+      answer: { text: '5' },
+      correct: { text: '5' },
+      isCorrect: true,
+    },
+    {
+      id: '2',
+      question: 'Какое число больше: 47 или 74?',
+      answer: { text: '47' },
+      correct: { text: '74' },
+      isCorrect: false,
+      action: (
+        <Button size="sm" icon={<Play />}>
+          Посмотреть объяснение
+        </Button>
+      ),
+    },
+  ];
+  return (
+    <>
+      <Demo
+        id="result"
+        title="ResultSummary и RewardLine"
+        description="Итог задания: заголовок по результату, верные ответы, награда и что дальше."
+        states={{
+          default: (
+            <Stack gap="md">
+              <RewardLine label="Награда за пройденный тест" xp={100} coins={350} />
+              <ResultSummary
+                tone="success"
+                title="Миссия выполнена!"
+                reward={<RewardLine label="Награда" xp={100} coins={350} />}
+                actions={<Button>К урокам</Button>}
+              >
+                <p>Верных ответов: 3 из 3.</p>
+              </ResultSummary>
+            </Stack>
+          ),
+          disabled: (
+            <ResultSummary
+              tone="partial"
+              title="Тест пройден!"
+              reward={<RewardLine label="Награда за этот тест уже получена." />}
+            >
+              <p>Верных ответов: 2 из 3.</p>
+            </ResultSummary>
+          ),
+          loading: { na: 'итог показывается, когда попытка проверена' },
+          empty: <RewardLine label="Награда — за пройденный тест." />,
+          error: (
+            <ResultSummary
+              tone="retry"
+              title="Попробуем ещё раз"
+              actions={
+                <>
+                  <Button variant="primary">Попросить пересдачу</Button>
+                  <Button>К урокам</Button>
+                </>
+              }
+            >
+              <p>Верных ответов: 0 из 3.</p>
+              <p>Новую попытку откроет родитель.</p>
+            </ResultSummary>
+          ),
+        }}
+      />
+      <Demo
+        id="review"
+        title="AnswerReview"
+        description="«Давай разберём»: ответ ученика и верный ответ по каждому вопросу."
+        states={{
+          default: <AnswerReview items={review} />,
+          disabled: { na: 'разбор только показывает ответы' },
+          loading: { na: 'разбор приходит вместе с результатом' },
+          empty: <AnswerReview title="Твои ответы" items={review.slice(0, 1)} />,
+          error: <AnswerReview items={review.slice(1)} />,
+        }}
+      />
+    </>
+  );
+}
+
+/** The lesson player. The gallery has no lesson video, so the demos show the controls around an
+ *  unavailable file (the lesson screens play real HLS and MP4, see e2e/video.spec.ts). */
+function MediaSection() {
+  const [shutter, setShutter] = useState<ShutterState>({ heightPct: 12, visible: true });
+  const missing = { kind: 'mp4' as const, src: '/assets/gallery/no-video.mp4' };
+  return (
+    <Demo
+      id="media-player"
+      title="MediaPlayer"
+      description="Видео урока: ±10 сек, «Смотреть», перемотка, звук, чёрная полоса над субтитрами (тянуть или стрелками), на весь экран."
+      states={{
+        default: (
+          <MediaPlayer
+            source={missing}
+            label="Видео урока (демо)"
+            shutter={shutter}
+            onShutterChange={setShutter}
+          />
+        ),
+        disabled: <MediaPlayer source={missing} label="Видео без полосы" />,
+        loading: { na: 'пока видео подключается, на кадре «Подключаем видео…»' },
+        empty: { na: 'без видео урок не публикуется' },
+        error: { na: 'файла нет — на кадре «Видео не загрузилось» и «Загрузить видео заново»' },
+      }}
+    />
+  );
+}
 
 type CelebrationDemo =
   'pass' | 'pass-empty' | 'purchase' | 'streak' | 'streak-reduced' | 'streak-broken';
@@ -921,6 +1240,8 @@ export function UiGallery() {
               error: { na: 'ошибку шага показывает плеер задания' },
             }}
           />
+
+          <HomeSections />
 
           <Demo
             id="empty"
@@ -1732,6 +2053,10 @@ export function UiGallery() {
               ),
             }}
           />
+
+          {/* New sections go last: inserting above shifts every section below on the page. */}
+          <ResultSections />
+          <MediaSection />
         </Stack>
       </Container>
     </ToastProvider>

@@ -21,6 +21,13 @@ const SECTIONS = [
   'badge',
   'avatar',
   'steps',
+  'lesson-card',
+  'streak-card',
+  'choice-tile',
+  'action-list',
+  'result',
+  'review',
+  'media-player',
   'empty',
   'toast',
   'tooltip',
@@ -71,7 +78,8 @@ test('gallery shows every component in five states and fits the screen', async (
 test('gallery sections match their screenshots', async ({ page }) => {
   await page.goto('/dev/ui');
   await expect(page.getByRole('heading', { level: 1, name: 'Галерея компонентов' })).toBeVisible();
-  for (const id of [...SECTIONS, 'live-heroes']) {
+  // The player's frame depends on how fast the (missing) file fails: it is checked in video.spec.
+  for (const id of [...SECTIONS.filter((s) => s !== 'media-player'), 'live-heroes']) {
     await expectScreenshot(page.locator(`[data-gallery="${id}"]`), `gallery-${id}`);
   }
 });
