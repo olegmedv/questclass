@@ -4,6 +4,8 @@
  * Every item that adds routes adds rows here. Rows for a learner's own data must point the URL
  * at learner A's resource and set `learnerOwned: true`; learner B must then get 404.
  */
+import { writeFileSync } from 'node:fs';
+import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { QuestionContent } from '@questclass/shared/questions/schema';
 import { ROLES } from '../src/http/route';
@@ -40,6 +42,8 @@ interface MatrixData {
     /** Failed twice: the free retry is used up. */
     readonly failedTask: number;
   };
+  /** A ready media of `taskA` (one playlist file on disk). */
+  readonly mediaA: number;
 }
 
 const prepared = new WeakMap<TwoLearners, MatrixData>();
@@ -120,6 +124,9 @@ function prepare(f: TwoLearners): TwoLearners {
   for (const key of ['q1', 'q-spare']) {
     ctx.questions.create(taskA, { key, ...SAMPLE_QUESTION }, admin);
   }
+  const mediaA = ctx.media.create({ taskId: taskA, role: 'video', kind: 'hls' });
+  writeFileSync(path.join(ctx.media.dirOf(mediaA), 'master.m3u8'), '#EXTM3U');
+  ctx.media.markReady(mediaA.id, { sizeBytes: 7 });
   prepared.set(f, {
     subjectId,
     spareSubjectId,
@@ -127,6 +134,7 @@ function prepare(f: TwoLearners): TwoLearners {
     spareTask: task('Лишнее'),
     assignedToB,
     quiz: prepareQuizzes(f),
+    mediaA: mediaA.id,
   });
   return f;
 }
@@ -478,6 +486,14 @@ const MATRIX: readonly MatrixRow[] = [
     route: 'POST /api/admin/retry-grants',
     body: (f) => ({ learnerId: f.ids.learnerA, taskId: data(f).quiz.failedTask }),
     expect: adminOnly(201),
+  },
+
+  // media
+  {
+    route: 'GET /api/media/:id/*',
+    url: (f) => `/api/media/${data(f).mediaA}/master.m3u8`,
+    learnerOwned: true,
+    expect: { anon: 401, import: 401, learnerA: 200, learnerB: 404, admin: 200 },
   },
 ];
 

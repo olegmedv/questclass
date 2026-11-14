@@ -7,6 +7,7 @@ export * from './attempts';
 export * from './audit';
 export * from './ledger';
 export * from './loginThrottle';
+export * from './media';
 export * from './progress';
 export * from './progressResets';
 export * from './questions';

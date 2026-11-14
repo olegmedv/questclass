@@ -8,6 +8,7 @@ import { createAttemptsService } from './modules/attempts/service';
 import { createAuditService } from './modules/audit/service';
 import { createAuthService } from './modules/auth/service';
 import { createLedgerService } from './modules/ledger/service';
+import { createMediaService } from './modules/media/service';
 import { createProgressService } from './modules/progress/service';
 import { createQuestionsService } from './modules/questions/service';
 import { createKeyring } from './modules/settings/crypto';
@@ -87,6 +88,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       streak,
       taskTypes,
     });
+    const media = createMediaService(db, { dataDir: config.dataDir, tasks });
     const ctx: AppContext = {
       config,
       db,
@@ -103,6 +105,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       progress,
       streak,
       attempts,
+      media,
       trustedProxies: trustedProxiesFromSettings(settings),
     };
     return { ctx, closers };

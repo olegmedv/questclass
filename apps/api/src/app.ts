@@ -12,6 +12,8 @@ import type { AuditService } from './modules/audit/service';
 import { authMiddleware, authRoutes } from './modules/auth/routes';
 import type { AuthService } from './modules/auth/service';
 import { ledgerRoutes } from './modules/ledger/routes';
+import { mediaRoutes } from './modules/media/routes';
+import type { MediaService } from './modules/media/service';
 import { progressRoutes } from './modules/progress/routes';
 import type { ProgressService } from './modules/progress/service';
 import { questionsRoutes } from './modules/questions/routes';
@@ -50,6 +52,8 @@ export interface AppContext {
   readonly progress: ProgressService;
   readonly streak: StreakService;
   readonly attempts: AttemptsService;
+  /** Media files under DATA_DIR/media. */
+  readonly media: MediaService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -80,6 +84,7 @@ function collectRoutes(ctx: AppContext): RouteDef[] {
     ...progressRoutes(ctx),
     ...streakRoutes(ctx),
     ...attemptsRoutes(ctx),
+    ...mediaRoutes(ctx),
   ];
 }
 
