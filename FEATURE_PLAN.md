@@ -4,7 +4,7 @@ Generated: 2026-11-14. Description: "MVP (Этап 1) КвестКласс 2 п�
 
 ## Summary
 - Total items: 56
-- Pending: 15 | Done: 40 (FEAT-001–FEAT-031, FEAT-035, FEAT-038, FEAT-048–FEAT-054; FEAT-050 условно) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
+- Pending: 12 | Done: 43 (FEAT-001–FEAT-031, FEAT-035, FEAT-038, FEAT-044–FEAT-046, FEAT-048–FEAT-054; FEAT-046 с оговоркой про GHCR-токен; FEAT-050 условно) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
 - Items requiring user decision: 3 — FEAT-050 и FEAT-046: SSH разрешён пользователем 14.11.2026; FEAT-047 отложен до после MVP
 - Critic iterations: 3 (+ патч после вердикта)
 - Critic verdict: halted at max iterations; HIGH и MED третьего круга закрыты патчем после вердикта (повторно не критиковались), 11 LOW — известные риски
@@ -1274,7 +1274,19 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - PR и push: lint, typecheck, test, e2e (Chromium). CI не использует `QuestClass-Source`. Push в `main`: образ `ghcr.io/olegmedv/questclass:{sha,latest}` (приватный). Первый прогон зелёный.
 
 ### FEAT-046 — Деплой на VPS
-- **Status**: pending
+- **Status**: done (14.11.2026) — с оговоркой: вход в GHCR на сервере ждёт токена владельца, первый образ доставлен по SSH
+- **Notes**:
+  - Сервер: `/opt/questclass/{docker-compose.yml,deploy.sh,current-tag,previous-tag,data/}`; `data/` — uid 1000, права 700. Проверочный контейнер FEAT-050 остановлен (`spike/` можно удалить), имя `questclass` и блок Caddy те же.
+  - Образ `ghcr.io/olegmedv/questclass:6e8d3c3` (коммит 6e8d3c3, 225 МБ) собран локально и доставлен `docker save | gzip | ssh docker load`: у `gh` на ПК нет `read:packages`, а classic PAT только с `read:packages` для `docker login ghcr.io` на сервере владелец ещё не создал. Как только токен будет — обновления через `deploy.sh up <sha>` из GHCR (README).
+  - `shared_web` = 172.21.0.0/16 входит в `http.trustedProxies` по умолчанию — ключ не менялся.
+  - Проверено: `deploy.sh up 6e8d3c3` → healthy за ~10 с; `up rbtest` (временный второй тег того же образа) → `rollback` → снова 6e8d3c3, теги в `current-tag`/`previous-tag` переключаются; временный тег удалён, `previous-tag` очищен. `restore-snapshot` проверен только на защите (нет файла / нет `--yes`): снимков ещё нет, они появятся при первой миграции на данных. При неудачном `up` скрипт сам возвращает предыдущий тег.
+  - После старта: 19 миграций, `master.key` создан, setup-токен взят из `docker logs` (в файле `setup-token` только хэш), первый админ создан; добавлен ученик и токен импорта lesson-prep. Учётные данные — у владельца в `D:\QuestClassMedia\prod-credentials.txt`.
+  - Контент: 5 сид-уроков загружены `lesson-prep import` (~1,38 ГБ HLS + картинки вопросов) и опубликованы.
+  - Память: 92 МиБ сразу после старта (`docker stats`, лимит 256m).
+  - Caddy: в блок `questclass.duckdns.org` добавлен `encode zstd gzip` (рекомендация FEAT-044: Node не сжимает). Бэкап `/opt/caddy/Caddyfile.bak-2026-11-14-questclass-encode`, запись через `cat > Caddyfile` (inode тот же), `caddy validate` → `reload`. Главный JS 440 КБ уходит zstd ~190 КБ, `immutable` сохраняется.
+  - Домены сервера до/после: site-a 200/200, landing 200/200, mcp.site-a 400/400, site-b 200/200, site-c 502/502 (контейнера нет и до деплоя).
+  - Проверка в браузере на https://questclass.duckdns.org: вход родителя → «Сделать устройство детским» → выход → «Кто учится?» → PIN → главная с уроком → видео HLS 360p играет (сегменты по ~0,2 с), «Место остановки сохранено». Проверочное устройство отозвано.
+  - Не сделано: замер скачивания из Калининграда (FEAT-050) — теперь проверяется просто просмотром урока на сайте.
 - **Risk**: HIGH
 - **Requires decision**: Y — разрешение на SSH в момент выполнения
 - **Spec reference**: SPEC §1 «новый блок в общем Caddyfile»; Critique 1 MED#19.
