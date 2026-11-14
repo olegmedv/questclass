@@ -13,13 +13,12 @@ import { createTaskTypeRegistry, type TaskTypePlugin } from '../src/task-types/r
 import { NOTE_TYPE, READY_NOTE, noteTaskType } from './fixtures/noteTaskType';
 import {
   createClient,
-  createLearner,
   errorCode,
   loginAdmin,
-  seedAdmin,
   trustDevice,
   type TestClient,
 } from './helpers/client';
+import { quickAdmin, quickLearner } from './helpers/fastUsers';
 import { createTestRuntime, type TestRuntime } from './helpers/db';
 
 let runtime: TestRuntime;
@@ -33,9 +32,9 @@ const app = () => createApp(runtime.ctx).app;
 beforeEach(async () => {
   runtime = await createTestRuntime();
   runtime.ctx.taskTypes.register(noteTaskType);
-  adminId = await seedAdmin(runtime.ctx);
-  anya = await createLearner(runtime.ctx, 'Аня', '1111');
-  borya = await createLearner(runtime.ctx, 'Боря', '2222');
+  adminId = await quickAdmin(runtime.ctx);
+  anya = await quickLearner(runtime.ctx, 'Аня', '1111');
+  borya = await quickLearner(runtime.ctx, 'Боря', '2222');
   admin = createClient(app());
   await loginAdmin(admin);
 });
@@ -393,7 +392,7 @@ describe('GET /api/tasks (learner)', () => {
 
   it('"no assignments" means every learner active at the time of the request', async () => {
     const task = await publishedTask();
-    const vera = await createLearner(runtime.ctx, 'Вера', '3333');
+    const vera = await quickLearner(runtime.ctx, 'Вера', '3333');
     expect(await visibleIds(await learnerClient(vera, '3333'))).toEqual([task.id]);
   });
 

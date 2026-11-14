@@ -7,13 +7,12 @@ import { computeAvailability } from '../src/modules/progress/availability';
 import { NOTE_TYPE, READY_NOTE, noteTaskType } from './fixtures/noteTaskType';
 import {
   createClient,
-  createLearner,
   errorCode,
   loginAdmin,
-  seedAdmin,
   trustDevice,
   type TestClient,
 } from './helpers/client';
+import { quickAdmin, quickLearner } from './helpers/fastUsers';
 import { createTestRuntime, type TestRuntime } from './helpers/db';
 
 let runtime: TestRuntime;
@@ -29,9 +28,9 @@ const requestId = () => `req-${String(++requestSeq).padStart(8, '0')}`;
 beforeEach(async () => {
   runtime = await createTestRuntime();
   runtime.ctx.taskTypes.register(noteTaskType);
-  adminId = await seedAdmin(runtime.ctx);
-  anya = await createLearner(runtime.ctx, 'Аня', '1111');
-  borya = await createLearner(runtime.ctx, 'Боря', '2222');
+  adminId = await quickAdmin(runtime.ctx);
+  anya = await quickLearner(runtime.ctx, 'Аня', '1111');
+  borya = await quickLearner(runtime.ctx, 'Боря', '2222');
   admin = createClient(app());
   await loginAdmin(admin);
 });

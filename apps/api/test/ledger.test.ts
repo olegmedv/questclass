@@ -6,13 +6,12 @@ import { HttpError } from '../src/http/errors';
 import { idemKey, requestKey, type LedgerService } from '../src/modules/ledger/service';
 import {
   createClient,
-  createLearner,
   errorCode,
   loginAdmin,
-  seedAdmin,
   trustDevice,
   type TestClient,
 } from './helpers/client';
+import { quickAdmin, quickLearner } from './helpers/fastUsers';
 import { createTestRuntime, type TestRuntime } from './helpers/db';
 
 let runtime: TestRuntime;
@@ -24,9 +23,9 @@ let borya: number;
 beforeEach(async () => {
   runtime = await createTestRuntime();
   ledger = runtime.ctx.ledger;
-  adminId = await seedAdmin(runtime.ctx);
-  anya = await createLearner(runtime.ctx, 'Аня', '1111');
-  borya = await createLearner(runtime.ctx, 'Боря', '2222');
+  adminId = await quickAdmin(runtime.ctx);
+  anya = await quickLearner(runtime.ctx, 'Аня', '1111');
+  borya = await quickLearner(runtime.ctx, 'Боря', '2222');
 });
 
 afterEach(async () => {

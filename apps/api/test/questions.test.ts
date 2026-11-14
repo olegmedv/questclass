@@ -8,7 +8,8 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../src/app';
 import type { ImportedQuestion } from '../src/modules/questions/service';
 import { NOTE_TYPE, READY_NOTE, noteTaskType } from './fixtures/noteTaskType';
-import { createClient, errorCode, loginAdmin, seedAdmin, type TestClient } from './helpers/client';
+import { createClient, errorCode, loginAdmin, type TestClient } from './helpers/client';
+import { quickAdmin } from './helpers/fastUsers';
 import { createTestRuntime, type TestRuntime } from './helpers/db';
 
 /** The plain-text sample of the original (README «Test import format», `testTemplate`). */
@@ -185,7 +186,7 @@ describe('questions service and API', () => {
   beforeEach(async () => {
     runtime = await createTestRuntime();
     runtime.ctx.taskTypes.register(noteTaskType);
-    adminId = await seedAdmin(runtime.ctx);
+    adminId = await quickAdmin(runtime.ctx);
     admin = createClient(createApp(runtime.ctx).app);
     await loginAdmin(admin);
     taskId = runtime.ctx.tasks.create(
