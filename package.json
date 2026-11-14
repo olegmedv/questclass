@@ -15,7 +15,9 @@
     "lint": "eslint . && stylelint \"**/*.css\" --allow-empty-input && prettier --check \"**/*.{ts,tsx,mts,mjs,css}\"",
     "format": "prettier --write \"**/*.{ts,tsx,mts,mjs,css}\"",
     "typecheck": "corepack pnpm -r typecheck",
-    "db:generate": "corepack pnpm --filter @questclass/api db:generate"
+    "db:generate": "corepack pnpm --filter @questclass/api db:generate",
+    "assets:import": "node scripts/assets/import.mjs",
+    "assets:budget": "node scripts/assets/budget.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -24,6 +26,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "globals": "^17.14.0",
     "prettier": "^3.10.1",
+    "sharp": "^0.35.5",
     "stylelint": "^18.0.0",
     "stylelint-config-standard": "^41.0.0",
     "typescript": "~6.0.3",

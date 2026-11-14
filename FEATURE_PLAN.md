@@ -555,7 +555,21 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Отмена через `ledger.reverse` с audit. Ученик видит начисления в «От родителя». Строки FEAT-049.
 
 ### FEAT-026 — Ассеты MVP: импорт и пережатие
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Итог: 249 исходных файлов → 279 файлов, 75,2 МБ (бюджет 90 МБ = 90·10⁶ байт). Импорт идёт ~10 с, `pnpm assets:import -- --source <QuestClass-Source или его public>`; `pnpm assets:budget` — отчёт по папкам.
+  - В манифесте у записи есть поле `kind` (`image|audio|font|text`). У звуков, шрифтов и текста только `bytes`, у анимированных картинок кроме `frames` есть `durationMs` (сумма длительностей кадров, совпадает с `durationMs` каталога оригинала). Ключ — путь от `apps/web/public/assets`, URL — `/assets/<ключ>`.
+  - Манифест строится разбором заголовков (WebP/PNG/SVG) без sharp, поэтому тест в CI не требует нативных зависимостей. sharp 0.35 — devDependency корня (без install-скрипта).
+  - WebP оригинала (в том числе анимированные) копируются байт в байт. PNG → WebP без потерь, размеры те же; это касается всех PNG, включая непиксельные (`wishes.png`, `rewards/towel…`). PNG остались только у иконок платформы (манифест PWA, apple-touch, favicon, иконка уведомлений, `stars-transparent-v7/*-192.png`): режим `keep`.
+  - Ролик серии → animated WebP 768×1168 (размер исходника), 12 кадров/с вместо 24, q70, бесконечный цикл (121 кадр, 10,08 с; плеер FEAT-038 останавливает его по `durationMs`). У MP4 был звук с кнопкой «Включить звук», поэтому дорожка вынесена в `celebrations/streak-five-v1.{ogg,mp3}`.
+  - Звук: OGG оригинала копируется, к нему MP3 (LAME VBR q4, исходная частота); MP3 оригинала (`ui-audio`) копируется, к нему OGG (Vorbis q4). Шрифты TTF не конвертируются: их читает jsPDF для PDF-отчёта; лицензия DejaVu лежит рядом.
+  - Исключены файлы, на которые код оригинала не ссылается (старые версии и остатки, список с комментариями в `mvp-assets.txt`): `rebound-audio/` (используется `rebound-audio-v2/`), `room-rebound-hotel{,-thumb}.webp` и `rebound-curtain.webp` (используются `-v3`), `fitting-room/{heroes.png,room.png,*-compact.webp}`, `animated/{blue-cover.png,blue-idle.webp}`, `repaired/vampire-juice*` (используется `vampire-drink-v2`), `red-hero.jpg`, 4 неиспользуемых спрайта Рибаунда, `menu/multiplication.webp`, 2 звука `night-hotel/audio/ui`, старые наборы `icons/stars/` и `icons/stars-cobalt-v5/`.
+  - Тест детерминизма ищет оригинал в `<repo>/QuestClass-Source` или по `QUESTCLASS_SOURCE` (только для dev, например из worktree), пропускается и без ffmpeg; идёт ~12 с.
+  - `.gitattributes`: `apps/web/public/assets/** binary`, чтобы SVG и текст лицензии не нормализовались и совпадали с манифестом.
+  - Для FEAT-044: у Vite `build.assetsDir` по умолчанию тоже `assets`, хэшированные бандлы попадут в `dist/assets` рядом с нехэшированными игровыми ассетами. Нельзя помечать весь `/assets/*` как `immutable`: сменить `build.assetsDir` или различать по хэшу в имени.
+  - `docs/PLACEHOLDERS.md` создан: каталожных заглушек нет, в реестре 3 слота без встроенной картинки (загрузки товаров и похвал, значок нового предмета).
+  - Вне Scope: `scripts/parity-check.mjs` только переформатирован prettier (на базовой ветке `pnpm lint` падал на нём), логика не менялась, `--strict` зелёный; в корневой `package.json` добавлены скрипты `assets:import` и `assets:budget`.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: Clarification «в git, пережатые»; «анимации — всё в MVP»; Critique 1 HIGH#1, MED#11, LOW (MP3).

@@ -1,0 +1,1828 @@
+{
+  "celebrations/first-streak-achievement.webp": {
+    "kind": "image",
+    "w": 700,
+    "h": 700,
+    "bytes": 81164,
+    "animated": false
+  },
+  "celebrations/streak-five-poster.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 584,
+    "bytes": 17394,
+    "animated": false
+  },
+  "celebrations/streak-five-v1.mp3": {
+    "kind": "audio",
+    "bytes": 114480
+  },
+  "celebrations/streak-five-v1.ogg": {
+    "kind": "audio",
+    "bytes": 115037
+  },
+  "celebrations/streak-five-v1.webp": {
+    "kind": "image",
+    "w": 768,
+    "h": 1168,
+    "bytes": 6053694,
+    "animated": true,
+    "frames": 121,
+    "durationMs": 10083
+  },
+  "fonts/LICENSE-DejaVu.txt": {
+    "kind": "text",
+    "bytes": 3859
+  },
+  "fonts/ReportSans-Bold.ttf": {
+    "kind": "font",
+    "bytes": 708920
+  },
+  "fonts/ReportSans.ttf": {
+    "kind": "font",
+    "bytes": 759720
+  },
+  "game/animated/dozer-drowsy-cover.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 109908,
+    "animated": false
+  },
+  "game/animated/dozer-drowsy.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 736182,
+    "animated": true,
+    "frames": 7,
+    "durationMs": 4600
+  },
+  "game/animated/mart-boy-wave.webp": {
+    "kind": "image",
+    "w": 768,
+    "h": 768,
+    "bytes": 1157674,
+    "animated": true,
+    "frames": 6,
+    "durationMs": 3200
+  },
+  "game/animated/repaired/blue-idle-cover.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 73602,
+    "animated": false
+  },
+  "game/animated/repaired/blue-idle.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 662296,
+    "animated": true,
+    "frames": 9,
+    "durationMs": 3000
+  },
+  "game/animated/repaired/boy-fairy-cover.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 66912,
+    "animated": false
+  },
+  "game/animated/repaired/boy-fairy.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 914832,
+    "animated": true,
+    "frames": 10,
+    "durationMs": 4000
+  },
+  "game/animated/repaired/claw-show-cover.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 89040,
+    "animated": false
+  },
+  "game/animated/repaired/claw-show.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 439046,
+    "animated": true,
+    "frames": 9,
+    "durationMs": 3000
+  },
+  "game/animated/repaired/fairy-magic-cover.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 110204,
+    "animated": false
+  },
+  "game/animated/repaired/fairy-magic.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 969612,
+    "animated": true,
+    "frames": 7,
+    "durationMs": 3200
+  },
+  "game/animated/repaired/fairy-swing-cover.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 95640,
+    "animated": false
+  },
+  "game/animated/repaired/fairy-swing.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 716650,
+    "animated": true,
+    "frames": 7,
+    "durationMs": 2800
+  },
+  "game/animated/repaired/hero-hair-cover.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 81610,
+    "animated": false
+  },
+  "game/animated/repaired/hero-hair.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 618326,
+    "animated": true,
+    "frames": 8,
+    "durationMs": 3600
+  },
+  "game/animated/repaired/hero-punch-cover.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 78760,
+    "animated": false
+  },
+  "game/animated/repaired/hero-punch.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 900510,
+    "animated": true,
+    "frames": 11,
+    "durationMs": 2800
+  },
+  "game/animated/repaired/vampire-awakening-cover.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 77874,
+    "animated": false
+  },
+  "game/animated/repaired/vampire-awakening.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 657640,
+    "animated": true,
+    "frames": 8,
+    "durationMs": 3400
+  },
+  "game/animated/repaired/vampire-bat-cover.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 77022,
+    "animated": false
+  },
+  "game/animated/repaired/vampire-bat.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 859570,
+    "animated": true,
+    "frames": 11,
+    "durationMs": 3800
+  },
+  "game/animated/vampire-cape.webp": {
+    "kind": "image",
+    "w": 768,
+    "h": 768,
+    "bytes": 1202800,
+    "animated": true,
+    "frames": 6,
+    "durationMs": 3200
+  },
+  "game/animated/vampire-drink-v2-cover.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 90216,
+    "animated": false
+  },
+  "game/animated/vampire-drink-v2.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 971830,
+    "animated": true,
+    "frames": 11,
+    "durationMs": 4000
+  },
+  "game/characters/angel-boy.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 544568,
+    "animated": false
+  },
+  "game/characters/astro-idle.webp": {
+    "kind": "image",
+    "w": 400,
+    "h": 600,
+    "bytes": 9146844,
+    "animated": true,
+    "frames": 160,
+    "durationMs": 8000
+  },
+  "game/characters/astro.webp": {
+    "kind": "image",
+    "w": 400,
+    "h": 600,
+    "bytes": 57968,
+    "animated": false
+  },
+  "game/characters/cadence-boy.webp": {
+    "kind": "image",
+    "w": 768,
+    "h": 768,
+    "bytes": 78848,
+    "animated": false
+  },
+  "game/characters/cadence-clock.webp": {
+    "kind": "image",
+    "w": 768,
+    "h": 768,
+    "bytes": 124366,
+    "animated": false
+  },
+  "game/characters/claw-explorer.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 440184,
+    "animated": false
+  },
+  "game/characters/dancing-skeleton.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 417656,
+    "animated": false
+  },
+  "game/characters/demon-boy.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 471530,
+    "animated": false
+  },
+  "game/characters/dinosaur-boy.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 451372,
+    "animated": false
+  },
+  "game/characters/dozer-boy.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 109908,
+    "animated": false
+  },
+  "game/characters/dozer-nightcap.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 103386,
+    "animated": false
+  },
+  "game/characters/fairy-boy.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 559054,
+    "animated": false
+  },
+  "game/characters/fairy-prankster.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 699922,
+    "animated": false
+  },
+  "game/characters/floating-angel.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 612286,
+    "animated": false
+  },
+  "game/characters/hotdog-boy.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 398462,
+    "animated": false
+  },
+  "game/characters/mart-boy.webp": {
+    "kind": "image",
+    "w": 768,
+    "h": 768,
+    "bytes": 210126,
+    "animated": false
+  },
+  "game/characters/mart-round.webp": {
+    "kind": "image",
+    "w": 768,
+    "h": 768,
+    "bytes": 242734,
+    "animated": false
+  },
+  "game/characters/mischievous-demon.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 565190,
+    "animated": false
+  },
+  "game/characters/pizza-boy.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 388668,
+    "animated": false
+  },
+  "game/characters/rebound-boy-flight-cover.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 167180,
+    "animated": false
+  },
+  "game/characters/rebound-boy-flight-poster.webp": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 7562,
+    "animated": false
+  },
+  "game/characters/rebound-boy-flight.webp": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 129002,
+    "animated": true,
+    "frames": 18,
+    "durationMs": 2800
+  },
+  "game/characters/rebound-boy.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 59936,
+    "animated": false
+  },
+  "game/characters/rebound-face.webp": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 67996,
+    "animated": false
+  },
+  "game/characters/rebound-float.webp": {
+    "kind": "image",
+    "w": 256,
+    "h": 256,
+    "bytes": 132852,
+    "animated": true,
+    "frames": 9,
+    "durationMs": 2560
+  },
+  "game/characters/red-hero-transparent.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 395962,
+    "animated": false
+  },
+  "game/characters/skeleton-boy.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 375542,
+    "animated": false
+  },
+  "game/characters/sleepy-dozer.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 539680,
+    "animated": false
+  },
+  "game/characters/star-hero.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 424508,
+    "animated": false
+  },
+  "game/characters/star-pajamas.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 607958,
+    "animated": false
+  },
+  "game/characters/star-wizard.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 460826,
+    "animated": false
+  },
+  "game/characters/vampire-boy.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 435118,
+    "animated": false
+  },
+  "game/characters/zombie-boy.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 412556,
+    "animated": false
+  },
+  "game/fitting-room/blue-original.webp": {
+    "kind": "image",
+    "w": 627,
+    "h": 627,
+    "bytes": 159202,
+    "animated": false
+  },
+  "game/fitting-room/forest-original.webp": {
+    "kind": "image",
+    "w": 627,
+    "h": 627,
+    "bytes": 176236,
+    "animated": false
+  },
+  "game/fitting-room/purple-original.webp": {
+    "kind": "image",
+    "w": 627,
+    "h": 627,
+    "bytes": 175116,
+    "animated": false
+  },
+  "game/fitting-room/room-bright.webp": {
+    "kind": "image",
+    "w": 768,
+    "h": 512,
+    "bytes": 436886,
+    "animated": false
+  },
+  "game/fitting-room/space-original.webp": {
+    "kind": "image",
+    "w": 627,
+    "h": 627,
+    "bytes": 183810,
+    "animated": false
+  },
+  "game/heroes.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 715418,
+    "animated": false
+  },
+  "game/menu/eternal-halloween.webp": {
+    "kind": "image",
+    "w": 941,
+    "h": 1672,
+    "bytes": 301756,
+    "animated": false
+  },
+  "game/menu/forest-wonders.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 384,
+    "bytes": 73978,
+    "animated": false
+  },
+  "game/menu/handwriting.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 384,
+    "bytes": 28356,
+    "animated": false
+  },
+  "game/menu/hotel-preview.webp": {
+    "kind": "image",
+    "w": 720,
+    "h": 1280,
+    "bytes": 144760,
+    "animated": false
+  },
+  "game/report-robux.svg": {
+    "kind": "image",
+    "w": 240,
+    "h": 240,
+    "bytes": 280,
+    "animated": false
+  },
+  "game/rooms/astro-audio-v1/ambient/lullaby.mp3": {
+    "kind": "audio",
+    "bytes": 246768
+  },
+  "game/rooms/astro-audio-v1/ambient/lullaby.ogg": {
+    "kind": "audio",
+    "bytes": 190129
+  },
+  "game/rooms/astro-audio-v1/ambient/night-air.mp3": {
+    "kind": "audio",
+    "bytes": 305976
+  },
+  "game/rooms/astro-audio-v1/ambient/night-air.ogg": {
+    "kind": "audio",
+    "bytes": 237087
+  },
+  "game/rooms/astro-audio-v1/events/star-chime.mp3": {
+    "kind": "audio",
+    "bytes": 19656
+  },
+  "game/rooms/astro-audio-v1/events/star-chime.ogg": {
+    "kind": "audio",
+    "bytes": 22994
+  },
+  "game/rooms/night-hotel/audio/ambient/ambient_room_loop.mp3": {
+    "kind": "audio",
+    "bytes": 218849
+  },
+  "game/rooms/night-hotel/audio/ambient/ambient_room_loop.ogg": {
+    "kind": "audio",
+    "bytes": 164081
+  },
+  "game/rooms/night-hotel/audio/ambient/music_optional_loop.mp3": {
+    "kind": "audio",
+    "bytes": 208840
+  },
+  "game/rooms/night-hotel/audio/ambient/music_optional_loop.ogg": {
+    "kind": "audio",
+    "bytes": 159573
+  },
+  "game/rooms/night-hotel/audio/ambient/rain_loop.mp3": {
+    "kind": "audio",
+    "bytes": 333082
+  },
+  "game/rooms/night-hotel/audio/ambient/rain_loop.ogg": {
+    "kind": "audio",
+    "bytes": 236952
+  },
+  "game/rooms/night-hotel/audio/events/closet_creak_close.mp3": {
+    "kind": "audio",
+    "bytes": 20763
+  },
+  "game/rooms/night-hotel/audio/events/closet_creak_close.ogg": {
+    "kind": "audio",
+    "bytes": 19634
+  },
+  "game/rooms/night-hotel/audio/events/closet_creak_open.mp3": {
+    "kind": "audio",
+    "bytes": 28170
+  },
+  "game/rooms/night-hotel/audio/events/closet_creak_open.ogg": {
+    "kind": "audio",
+    "bytes": 25063
+  },
+  "game/rooms/night-hotel/audio/events/door_creak.mp3": {
+    "kind": "audio",
+    "bytes": 33906
+  },
+  "game/rooms/night-hotel/audio/events/door_creak.ogg": {
+    "kind": "audio",
+    "bytes": 29205
+  },
+  "game/rooms/night-hotel/audio/events/girl_laugh.mp3": {
+    "kind": "audio",
+    "bytes": 13190
+  },
+  "game/rooms/night-hotel/audio/events/girl_laugh.ogg": {
+    "kind": "audio",
+    "bytes": 12100
+  },
+  "game/rooms/night-hotel/audio/events/light_flicker.mp3": {
+    "kind": "audio",
+    "bytes": 7868
+  },
+  "game/rooms/night-hotel/audio/events/light_flicker.ogg": {
+    "kind": "audio",
+    "bytes": 8564
+  },
+  "game/rooms/night-hotel/audio/events/monster_slither.mp3": {
+    "kind": "audio",
+    "bytes": 29362
+  },
+  "game/rooms/night-hotel/audio/events/monster_slither.ogg": {
+    "kind": "audio",
+    "bytes": 21156
+  },
+  "game/rooms/night-hotel/audio/events/screech_jump.mp3": {
+    "kind": "audio",
+    "bytes": 14918
+  },
+  "game/rooms/night-hotel/audio/events/screech_jump.ogg": {
+    "kind": "audio",
+    "bytes": 15683
+  },
+  "game/rooms/night-hotel/audio/events/shadow_run.mp3": {
+    "kind": "audio",
+    "bytes": 33546
+  },
+  "game/rooms/night-hotel/audio/events/shadow_run.ogg": {
+    "kind": "audio",
+    "bytes": 23112
+  },
+  "game/rooms/night-hotel/audio/events/thunder_01.mp3": {
+    "kind": "audio",
+    "bytes": 34518
+  },
+  "game/rooms/night-hotel/audio/events/thunder_01.ogg": {
+    "kind": "audio",
+    "bytes": 28245
+  },
+  "game/rooms/night-hotel/audio/events/thunder_02.mp3": {
+    "kind": "audio",
+    "bytes": 37714
+  },
+  "game/rooms/night-hotel/audio/events/thunder_02.ogg": {
+    "kind": "audio",
+    "bytes": 40358
+  },
+  "game/rooms/night-hotel/audio/events/wardrobe_thump.mp3": {
+    "kind": "audio",
+    "bytes": 3720
+  },
+  "game/rooms/night-hotel/audio/events/wardrobe_thump.ogg": {
+    "kind": "audio",
+    "bytes": 8764
+  },
+  "game/rooms/night-hotel/audio/ui/key_pickup.mp3": {
+    "kind": "audio",
+    "bytes": 4397
+  },
+  "game/rooms/night-hotel/audio/ui/key_pickup.ogg": {
+    "kind": "audio",
+    "bytes": 7990
+  },
+  "game/rooms/night-hotel/candles_flicker.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 132150,
+    "animated": true,
+    "frames": 6,
+    "durationMs": 1800
+  },
+  "game/rooms/night-hotel/door_bend_event.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 445046,
+    "animated": true,
+    "frames": 11,
+    "durationMs": 2480
+  },
+  "game/rooms/night-hotel/eyes_blink.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 3250,
+    "animated": true,
+    "frames": 3,
+    "durationMs": 2000
+  },
+  "game/rooms/night-hotel/figure_peek_event.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 135948,
+    "animated": true,
+    "frames": 11,
+    "durationMs": 3000
+  },
+  "game/rooms/night-hotel/light_flicker_event.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 764,
+    "animated": true,
+    "frames": 6,
+    "durationMs": 840
+  },
+  "game/rooms/night-hotel/lightning_flash.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 102690,
+    "animated": true,
+    "frames": 5,
+    "durationMs": 2100
+  },
+  "game/rooms/night-hotel/room_base.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 1399370,
+    "animated": false
+  },
+  "game/rooms/night-hotel/screech_ceiling_event.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 52722,
+    "animated": true,
+    "frames": 9,
+    "durationMs": 1400
+  },
+  "game/rooms/night-hotel/shadow_run_event.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 4156,
+    "animated": true,
+    "frames": 8,
+    "durationMs": 760
+  },
+  "game/rooms/night-hotel/thumbnail.webp": {
+    "kind": "image",
+    "w": 480,
+    "h": 320,
+    "bytes": 29664,
+    "animated": false
+  },
+  "game/rooms/night-hotel/wardrobe_monster_peek.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 408046,
+    "animated": true,
+    "frames": 11,
+    "durationMs": 3400
+  },
+  "game/rooms/night-hotel/window_girl_appear.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 72778,
+    "animated": true,
+    "frames": 7,
+    "durationMs": 2900
+  },
+  "game/rooms/rebound-audio-v2/ambient/night-air.mp3": {
+    "kind": "audio",
+    "bytes": 197808
+  },
+  "game/rooms/rebound-audio-v2/ambient/night-air.ogg": {
+    "kind": "audio",
+    "bytes": 202728
+  },
+  "game/rooms/rebound-audio-v2/ambient/night-music.mp3": {
+    "kind": "audio",
+    "bytes": 142392
+  },
+  "game/rooms/rebound-audio-v2/ambient/night-music.ogg": {
+    "kind": "audio",
+    "bytes": 104927
+  },
+  "game/rooms/rebound-audio-v2/events/curtain-rustle.mp3": {
+    "kind": "audio",
+    "bytes": 13176
+  },
+  "game/rooms/rebound-audio-v2/events/curtain-rustle.ogg": {
+    "kind": "audio",
+    "bytes": 17247
+  },
+  "game/rooms/rebound-audio-v2/events/ghost-return.mp3": {
+    "kind": "audio",
+    "bytes": 13728
+  },
+  "game/rooms/rebound-audio-v2/events/ghost-return.ogg": {
+    "kind": "audio",
+    "bytes": 16732
+  },
+  "game/rooms/rebound-audio-v2/events/ghost-vanish.mp3": {
+    "kind": "audio",
+    "bytes": 13824
+  },
+  "game/rooms/rebound-audio-v2/events/ghost-vanish.ogg": {
+    "kind": "audio",
+    "bytes": 16780
+  },
+  "game/rooms/rebound-audio-v2/events/wood-creak.mp3": {
+    "kind": "audio",
+    "bytes": 4104
+  },
+  "game/rooms/rebound-audio-v2/events/wood-creak.ogg": {
+    "kind": "audio",
+    "bytes": 8365
+  },
+  "game/rooms/rebound-curtain-v3.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 17050,
+    "animated": false
+  },
+  "game/rooms/room-astro-night-animated.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 5130344,
+    "animated": true,
+    "frames": 120,
+    "durationMs": 8000
+  },
+  "game/rooms/room-astro-night-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 21496,
+    "animated": false
+  },
+  "game/rooms/room-astro-night.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 233810,
+    "animated": false
+  },
+  "game/rooms/room-before-monster-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 34380,
+    "animated": false
+  },
+  "game/rooms/room-before-monster.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 450710,
+    "animated": false
+  },
+  "game/rooms/room-cadence-observatory-thumb.webp": {
+    "kind": "image",
+    "w": 450,
+    "h": 300,
+    "bytes": 33488,
+    "animated": false
+  },
+  "game/rooms/room-cadence-observatory.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 321632,
+    "animated": false
+  },
+  "game/rooms/room-city-hero-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 20492,
+    "animated": false
+  },
+  "game/rooms/room-city-hero.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 213360,
+    "animated": false
+  },
+  "game/rooms/room-crypt-night-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 27416,
+    "animated": false
+  },
+  "game/rooms/room-crypt-night.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 358594,
+    "animated": false
+  },
+  "game/rooms/room-danya-day-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 29044,
+    "animated": false
+  },
+  "game/rooms/room-danya-day.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 303800,
+    "animated": false
+  },
+  "game/rooms/room-danya-night-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 21852,
+    "animated": false
+  },
+  "game/rooms/room-danya-night.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 234398,
+    "animated": false
+  },
+  "game/rooms/room-dozer-bedroom-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 27824,
+    "animated": false
+  },
+  "game/rooms/room-dozer-bedroom.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 325436,
+    "animated": false
+  },
+  "game/rooms/room-dracula-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 21860,
+    "animated": false
+  },
+  "game/rooms/room-dracula.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 264484,
+    "animated": false
+  },
+  "game/rooms/room-fairy-gallery-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 27892,
+    "animated": false
+  },
+  "game/rooms/room-fairy-gallery.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 308456,
+    "animated": false
+  },
+  "game/rooms/room-fairy-night-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 19308,
+    "animated": false
+  },
+  "game/rooms/room-fairy-night.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 226684,
+    "animated": false
+  },
+  "game/rooms/room-forest-house-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 23768,
+    "animated": false
+  },
+  "game/rooms/room-forest-house.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 296262,
+    "animated": false
+  },
+  "game/rooms/room-forgotten-crypt-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 39180,
+    "animated": false
+  },
+  "game/rooms/room-forgotten-crypt.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 545478,
+    "animated": false
+  },
+  "game/rooms/room-game-night-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 13526,
+    "animated": false
+  },
+  "game/rooms/room-game-night.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 137668,
+    "animated": false
+  },
+  "game/rooms/room-game-wardrobe-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 22466,
+    "animated": false
+  },
+  "game/rooms/room-game-wardrobe.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 233618,
+    "animated": false
+  },
+  "game/rooms/room-giant-mouth-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 31480,
+    "animated": false
+  },
+  "game/rooms/room-giant-mouth.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 405944,
+    "animated": false
+  },
+  "game/rooms/room-gothic-organ-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 26084,
+    "animated": false
+  },
+  "game/rooms/room-gothic-organ.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 312034,
+    "animated": false
+  },
+  "game/rooms/room-gothic-piano-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 28058,
+    "animated": false
+  },
+  "game/rooms/room-gothic-piano.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 309120,
+    "animated": false
+  },
+  "game/rooms/room-lilac-moon-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 24860,
+    "animated": false
+  },
+  "game/rooms/room-lilac-moon.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 260640,
+    "animated": false
+  },
+  "game/rooms/room-mart-islands-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 25692,
+    "animated": false
+  },
+  "game/rooms/room-mart-islands.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 287982,
+    "animated": false
+  },
+  "game/rooms/room-monster-city-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 30176,
+    "animated": false
+  },
+  "game/rooms/room-monster-city.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 384088,
+    "animated": false
+  },
+  "game/rooms/room-monster-neon-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 31626,
+    "animated": false
+  },
+  "game/rooms/room-monster-neon.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 443606,
+    "animated": false
+  },
+  "game/rooms/room-monster-platform-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 34120,
+    "animated": false
+  },
+  "game/rooms/room-monster-platform.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 453750,
+    "animated": false
+  },
+  "game/rooms/room-monster-tongue-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 27978,
+    "animated": false
+  },
+  "game/rooms/room-monster-tongue.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 398348,
+    "animated": false
+  },
+  "game/rooms/room-moon-wizard-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 26844,
+    "animated": false
+  },
+  "game/rooms/room-moon-wizard.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 319672,
+    "animated": false
+  },
+  "game/rooms/room-music-day-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 29690,
+    "animated": false
+  },
+  "game/rooms/room-music-day.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 319164,
+    "animated": false
+  },
+  "game/rooms/room-music-night-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 20682,
+    "animated": false
+  },
+  "game/rooms/room-music-night.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 210440,
+    "animated": false
+  },
+  "game/rooms/room-neon-studio-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 24002,
+    "animated": false
+  },
+  "game/rooms/room-neon-studio.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 266058,
+    "animated": false
+  },
+  "game/rooms/room-rebound-hotel-v3-thumb.webp": {
+    "kind": "image",
+    "w": 480,
+    "h": 320,
+    "bytes": 24990,
+    "animated": false
+  },
+  "game/rooms/room-rebound-hotel-v3.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 180244,
+    "animated": false
+  },
+  "game/rooms/room-ruined-city-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 28124,
+    "animated": false
+  },
+  "game/rooms/room-ruined-city.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 351356,
+    "animated": false
+  },
+  "game/rooms/room-secret-crypt-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 30068,
+    "animated": false
+  },
+  "game/rooms/room-secret-crypt.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 363182,
+    "animated": false
+  },
+  "game/rooms/room-star-night-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 19254,
+    "animated": false
+  },
+  "game/rooms/room-star-night.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 201716,
+    "animated": false
+  },
+  "game/rooms/room-star-studio-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 27936,
+    "animated": false
+  },
+  "game/rooms/room-star-studio.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 294594,
+    "animated": false
+  },
+  "game/rooms/room-sunny-hero-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 21168,
+    "animated": false
+  },
+  "game/rooms/room-sunny-hero.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 222646,
+    "animated": false
+  },
+  "game/rooms/room-vampire-gallery-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 24038,
+    "animated": false
+  },
+  "game/rooms/room-vampire-gallery.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 269978,
+    "animated": false
+  },
+  "game/rooms/room-vampire-organ-thumb.webp": {
+    "kind": "image",
+    "w": 384,
+    "h": 256,
+    "bytes": 23222,
+    "animated": false
+  },
+  "game/rooms/room-vampire-organ.webp": {
+    "kind": "image",
+    "w": 1264,
+    "h": 843,
+    "bytes": 199350,
+    "animated": false
+  },
+  "game/special.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 356322,
+    "animated": false
+  },
+  "game/subjects-pixel/art.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 500898,
+    "animated": false
+  },
+  "game/subjects-pixel/craft.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 349632,
+    "animated": false
+  },
+  "game/subjects-pixel/math.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 390522,
+    "animated": false
+  },
+  "game/subjects-pixel/reading.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 450728,
+    "animated": false
+  },
+  "game/subjects-pixel/russian.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 486998,
+    "animated": false
+  },
+  "game/subjects-pixel/world.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 417530,
+    "animated": false
+  },
+  "game/subjects.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 652792,
+    "animated": false
+  },
+  "game/ui-audio/collection-blessing.mp3": {
+    "kind": "audio",
+    "bytes": 59394
+  },
+  "game/ui-audio/collection-blessing.ogg": {
+    "kind": "audio",
+    "bytes": 47320
+  },
+  "game/ui-audio/element-shimmer.mp3": {
+    "kind": "audio",
+    "bytes": 21359
+  },
+  "game/ui-audio/element-shimmer.ogg": {
+    "kind": "audio",
+    "bytes": 19691
+  },
+  "game/ui-audio/level-enchantment.mp3": {
+    "kind": "audio",
+    "bytes": 40168
+  },
+  "game/ui-audio/level-enchantment.ogg": {
+    "kind": "audio",
+    "bytes": 41058
+  },
+  "game/ui-audio/packet-magic.mp3": {
+    "kind": "audio",
+    "bytes": 14254
+  },
+  "game/ui-audio/packet-magic.ogg": {
+    "kind": "audio",
+    "bytes": 14642
+  },
+  "game/wishes-transparent-v1.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 725360,
+    "animated": false
+  },
+  "game/wishes.webp": {
+    "kind": "image",
+    "w": 1254,
+    "h": 1254,
+    "bytes": 989516,
+    "animated": false
+  },
+  "icons/knowledge-spark-180.png": {
+    "kind": "image",
+    "w": 180,
+    "h": 180,
+    "bytes": 66330,
+    "animated": false
+  },
+  "icons/knowledge-spark-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 74612,
+    "animated": false
+  },
+  "icons/knowledge-spark-32.png": {
+    "kind": "image",
+    "w": 32,
+    "h": 32,
+    "bytes": 2795,
+    "animated": false
+  },
+  "icons/knowledge-spark-512.png": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 491744,
+    "animated": false
+  },
+  "icons/questclass-maskable-512.png": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 170817,
+    "animated": false
+  },
+  "icons/star-v1-180.png": {
+    "kind": "image",
+    "w": 180,
+    "h": 180,
+    "bytes": 65147,
+    "animated": false
+  },
+  "icons/star-v1-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 73689,
+    "animated": false
+  },
+  "icons/star-v1-32.png": {
+    "kind": "image",
+    "w": 32,
+    "h": 32,
+    "bytes": 3193,
+    "animated": false
+  },
+  "icons/star-v1-512.png": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 392418,
+    "animated": false
+  },
+  "icons/star-v1-maskable-512.png": {
+    "kind": "image",
+    "w": 512,
+    "h": 512,
+    "bytes": 191608,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/clenched-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 50392,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/clenched.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 21154,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/evening-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 40422,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/evening.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 16082,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/fury-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 47349,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/fury.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 17848,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/ghost-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 39688,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/ghost.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 15614,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/grave-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 43782,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/grave.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 13660,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/hint-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 44088,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/hint.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 17300,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/juice-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 46146,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/juice.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 17806,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/melting-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 39422,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/melting.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 15988,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/menace-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 50304,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/menace.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 18768,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/monster-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 52746,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/monster.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 21834,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/rage-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 47629,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/rage.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 19244,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/revived-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 46598,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/revived.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 20382,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/satisfied-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 41149,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/satisfied.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 16270,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/scream-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 53058,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/scream.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 21094,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/skeleton-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 41027,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/skeleton.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 15580,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/tomato-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 43993,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/tomato.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 18504,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/waiting-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 37511,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/waiting.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 15156,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/watching-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 41533,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/watching.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 17026,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/where-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 42214,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/where.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 16822,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/wicked-192.png": {
+    "kind": "image",
+    "w": 192,
+    "h": 192,
+    "bytes": 47539,
+    "animated": false
+  },
+  "icons/stars-transparent-v7/wicked.webp": {
+    "kind": "image",
+    "w": 288,
+    "h": 288,
+    "bytes": 20690,
+    "animated": false
+  },
+  "rewards/towel-perfect-five-stars.webp": {
+    "kind": "image",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 1611694,
+    "animated": false
+  }
+}
