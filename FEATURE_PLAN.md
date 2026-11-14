@@ -4,7 +4,7 @@ Generated: 2026-11-14. Description: "MVP (Этап 1) КвестКласс 2 п�
 
 ## Summary
 - Total items: 56
-- Pending: 26 | Done: 29 (FEAT-001, FEAT-002, FEAT-003, FEAT-004, FEAT-005, FEAT-006, FEAT-007, FEAT-008, FEAT-009, FEAT-010, FEAT-011, FEAT-012, FEAT-013, FEAT-015, FEAT-023, FEAT-024, FEAT-025, FEAT-026, FEAT-027, FEAT-028, FEAT-035, FEAT-038, FEAT-048, FEAT-049, FEAT-050, FEAT-051, FEAT-052, FEAT-053, FEAT-054; FEAT-050 условно) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
+- Pending: 15 | Done: 40 (FEAT-001–FEAT-031, FEAT-035, FEAT-038, FEAT-048–FEAT-054; FEAT-050 условно) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
 - Items requiring user decision: 3 — FEAT-050 и FEAT-046: SSH разрешён пользователем 14.11.2026; FEAT-047 отложен до после MVP
 - Critic iterations: 3 (+ патч после вердикта)
 - Critic verdict: halted at max iterations; HIGH и MED третьего круга закрыты патчем после вердикта (повторно не критиковались), 11 LOW — известные риски
