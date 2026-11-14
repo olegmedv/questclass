@@ -1,0 +1,114 @@
+.qc-icon-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--q-space-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.qc-icon-picker > legend {
+  margin-bottom: var(--q-space-2);
+  padding: 0;
+}
+
+.qc-icon-picker-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--q-space-2);
+}
+
+.qc-icon-pick {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+/* Invisible, but on top of the tile: the click lands on the radio itself. */
+.qc-icon-pick-input {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.qc-icon-pick-tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--q-icon-md);
+  height: var(--q-icon-md);
+  padding: var(--q-space-2);
+  border: 2px solid var(--q-border);
+  border-radius: var(--q-radius-sm);
+  background: var(--q-input);
+  color: var(--q-subtle);
+  transition:
+    background var(--q-duration-fast),
+    border-color var(--q-duration-fast);
+}
+
+.qc-icon-pick-tile svg {
+  width: 24px;
+  height: 24px;
+}
+
+.qc-icon-picker[data-invalid] .qc-icon-pick-tile {
+  border-color: var(--q-danger-border);
+}
+
+.qc-icon-pick-input:checked + .qc-icon-pick-tile {
+  border-color: var(--q-border-selected);
+  background: var(--q-selected);
+}
+
+.qc-icon-pick-input:focus-visible + .qc-icon-pick-tile {
+  outline: 3px solid var(--q-focus);
+  outline-offset: 2px;
+}
+
+.qc-icon-pick-input:disabled {
+  cursor: not-allowed;
+}
+
+.qc-icon-pick-input:disabled + .qc-icon-pick-tile {
+  opacity: 0.55;
+}
+
+/* Not only the colour tells the choice: a check in the corner. */
+.qc-icon-pick-check {
+  position: absolute;
+  top: calc(-1 * var(--q-space-2));
+  right: calc(-1 * var(--q-space-2));
+  display: none;
+  place-items: center;
+  width: var(--q-space-5);
+  height: var(--q-space-5);
+  border-radius: var(--q-radius-round);
+  background: var(--q-accent);
+  color: var(--q-accent-ink);
+}
+
+.qc-icon-pick-check svg {
+  width: var(--q-space-3);
+  height: var(--q-space-3);
+  stroke-width: 3;
+}
+
+.qc-icon-pick-input:checked + .qc-icon-pick-tile .qc-icon-pick-check {
+  display: grid;
+}
+
+.qc-icon-pick-tile[data-loading] {
+  border-style: dashed;
+}
+
+/* Last: the most specific rule (stylelint no-descending-specificity). */
+.qc-icon-pick:hover .qc-icon-pick-input:not(:disabled, :checked) + .qc-icon-pick-tile {
+  border-color: var(--q-border-strong);
+}

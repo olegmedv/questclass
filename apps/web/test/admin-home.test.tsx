@@ -132,6 +132,7 @@ describe('searchAdmin', () => {
   it('matches every word, ё as е, titles first; every registered setting is findable', () => {
     expect(searchAdmin('')).toEqual([]);
     expect(searchAdmin('еще попытка')[0]?.id).toBe('retries');
+    expect(searchAdmin('логотип')[0]?.id).toBe('appearance');
     for (const [key, def] of Object.entries(SETTINGS)) {
       const ids = searchAdmin(def.label, undefined, 50).map((entry) => entry.id);
       expect(ids, key).toContain(`setting:${key}`);

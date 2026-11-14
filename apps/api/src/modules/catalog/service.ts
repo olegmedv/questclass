@@ -115,6 +115,8 @@ export interface CatalogDeps {
   readonly describeUpload?: (mediaId: number) => UploadInfo | undefined;
   /** Whether learners bought the item (its kind may not change then; FEAT-019 provides it). */
   readonly hasPurchases?: (itemId: number) => boolean;
+  /** Length of a replaced built-in animation (FEAT-060); undefined for the built-in file. */
+  readonly replacedDurationMs?: (file: string) => number | undefined;
   readonly clock?: () => number;
 }
 
@@ -149,6 +151,8 @@ interface Library {
   readonly characters: ReadonlyMap<number, CharacterRow>;
   readonly animations: ReadonlyMap<number, AnimationRow>;
   readonly rooms: ReadonlyMap<number, RoomRow>;
+  /** Length of a built-in animation file the admin replaced («Оформление»), ms. */
+  readonly replacedDurationMs: (file: string) => number | undefined;
 }
 
 function byId<T extends { id: number }>(rows: readonly T[]): Map<number, T> {
@@ -165,7 +169,10 @@ function characterDto(row: CharacterRow) {
   };
 }
 
-function animationDto(row: AnimationRow): AnimationDto & { key: string } {
+function animationDto(
+  row: AnimationRow,
+  replacedDurationMs: (file: string) => number | undefined,
+): AnimationDto & { key: string } {
   return {
     key: row.key,
     uploadId: null,
@@ -175,7 +182,7 @@ function animationDto(row: AnimationRow): AnimationDto & { key: string } {
     motion: row.motion ?? null,
     poster: assetUrl(row.poster),
     posterSprite: row.posterSprite ?? null,
-    durationMs: row.durationMs,
+    durationMs: (row.src === null ? undefined : replacedDurationMs(row.src)) ?? row.durationMs,
   };
 }
 
@@ -241,7 +248,7 @@ function toItemDto(row: CatalogItemRow, lib: Library): CatalogItemDto {
 
   let animation: AnimationDto | null = null;
   if (animationRow) {
-    animation = animationDto(animationRow);
+    animation = animationDto(animationRow, lib.replacedDurationMs);
   } else if (row.animationUploadId !== null) {
     animation = {
       key: null,
@@ -295,12 +302,13 @@ function sameValue(a: unknown, b: unknown): boolean {
 }
 
 export function createCatalogService(db: Db, deps: CatalogDeps): CatalogService {
-  const { audit, describeUpload, hasPurchases, clock = Date.now } = deps;
+  const { audit, describeUpload, hasPurchases, replacedDurationMs, clock = Date.now } = deps;
 
   const loadLibrary = (): Library => ({
     characters: byId(db.select().from(characters).all()),
     animations: byId(db.select().from(animations).all()),
     rooms: byId(db.select().from(rooms).all()),
+    replacedDurationMs: (file) => replacedDurationMs?.(file),
   });
 
   const findRow = (id: number): CatalogItemRow | undefined =>
@@ -521,7 +529,7 @@ export function createCatalogService(db: Db, deps: CatalogDeps): CatalogService 
           .from(animations)
           .orderBy(asc(animations.id))
           .all()
-          .map(animationDto),
+          .map((row) => animationDto(row, (file) => replacedDurationMs?.(file))),
         rooms: db.select().from(rooms).orderBy(asc(rooms.id)).all().map(roomDto),
       };
     },

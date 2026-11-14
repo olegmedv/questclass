@@ -29,6 +29,7 @@ import {
   type TabItem,
 } from '@questclass/ui';
 import { useMemo, useRef, useState } from 'react';
+import { useAssetDuration } from '../../features/appearance/queries';
 import { useHeroAnimation } from '../../features/animation/AnimationManager';
 import { HeroSettings, useHeroPreferences } from '../../features/character/HeroSettings';
 import {
@@ -99,7 +100,8 @@ function Fitting({ character }: { readonly character: CharacterDto }) {
   const dressing = useDressing(character.look, { motion: prefs.characterMotion && !reduced });
   const shown = dressing.shown;
   const art = shown ? lookArt(shown) : null;
-  const room = useMemo(() => roomOf(character.room), [character.room]);
+  const durationOf = useAssetDuration();
+  const room = useMemo(() => roomOf(character.room, durationOf), [character.room, durationOf]);
   const idle = dressing.phase === 'idle';
 
   const heroRef = useRef<HTMLElement>(null);

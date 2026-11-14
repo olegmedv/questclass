@@ -21,109 +21,13 @@ import {
 } from './helpers/client';
 import { quickAdmin, quickLearner } from './helpers/fastUsers';
 import { createTestRuntime, type TestRuntime } from './helpers/db';
+import { png, jpeg, webpStill, webpAnimation, frames, MIB, mp3, ogg } from './fixtures/images';
 
 const ASSETS = fileURLToPath(new URL('../../web/public/assets/', import.meta.url));
 const manifest = manifestJson as Record<
   string,
   { kind: string; w?: number; h?: number; animated?: boolean; frames?: number; durationMs?: number }
 >;
-
-// ---- fixtures: headers of real formats, built byte by byte ---------------------------------
-
-const bytes = (...parts: (number[] | Uint8Array | string)[]): Uint8Array => {
-  const arrays = parts.map((p) =>
-    typeof p === 'string'
-      ? new TextEncoder().encode(p)
-      : p instanceof Uint8Array
-        ? p
-        : Uint8Array.from(p),
-  );
-  const out = new Uint8Array(arrays.reduce((n, a) => n + a.length, 0));
-  let at = 0;
-  for (const a of arrays) {
-    out.set(a, at);
-    at += a.length;
-  }
-  return out;
-};
-const le32 = (n: number) => [n & 0xff, (n >>> 8) & 0xff, (n >>> 16) & 0xff, (n >>> 24) & 0xff];
-const le24 = (n: number) => [n & 0xff, (n >>> 8) & 0xff, (n >>> 16) & 0xff];
-const be32 = (n: number) => [(n >>> 24) & 0xff, (n >>> 16) & 0xff, (n >>> 8) & 0xff, n & 0xff];
-const be16 = (n: number) => [(n >>> 8) & 0xff, n & 0xff];
-
-function png(width: number, height: number, padding = 0): Uint8Array {
-  const ihdr = bytes(be32(width), be32(height), [8, 6, 0, 0, 0]);
-  return bytes(
-    [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
-    be32(13),
-    'IHDR',
-    ihdr,
-    [0, 0, 0, 0],
-    be32(padding),
-    'IDAT',
-    new Uint8Array(padding),
-    [0, 0, 0, 0],
-    be32(0),
-    'IEND',
-    [0xae, 0x42, 0x60, 0x82],
-  );
-}
-
-function jpeg(width: number, height: number): Uint8Array {
-  const app0 = bytes([0xff, 0xe0], be16(16), 'JFIF', [0, 1, 1, 0, 0, 1, 0, 1, 0, 0]);
-  const sof = bytes(
-    [0xff, 0xc0],
-    be16(17),
-    [8],
-    be16(height),
-    be16(width),
-    [3, 1, 0x22, 0, 2, 0x11, 1, 3, 0x11, 1],
-  );
-  return bytes([0xff, 0xd8], app0, sof, [0xff, 0xd9]);
-}
-
-const chunk = (fourcc: string, payload: Uint8Array): Uint8Array =>
-  bytes(fourcc, le32(payload.length), payload, payload.length % 2 ? [0] : []);
-const riff = (...chunks: Uint8Array[]): Uint8Array => {
-  const body = bytes('WEBP', ...chunks);
-  return bytes('RIFF', le32(body.length), body);
-};
-const vp8l = (width: number, height: number) => {
-  const bits = ((width - 1) & 0x3fff) | (((height - 1) & 0x3fff) << 14);
-  return chunk('VP8L', bytes([0x2f], le32(bits), [0, 0, 0]));
-};
-
-function webpStill(width: number, height: number): Uint8Array {
-  return riff(vp8l(width, height));
-}
-
-function webpAnimation(width: number, height: number, frameMs: readonly number[], padding = 0) {
-  const vp8x = chunk('VP8X', bytes([0x12, 0, 0, 0], le24(width - 1), le24(height - 1)));
-  const anim = chunk('ANIM', bytes([0, 0, 0, 0], [0, 0]));
-  const frames = frameMs.map((ms) =>
-    chunk(
-      'ANMF',
-      bytes(
-        le24(0),
-        le24(0),
-        le24(width - 1),
-        le24(height - 1),
-        le24(ms),
-        [0],
-        vp8l(width, height),
-      ),
-    ),
-  );
-  return riff(
-    vp8x,
-    anim,
-    ...frames,
-    ...(padding > 0 ? [chunk('XPAD', new Uint8Array(padding))] : []),
-  );
-}
-
-const frames = (n: number, ms = 100) => Array.from({ length: n }, () => ms);
-const MIB = 1024 * 1024;
 
 // ---- runtime -------------------------------------------------------------------------------
 
@@ -150,9 +54,13 @@ const ENV = {
 const cookieHeader = (client: TestClient) =>
   [...client.cookies].map(([k, v]) => `${k}=${v}`).join('; ');
 
-async function post(body: Uint8Array, client: TestClient = admin): Promise<Response> {
+async function post(
+  body: Uint8Array,
+  client: TestClient = admin,
+  path = '/api/admin/uploads',
+): Promise<Response> {
   return await createApp(runtime.ctx).app.request(
-    '/api/admin/uploads',
+    path,
     {
       method: 'POST',
       headers: { 'content-type': 'application/octet-stream', cookie: cookieHeader(client) },
@@ -362,5 +270,75 @@ describe('uploads in the catalog', () => {
     });
     expect(wrong.status).toBe(400);
     expect(await errorCode(wrong)).toBe('invalid_item');
+  });
+});
+
+describe('uploads that replace a built-in file (?for=)', () => {
+  const entry = (key: string) => {
+    const found = manifest[key];
+    if (!found) throw new Error(`Not in the manifest: ${key}`);
+    return found;
+  };
+  const SOUND = Object.keys(manifest).find(
+    (k) => k.startsWith('game/ui-audio/') && k.endsWith('.ogg'),
+  );
+  const ROOM = 'game/rooms/night-hotel/room_base.webp';
+  const MOVIE = 'celebrations/streak-five-v1.webp';
+  const forFile = (file: string) => `/api/admin/uploads?for=${encodeURIComponent(file)}`;
+
+  it('takes a sound only for a sound slot (MP3 or Ogg) and serves it back', async () => {
+    if (!SOUND) throw new Error('No built-in sound');
+    const plain = await post(mp3());
+    expect(plain.status).toBe(415);
+    expect(await errorCode(plain)).toBe('unsupported_type');
+
+    const res = await post(mp3(), admin, forFile(SOUND));
+    expect(res.status, await res.clone().text()).toBe(201);
+    const sound = (await res.json()) as CreatedUploadDto;
+    expect(sound).toMatchObject({
+      kind: 'audio',
+      mime: 'audio/mpeg',
+      width: null,
+      animated: false,
+    });
+    expect((await post(ogg(), admin, forFile(SOUND))).status).toBe(201);
+
+    const file = await admin.get(sound.url);
+    expect(file.status).toBe(200);
+    expect(file.headers.get('content-type')).toBe('audio/mpeg');
+    const list = (await (await admin.get('/api/admin/uploads')).json()) as UploadDto[];
+    expect(list.find((u) => u.id === sound.id)?.kind).toBe('audio');
+
+    // A picture for a sound slot and a sound for a picture slot are refused.
+    expect((await post(png(64, 64), admin, forFile(SOUND))).status).toBe(415);
+    expect((await post(mp3(), admin, forFile(ROOM))).status).toBe(415);
+    // The catalog never takes a sound for a picture.
+    expect(runtime.ctx.uploads.describe(sound.id)).toBeUndefined();
+    expect(runtime.ctx.uploads.slotKind(sound.id)).toBe('audio');
+  });
+
+  it('raises the limits to the built-in file it replaces', async () => {
+    const room = entry(ROOM);
+    const big = webpStill(room.w ?? 0, room.h ?? 0);
+    expect((await post(big)).status).toBe(422);
+    const replaced = await post(big, admin, forFile(ROOM));
+    expect(replaced.status, await replaced.clone().text()).toBe(201);
+    expect(runtime.ctx.uploads.slotKind(((await replaced.json()) as UploadDto).id)).toBe('image');
+
+    const movie = entry(MOVIE);
+    const long = webpAnimation(64, 64, frames(movie.frames ?? 0, 80));
+    expect((await post(long)).status).toBe(422);
+    const res = await post(long, admin, forFile(MOVIE));
+    expect(res.status, await res.clone().text()).toBe(201);
+    expect(runtime.ctx.uploads.slotKind(((await res.json()) as UploadDto).id)).toBe('animation');
+    // Still twice the built-in at most.
+    const huge = webpStill(4 * (room.w ?? 0), 64);
+    expect((await post(huge, admin, forFile(ROOM))).status).toBe(422);
+  });
+
+  it('refuses an unknown target', async () => {
+    const res = await post(png(32, 32), admin, forFile('game/nothing-here.webp'));
+    expect(res.status).toBe(400);
+    expect(await errorCode(res)).toBe('unknown_slot');
   });
 });

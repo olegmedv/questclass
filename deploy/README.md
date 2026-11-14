@@ -10,7 +10,7 @@
 | `/opt/questclass/docker-compose.yml` | копия `deploy/docker-compose.yml` |
 | `/opt/questclass/deploy.sh` | копия `deploy/deploy.sh` |
 | `/opt/questclass/current-tag`, `previous-tag` | какой образ запущен и на какой откатываться (пишет `deploy.sh`) |
-| `/opt/questclass/data/` | том приложения, владелец uid 1000, права 700: `questclass.db`, `master.key`, `media/`, `snapshots/` |
+| `/opt/questclass/data/` | том приложения, владелец uid 1000, права 700: `questclass.db`, `master.key`, `media/` (в том числе загрузки кабинета и замены встроенных файлов из «Оформления»), `snapshots/` |
 | `/opt/questclass/spike/` | остановленная проверка FEAT-050 (можно удалить) |
 
 Блок в `/opt/caddy/Caddyfile` (другой проект, правится только с бэкапом, через `cat … > Caddyfile`, чтобы сохранить inode, затем `caddy validate` и `caddy reload`):
@@ -21,6 +21,8 @@ questclass.duckdns.org {
     reverse_proxy questclass:8080
 }
 ```
+
+Встроенные файлы игры (`/assets/...`) раздаёт Node, а не Caddy: файл, заменённый в «Оформлении», отдаётся по тому же адресу; для `/assets` — `Cache-Control: no-cache` + ETag, поэтому замена видна при следующей загрузке страницы. Кэшировать `/assets` в Caddy нельзя.
 
 Контейнер: сеть `shared_web` (172.21.0.0/16, входит в доверенные прокси по умолчанию — настройка `http.trustedProxies`), `mem_limit: 256m`, логи json-file 10m × 3, `restart: unless-stopped`.
 

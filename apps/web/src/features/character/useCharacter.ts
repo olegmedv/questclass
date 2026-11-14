@@ -14,6 +14,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useCallback, useRef, useState } from 'react';
 import { api } from '../../api/client';
+import type { AssetDuration } from '../appearance/queries';
 import { browserFormat, type AudioFormat } from '../sound/SoundManager';
 
 export const characterKeys = { character: ['me', 'character'] as const };
@@ -72,12 +73,18 @@ export function sceneAssetUrls(
   assets: SceneAssets | null,
   motion: string | null,
   format: AudioFormat = browserFormat(),
+  durationOf: AssetDuration = () => undefined,
 ): RoomSceneAssets {
   const sound = (key: string) => `/assets/${format === 'mp3' ? key.replace(/.ogg$/, '.mp3') : key}`;
+  const layers = Object.entries(assets?.layers ?? {});
+  // A clip the admin replaced keeps the room busy for its own length.
+  const durations = layers.flatMap(([name, key]) => {
+    const ms = durationOf(key);
+    return ms === undefined ? [] : [[name, ms] as const];
+  });
   return {
-    layers: Object.fromEntries(
-      Object.entries(assets?.layers ?? {}).map(([name, key]) => [name, `/assets/${key}`]),
-    ),
+    layers: Object.fromEntries(layers.map(([name, key]) => [name, `/assets/${key}`])),
+    ...(durations.length > 0 && { layerDurations: Object.fromEntries(durations) }),
     ambient: (assets?.audio?.ambient ?? []).map(sound),
     events: (assets?.audio?.events ?? []).map(sound),
     motion,
@@ -85,7 +92,10 @@ export function sceneAssetUrls(
 }
 
 /** The room of a wardrobe entry as the scene needs it (null without art). */
-export function roomOf(room: OwnedItemDto | null): (SceneRoom & { readonly thumb: string }) | null {
+export function roomOf(
+  room: OwnedItemDto | null,
+  durationOf?: AssetDuration,
+): (SceneRoom & { readonly thumb: string }) | null {
   if (!room?.room?.image) return null;
   return {
     image: room.room.image,
@@ -93,7 +103,12 @@ export function roomOf(room: OwnedItemDto | null): (SceneRoom & { readonly thumb
     title: room.title,
     footAnchor: room.room.footAnchor,
     scene: room.room.scene,
-    assets: sceneAssetUrls(room.room.sceneAssets, room.animation?.src ?? null),
+    assets: sceneAssetUrls(
+      room.room.sceneAssets,
+      room.animation?.src ?? null,
+      browserFormat(),
+      durationOf,
+    ),
   };
 }
 

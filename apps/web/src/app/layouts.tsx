@@ -7,6 +7,7 @@ import {
   House,
   ListChecks,
   Settings,
+  Palette,
   Shapes,
   ShoppingBag,
   TabletSmartphone,
@@ -69,6 +70,12 @@ export const ADMIN_SECTIONS: readonly AdminSection[] = [
     label: 'История',
     href: '/admin/history',
     icon: <History aria-hidden="true" />,
+  },
+  {
+    id: 'appearance',
+    label: 'Оформление',
+    href: '/admin/appearance',
+    icon: <Palette aria-hidden="true" />,
   },
   {
     id: 'settings',

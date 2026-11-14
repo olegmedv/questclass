@@ -5,7 +5,7 @@ export const MEDIA_ROLES = ['video', 'question_image', 'upload'] as const;
 /** What the media is for. Retention (FEAT-022) deletes only `video`; the rest is backed up. */
 export type MediaRole = (typeof MEDIA_ROLES)[number];
 
-export const MEDIA_KINDS = ['hls', 'mp4', 'image'] as const;
+export const MEDIA_KINDS = ['hls', 'mp4', 'image', 'audio'] as const;
 export type MediaKind = (typeof MEDIA_KINDS)[number];
 
 export const MEDIA_STATUSES = ['pending', 'uploading', 'ready', 'deleted'] as const;

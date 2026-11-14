@@ -4,7 +4,9 @@ import type { PurchaseSnapshot } from '@questclass/shared/shop/dto';
 import { LiveRoomPreview } from '@questclass/ui';
 import { useMemo, useRef } from 'react';
 import { useHeroAnimation } from '../animation/AnimationManager';
+import { useAssetDuration } from '../appearance/queries';
 import { sceneAssetUrls } from '../character/useCharacter';
+import { browserFormat } from '../sound/SoundManager';
 
 type RoomArt = NonNullable<PurchaseSnapshot['room']>;
 
@@ -19,15 +21,16 @@ export function RoomPreview({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const playback = useHeroAnimation(ref, 'on-demand');
+  const durationOf = useAssetDuration();
   const scene = useMemo(
     () => ({
       image: room.image,
       title,
       footAnchor: room.footAnchor,
       scene: room.scene,
-      assets: sceneAssetUrls(room.sceneAssets, animation?.src ?? null),
+      assets: sceneAssetUrls(room.sceneAssets, animation?.src ?? null, browserFormat(), durationOf),
     }),
-    [room, animation, title],
+    [room, animation, title, durationOf],
   );
   return (
     <LiveRoomPreview

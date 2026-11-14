@@ -102,7 +102,10 @@ export function createWatchService(db: Db, deps: WatchDeps): WatchService {
     if (row?.status === 'deleted') {
       throw gone();
     }
-    if (!row || row.status !== 'ready' || row.kind === 'image' || !row.durationSec) {
+    if (!row || row.status !== 'ready' || !row.durationSec) {
+      throw videoNotReady();
+    }
+    if (row.kind !== 'hls' && row.kind !== 'mp4') {
       throw videoNotReady();
     }
     return { media: row, kind: row.kind, durationSec: row.durationSec };

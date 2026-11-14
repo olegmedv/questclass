@@ -174,6 +174,11 @@
   --q-admin-width: 1200px;
   --q-nav-height: 88px;
 
+  /* Square pictures: subject icons in lists, tiles of an icon picker, a big preview. */
+  --q-icon-sm: 40px;
+  --q-icon-md: 64px;
+  --q-icon-lg: 96px;
+
   /* Motion */
   --q-duration-fast: 150ms;
   --q-duration: 260ms;

@@ -3,8 +3,9 @@
 import { Button, Celebration, Inline, Play, StreakCard, Text } from '@questclass/ui';
 import type { StreakDto } from '@questclass/shared/progress/dto';
 import { useState } from 'react';
+import { useAssetDuration } from '../appearance/queries';
 import { useSound } from '../sound/useSound';
-import { STREAK_MOVIE } from '../tasks/assets';
+import { STREAK_MOVIE, STREAK_MOVIE_FILE } from '../tasks/assets';
 import { useWallet } from '../wallet/queries';
 import { useStreak } from './queries';
 
@@ -46,6 +47,8 @@ export function StreakPanel() {
   const streak = useStreak();
   const wallet = useWallet();
   const sound = useSound();
+  // A movie the admin replaced plays for its own length.
+  const durationOf = useAssetDuration();
   const [expanded, setExpanded] = useState(readExpanded);
   const [preview, setPreview] = useState(false);
   // The streak is a bonus on the home: if it cannot load, the lessons still can.
@@ -95,7 +98,11 @@ export function StreakPanel() {
           coins: (wallet.data?.coins ?? 0) + reward.coins,
           xp: (wallet.data?.xp ?? 0) + reward.xp,
         }}
-        movie={{ ...STREAK_MOVIE, audio: `/assets/celebrations/streak-five-v1.${sound.format}` }}
+        movie={{
+          ...STREAK_MOVIE,
+          durationMs: durationOf(STREAK_MOVIE_FILE) ?? STREAK_MOVIE.durationMs,
+          audio: `/assets/celebrations/streak-five-v1.${sound.format}`,
+        }}
         volume={sound.preferences.volume}
         onReward={() => sound.play('complete')}
       />

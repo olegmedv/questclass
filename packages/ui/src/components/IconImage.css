@@ -1,0 +1,34 @@
+.qc-icon-image {
+  display: block;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+/* Two classes deep: wins over the containers' `… img` rules (tiles, lesson card). */
+.qc-icon-image[data-size='fill'] {
+  width: 100%;
+  height: 100%;
+}
+
+.qc-icon-image[data-size='sm'] {
+  width: var(--q-icon-sm);
+  height: var(--q-icon-sm);
+}
+
+.qc-icon-image[data-size='md'] {
+  width: var(--q-icon-md);
+  height: var(--q-icon-md);
+}
+
+.qc-icon-image[data-size='lg'] {
+  width: var(--q-icon-lg);
+  height: var(--q-icon-lg);
+}
+
+.qc-icon-image[data-pixelated] {
+  image-rendering: pixelated;
+}
+
+.qc-icon-image:not([data-pixelated]) {
+  image-rendering: auto;
+}

@@ -9,7 +9,7 @@ import type {
   TaskProgressDto,
 } from '@questclass/shared/progress/dto';
 import type { LearnerTaskDto, SubjectDto } from '@questclass/shared/tasks/dto';
-import { screen, within } from '@testing-library/react';
+import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { STREAK_EXPANDED_KEY } from '../src/features/streak/StreakPanel';
@@ -28,6 +28,7 @@ const subjects: SubjectDto[] = [
     key: 'russian',
     name: 'Русский язык',
     icon: 'game/subjects-pixel/russian',
+    iconUploadId: null,
     sort: 1,
     archived: false,
   },
@@ -36,10 +37,11 @@ const subjects: SubjectDto[] = [
     key: 'math',
     name: 'Математика',
     icon: 'game/subjects-pixel/math',
+    iconUploadId: null,
     sort: 2,
     archived: false,
   },
-  { id: 3, key: 'own', name: 'Шахматы', icon: null, sort: 3, archived: false },
+  { id: 3, key: 'own', name: 'Шахматы', icon: null, iconUploadId: null, sort: 3, archived: false },
 ];
 
 function task(id: number, patch: Partial<LearnerTaskDto> = {}): LearnerTaskDto {
@@ -209,6 +211,26 @@ describe('learner home', () => {
     );
     const dialog = await screen.findByRole('dialog');
     expect(within(dialog).getByText('ПРЕДПРОСМОТР')).toBeInTheDocument();
+  });
+
+  it('a streak movie the admin replaced plays for its own length', async () => {
+    localStorage.setItem(STREAK_EXPANDED_KEY, '1');
+    mockApi({
+      ...homeApi([], []),
+      'GET /api/appearance': {
+        body: { files: { 'celebrations/streak-five-v1.webp': { version: 7, durationMs: 300 } } },
+      },
+    });
+    renderRoute('/');
+    const panel = await screen.findByRole('region', { name: 'Серия занятий' });
+    await userEvent.click(
+      within(panel).getByRole('button', { name: 'Предпросмотр награды за серию' }),
+    );
+    const dialog = await screen.findByRole('dialog');
+    // The built-in movie lasts 10 s; the replacement — 0.3 s.
+    await waitFor(() => expect(dialog.querySelector('[data-phase="rewards"]')).not.toBeNull(), {
+      timeout: 2000,
+    });
   });
 
   it('remembers an expanded streak card on this device', async () => {

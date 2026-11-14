@@ -219,6 +219,7 @@ describe('/admin/shop', () => {
       id: 12,
       url: '/api/uploads/12',
       mime: 'image/png',
+      kind: 'image',
       sizeBytes: 2048,
       animated: false,
       durationMs: null,

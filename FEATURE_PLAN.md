@@ -3,8 +3,8 @@
 Generated: 2026-11-14. Description: "MVP (Этап 1) КвестКласс 2 по docs/SPEC.md §9 с учётом §1–§8; поведение — docs/spec/01 и 02 (только пункты MVP); визуал — docs/reference-screens/. Репозиторий пустой — план с нуля: каркас, дизайн-система, auth, задания с плагинами типов, импорт видео, плеер, прогресс с ручным управлением админом, экономика, магазин, герой, админка, настройки с секретами, сид 5 уроков, деплой на общий Caddy немецкого VPS. Ограничение: ≤200 МБ RAM." Source CLAUDE.md: `CLAUDE.md`.
 
 ## Summary
-- Total items: 56
-- Pending: 0 | Done: 55 (FEAT-001–FEAT-046, FEAT-048–FEAT-056; FEAT-046 с оговоркой про GHCR-токен; FEAT-050 условно — нет замера из Калининграда) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
+- Total items: 61
+- Pending: 0 | Done: 60 (FEAT-001–FEAT-046, FEAT-048–FEAT-061; FEAT-046 с оговоркой про GHCR-токен; FEAT-050 условно — нет замера из Калининграда) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
 - Items requiring user decision: 1 — FEAT-047 (где хранить бэкапы), после MVP. Открытый вопрос из FEAT-041: должен ли сброс прогресса требовать пересмотра видео (сейчас нет).
 - Critic iterations: 3 (+ патч после вердикта)
 - Critic verdict: halted at max iterations; HIGH и MED третьего круга закрыты патчем после вердикта (повторно не критиковались), 11 LOW — известные риски
@@ -1432,6 +1432,114 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Ночью `docker exec questclass node dist/cli.js backup` → БД + все файлы `media`, кроме `role=video` (картинки вопросов и загрузки); список берётся из таблицы `media`. Тест восстановления проверяет картинку вопроса. Архив шифруется (`age`, публичный ключ получателя) и уходит во второе место; хранится 14 копий. Видео не копируются, их бэкап — YouTube.
   - `master.key` **не** входит в архив. При первом деплое админ сохраняет его офлайн; копия, зашифрованная другим ключом, лежит во втором месте.
   - Восстановление по `restore.md` проверено на чистой машине. Выполняется сразу после FEAT-046, до реального использования.
+
+### Фаза F — всё оформление меняется из кабинета (запрос пользователя 14.11.2026)
+
+Запрос: «значки предметов слишком большие, где выбор значка?»; «пройдись по коду: встроенной картинки без возможности перезаписать или выбрать быть не должно — кабинет универсальный, всё настраивается без правки кода». Инвентаризация (агент, 14.11.2026): из кабинета не менялись логотип и favicon, стартовый герой главной, ролик/постер/звук серии, звуки интерфейса, запасной значок Robux, слои и звуки «Ночного отеля», Astro и Rebound; герои, комнаты и билетики менялись только через товар.
+
+Решение: значок предмета — встроенный или своя загрузка (FEAT-057); для всего остального — общий механизм «замена встроенного файла»: любой файл манифеста (`/assets/...`) админ заменяет своей загрузкой или возвращает встроенный (FEAT-058…FEAT-061). Потребители не меняются: сервер отдаёт замену по тому же адресу.
+
+### FEAT-057 — Значок предмета: встроенный или своя загрузка, фиксированный размер
+- **Status**: done
+- **Completed**: 2026-11-15
+- **Notes**:
+  - Причина «огромных» значков: `SubjectIcon` выводил `<img>` без размера — в таблице админки картинка 256 × 256 в натуральную величину. Теперь `IconImage` (`fill` в плитках и карточке урока, `sm` = 40 px в таблице); токены `--q-icon-sm/md/lg`.
+  - Выбор значка был выпадающим списком из 6 имён файлов манифеста без загрузки — теперь `IconPicker` (радиогруппа плиток): «без значка», встроенные, все неанимированные загрузки кабинета, кнопка «Загрузить свою картинку» (загруженная сразу выбрана; анимацию для значка не берёт).
+  - API: `subjects.icon_upload_id` (миграция 0019, FK `media` ON DELETE RESTRICT), `SubjectDto.iconUploadId`; схемы create/update запрещают оба значка сразу; выбор одного сбрасывает другой; загрузка проверяется через `uploads.describe` (нет / анимация → 400 `invalid_icon`); audit `subject.updated` с `iconUploadId`. Ученик получает файл через `/api/uploads/:id`.
+  - Тесты: `apps/api/test/subject-icons.test.ts` (4), сборщики PNG/WebP вынесены в `apps/api/test/fixtures/images.ts`, `TestClient.request` умеет `bytes`; web — выбор встроенного и загруженного (2); галерея `/dev/ui` — раздел `icon-picker`, базы Docker. Проверено вживую на демо: загрузка → сохранение → в таблице `/api/uploads/8` → возврат встроенного.
+- **Risk**: LOW
+- **Requires decision**: N
+- **Spec reference**: PLACEHOLDERS P-003 («выбрать значок из манифеста или загрузить свой»); жалоба пользователя на размер и отсутствие выбора.
+- **Rule**: CLAUDE.md 1, 2 (миграция расширяющая), 8 (новые компоненты в `packages/ui` и `/dev/ui`)
+- **Scope**:
+  - `apps/api/src/db/schema/subjects.ts`, `apps/api/src/db/migrations/0019_subject_icon_upload.sql`, `apps/api/src/modules/subjects/service.ts`, `apps/api/src/startup.ts`, `packages/shared/src/tasks/dto.ts`
+  - `packages/ui/src/components/{IconImage,IconPicker}.{tsx,css}`, `packages/ui/src/{tokens.css,index.ts,icons.ts}`, `apps/web/src/features/tasks/SubjectIcon.tsx`, `apps/web/src/screens/admin/Subjects.tsx`, `apps/web/src/screens/dev/{adminGallery.tsx,UiGallery.tsx}`
+  - тесты: `apps/api/test/{subject-icons.test.ts,fixtures/images.ts,helpers/client.ts,uploads.test.ts}`, `apps/web/test/{admin-tasks,home}.test.tsx`, `e2e/ui-gallery.spec.ts`
+- **Depends on**: FEAT-022 (загрузки), FEAT-040
+- **DoD**:
+  - `subjects.icon_upload_id` (FK `media`, RESTRICT); у предмета не больше одного значка; загрузка — готовая неанимированная картинка, иначе 400 `invalid_icon` (тесты API).
+  - Диалог предмета: сетка плиток «без значка / встроенные / загруженные» + «Загрузить свою картинку»; в таблице значок 40 px (токен `--q-icon-sm`) (тест web + проверка вживую).
+  - `IconImage`, `IconPicker` в галерее `/dev/ui` в пяти состояниях (e2e-база из Docker).
+
+### FEAT-058 — Загрузки: звук (MP3/OGG) и лимиты по месту назначения
+- **Status**: done
+- **Completed**: 2026-11-15
+- **Notes**:
+  - Места замены — `packages/shared/src/assets/slots.ts` (`ASSET_SLOTS`, `assetSlot`, `assetSlotOfFile`, `ASSET_GROUPS`): все картинки, анимации и звуки манифеста (пара OGG+MP3 — одно место с ключом `.mp3`; шрифты и тексты — нет); перенесено сюда из FEAT-059, потому что `?for=` проверяет место уже при загрузке.
+  - `POST /api/admin/uploads?for=<файл>`: `uploadLimits(slot)` — не ниже общих и до двух встроенных (байты, стороны до 4096), кадры и длительность — не меньше встроенных; тело запроса до 20 МБ. Звук (`audio.ts`: ID3 / кадровая синхронизация MPEG / `OggS`, без декодирования) — только для звукового места; картинка для звукового места и звук без места — 415; неизвестное место — 400 `unknown_slot`. `media.kind = audio`, `.mp3`/`.ogg` в медиа-каталоге и в `/api/uploads/:id`.
+  - `UploadDto.kind`, `uploads.slotKind(id)` (image / animation / audio) для FEAT-059; `describe` для звука — undefined (каталог звук не возьмёт). Выбор картинок (товары, значки предметов) показывает только `kind = image`.
+  - Тесты: 3 в `uploads.test.ts` (звук только для места и отдаётся обратно; лимиты по встроенному: комната 1536 × 1024, ролик 121 кадр; неизвестное место), 3 в `packages/shared/test/slots.test.ts`, web — звук не предлагается значком. Всего 933.
+- **Risk**: MED
+- **Requires decision**: N
+- **Spec reference**: инвентаризация — звуков нельзя загрузить вообще; встроенные комнаты (1536 × 1024) и ролик серии (6 МБ, 121 кадр) больше общих лимитов загрузки.
+- **Rule**: CLAUDE.md 13 (только разбор заголовков, без перекодирования)
+- **Scope**:
+  - `apps/api/src/modules/uploads/{service.ts,routes.ts,webp.ts}` (+ разбор MP3/OGG), `apps/web/src/features/admin-shop/{queries.ts,UploadField.tsx}`, `apps/web/src/screens/admin/Subjects.tsx` (только картинки в выборе), тесты `apps/api/test/uploads.test.ts`
+- **Depends on**: FEAT-057
+- **DoD**:
+  - `POST /api/admin/uploads?for=<ключ файла манифеста>`: лимиты не ниже встроенного файла этого места (сторона, байты, кадры, длительность); без `for` — прежние лимиты. Звук (MP3 или OGG) принимается только с `for` звукового места (тесты).
+  - `UploadDto.kind: image | audio`; выбор картинок для товаров и предметов не показывает звуки (тесты).
+
+### FEAT-059 — Замена встроенных файлов: таблица, API, раздача по тому же адресу
+- **Status**: done
+- **Completed**: 2026-11-15
+- **Notes**:
+  - Таблица `asset_overrides` (миграция 0020, FK `media` и `users` ON DELETE RESTRICT): одна строка — одна замена; «вернуть встроенный» удаляет строку, история — в audit (`asset.replaced` с прежней загрузкой, `asset.restored`).
+  - `AppearanceService` (`modules/appearance`): `list` (все места + замена), `replace` (вид загрузки = вид места, иначе 400 `wrong_kind`; нет загрузки — 400 `invalid_upload`; нет места — 404), `restore`, `current` (публичные версии и длительности), `replacementOf(file)`, `durationOf(file)`. Строки читаются один раз и перечитываются после изменения (один процесс; чтение не пишет).
+  - REST: `GET /api/admin/appearance`, `PUT|DELETE /api/admin/appearance/<место>` (admin), `GET /api/appearance` и `GET /api/appearance/files/<файл>` (public — логотип и favicon видны до входа). Матрица доступа — 5 строк.
+  - Раздача: `/assets/<файл>` отдаёт замену по тому же адресу (тип — по самой замене; пара звуков — по обоим адресам), иначе встроенный файл. Для `/assets` — `Cache-Control: no-cache` + ETag (`W/"b<размер>-<время>"` / `"r<загрузка>"`), `If-Modified-Since` не используется: замена и возврат видны при следующей загрузке. Потребители (каталог, сцены комнат, звуки, `index.html`) не менялись.
+  - Разработка: плагин Vite `apps/web/vite-replaced-assets.ts` (dev и preview) берёт заменённые файлы из API; в образ не попадает.
+  - Тесты: `appearance.test.ts` (5: логотип — замена по тому же адресу, 304 по ETag, возврат; звук — оба адреса; ролик — длительность в публичном списке; отказы; список), `static.test.ts` (ETag вместо Last-Modified для /assets), матрица доступа. Всего 945.
+- **Risk**: MED
+- **Requires decision**: N
+- **Spec reference**: запрос пользователя «всё настраивается без правки кода».
+- **Rule**: CLAUDE.md 1 (одна замена — одна строка), 2 (чтение не пишет; миграция расширяющая), 3 (REST), 11 (роли), 16
+- **Scope**:
+  - `apps/api/src/db/schema/assetOverrides.ts` + миграция, `apps/api/src/modules/appearance/{service,routes}.ts`, `apps/api/src/static.ts`, `apps/api/src/startup.ts`, `apps/api/src/app.ts`, `packages/shared/src/assets/slots.ts` (места = файлы манифеста, пара OGG+MP3 — одно место; группы с русскими названиями по префиксу пути)
+  - тесты `apps/api/test/appearance.test.ts`, `apps/api/test/static.test.ts`, `apps/api/test/access-matrix.test.ts`
+- **Depends on**: FEAT-058
+- **DoD**:
+  - `asset_overrides(slot PK, upload_id FK media RESTRICT, updated_at, updated_by)`; `GET /api/admin/appearance` (места, встроенные параметры, замена), `PUT /api/admin/appearance/<slot> {uploadId}` (тип совпадает: картинка/анимация/звук), `DELETE` — вернуть встроенный; audit (тесты).
+  - `/assets/<файл>` отдаёт замену, если она есть (для пары звуков — по обоим адресам), иначе встроенный файл; для `/assets` — `Cache-Control: no-cache` + ETag (замена и возврат видны при следующей загрузке, без 304 со старой картинкой) (тесты).
+  - `GET /api/appearance` (без входа: логотип на экране входа) — версии и длительности заменённых файлов (тест).
+
+### FEAT-060 — Длительности анимаций с учётом замены
+- **Status**: done
+- **Completed**: 2026-11-15
+- **Notes**:
+  - Web: `features/appearance/queries.ts` — `useAppearance()` (публичный `/api/appearance`, кэш 60 с) и `useAssetDuration()` (замена, иначе манифест). Ролик серии берёт длительность через хук; `sceneAssetUrls`/`roomOf` получают `durationOf` и передают сцене `layerDurations`; «Ночной отель» берёт длительность слоя из них, иначе свою (`NIGHT_HOTEL_EVENTS` — значения совпадают с манифестом).
+  - API: каталог (товары и библиотека) отдаёт длительность заменённой анимации героя (`replacedDurationMs` ← `appearance.durationOf`).
+  - Длительность заменённого звука не измеряется (сервер не декодирует): «занятость» комнаты звуком остаётся встроенной — на вид не влияет.
+  - Тесты: web — ролик серии с заменой 0,3 с переходит к наградам (проверено, что с 30 с тест падает), `scene-durations.test.ts` (2); API — длительность в библиотеке каталога. Всего 948.
+- **Risk**: LOW
+- **Requires decision**: N
+- **Spec reference**: ролик серии и живые герои зависят от длительности анимации.
+- **Rule**: CLAUDE.md 10, 16
+- **Scope**:
+  - `apps/web/src/features/tasks/assets.ts`, `apps/web/src/features/streak/StreakPanel.tsx`, `apps/web/src/app/providers.tsx`, `apps/api/src/modules/catalog/service.ts` (длительность библиотечной анимации)
+- **Depends on**: FEAT-059
+- **DoD**:
+  - Заменённая анимация (ролик серии, анимация героя) играет свою длительность, а не встроенную (тесты web и API).
+
+### FEAT-061 — Экран «Оформление» в кабинете
+- **Status**: done
+- **Completed**: 2026-11-15
+- **Notes**:
+  - `/admin/appearance` (пункт меню «Оформление», значок `Palette`): 247 файлов по 14 группам в аккордеоне; поиск по имени и группе и фильтр «Заменённые» показывают плоскую сетку. Карточка — превью (`/assets/…?v=<загрузка>`), размеры встроенного, бейдж «Своя». Окно файла: «Сейчас: своя/встроенный», «Загрузить свой файл» (`?for=` — лимиты места; звук — MP3/OGG), «Или выберите загруженный раньше» (один логотип на все размеры иконки; только подходящего вида), «Вернуть встроенный». Новых визуальных элементов нет — только компоненты `packages/ui`.
+  - Плагин Vite берёт адрес API из прокси `/api` своего сервера (dev, e2e, демо); URL с `?v=` идёт в API сразу.
+  - Проверено вживую на демо: замена логотипа видна в шапке после обновления, возврат отдаёт встроенный PNG; на 390 px без горизонтальной прокрутки.
+  - Тесты: `apps/web/test/admin-appearance.test.tsx` (3), `e2e/admin-appearance.spec.ts` (замена логотипа → тот же адрес отдаёт WebP, шапка 256 px → возврат → PNG 192 px; база `admin-appearance` из Docker). Юнит-тестов 950.
+  - Раздел есть на главной кабинета («Все разделы» с подписью) и в поиске действий («логотип», «звук», «картинка»…). Базы `admin-home` пересняты в Docker; полный e2e — 102 зелёных.
+- **Risk**: MED
+- **Requires decision**: N
+- **Spec reference**: запрос пользователя.
+- **Rule**: CLAUDE.md 8, 15
+- **Scope**:
+  - `apps/web/src/screens/admin/Appearance.tsx`, `apps/web/src/features/appearance/*`, `apps/web/src/app/{router.tsx,layouts.tsx}`, `packages/ui` (если нужен новый элемент — сначала туда и в галерею), тесты `apps/web/test/admin-appearance.test.tsx`, `e2e/admin-appearance.spec.ts`
+- **Depends on**: FEAT-059, FEAT-060
+- **DoD**:
+  - Раздел «Оформление»: группы (логотип и значки, герои, анимации, комнаты, «Ночной отель», звуки, праздники, билетики…), поиск; у каждого файла — превью (картинка/анимация/прослушать), размеры встроенного, «Своя»/«Встроенная», «Заменить» (загрузка с лимитами места), «Вернуть встроенную» (тесты web).
+  - e2e: замена логотипа видна на экране входа и в шапке, возврат возвращает встроенный (Docker-база).
 
 ## Iteration history
 

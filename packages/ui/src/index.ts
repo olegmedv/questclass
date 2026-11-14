@@ -84,6 +84,8 @@ export {
 } from './components/Field';
 export { FileInput, type FileInputProps } from './components/FileInput';
 export { ItemCard, type ItemCardProps } from './components/ItemCard';
+export { IconImage, type IconImageProps, type IconImageSize } from './components/IconImage';
+export { IconPicker, type IconPickerOption, type IconPickerProps } from './components/IconPicker';
 export { Container, Grid, Inline, Stack, type Gap } from './components/Layout';
 export { LessonCard, type LessonCardProps } from './components/LessonCard';
 export { UiLink, UiLinkProvider, type UiLinkProps } from './components/Link';

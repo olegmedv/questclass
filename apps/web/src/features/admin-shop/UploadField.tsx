@@ -25,7 +25,9 @@ export interface UploadFieldProps {
 export function UploadField({ label, animated, value, onChange }: UploadFieldProps) {
   const uploads = useUploads();
   const upload = useUploadPicture();
-  const fitting = (uploads.data ?? []).filter((item) => item.animated === animated);
+  const fitting = (uploads.data ?? []).filter(
+    (item) => item.kind === 'image' && item.animated === animated,
+  );
   const current = uploads.data?.find((item) => item.id === value) ?? null;
   return (
     <Stack gap="sm">

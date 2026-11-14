@@ -9,8 +9,9 @@ import { z } from 'zod';
 import type { Db } from '../../db/client';
 import { isForeignKeyViolation, isUniqueViolation } from '../../db/constraints';
 import type { SubjectRow } from '../../db/schema/subjects';
-import { conflict, notFound } from '../../http/errors';
+import { badRequest, conflict, notFound } from '../../http/errors';
 import { auditPayload, defineAuditAction, type AuditService } from '../audit/service';
+import type { UploadInfo } from '../catalog/service';
 import { createSubjectsRepo } from './repo';
 
 export const subjectCreated = defineAuditAction(
@@ -23,6 +24,7 @@ export const subjectUpdated = defineAuditAction(
     changed: z.array(z.string()),
     name: z.string().optional(),
     icon: z.string().nullable().optional(),
+    iconUploadId: z.number().nullable().optional(),
     sort: z.number().optional(),
     archived: z.boolean().optional(),
   }),
@@ -52,6 +54,7 @@ export function toSubjectDto(row: SubjectRow): SubjectDto {
     key: row.key,
     name: row.name,
     icon: row.icon,
+    iconUploadId: row.iconUploadId,
     sort: row.sort,
     archived: row.archivedAt !== null,
   };
@@ -71,12 +74,30 @@ function translateUnique(err: unknown): never {
 /** Key for a subject the admin created without one: `s-` + 8 random hex digits. */
 const generatedKey = (): string => `s-${randomBytes(4).toString('hex')}`;
 
-export function createSubjectsService(
-  db: Db,
-  deps: { audit: AuditService; clock?: () => number },
-): SubjectsService {
-  const { audit, clock = Date.now } = deps;
+export interface SubjectsDeps {
+  readonly audit: AuditService;
+  /** Facts of an admin upload (the uploads service); undefined when there is no such upload. */
+  readonly describeUpload?: (mediaId: number) => UploadInfo | undefined;
+  readonly clock?: () => number;
+}
+
+export function createSubjectsService(db: Db, deps: SubjectsDeps): SubjectsService {
+  const { audit, describeUpload, clock = Date.now } = deps;
   const repo = createSubjectsRepo(db);
+
+  /** An uploaded icon must be a ready still picture: an animation would not fit a small tile. */
+  const checkIconUpload = (id: number | null | undefined): void => {
+    if (id === null || id === undefined) {
+      return;
+    }
+    const info = describeUpload?.(id);
+    if (!info) {
+      throw badRequest('invalid_icon', 'Картинка для значка не найдена');
+    }
+    if (info.animated) {
+      throw badRequest('invalid_icon', 'Для значка нужна обычная картинка, не анимация');
+    }
+  };
 
   const requireRow = (id: number): SubjectRow => {
     const row = repo.findById(id);
@@ -95,6 +116,7 @@ export function createSubjectsService(
 
     create(input, actorId) {
       const now = clock();
+      checkIconUpload(input.iconUploadId);
       return db.transaction(() => {
         let row: SubjectRow;
         try {
@@ -103,6 +125,7 @@ export function createSubjectsService(
             name: input.name,
             nameKey: subjectNameKey(input.name),
             icon: input.icon ?? null,
+            iconUploadId: input.iconUploadId ?? null,
             sort: input.sort ?? repo.maxSort() + SORT_STEP,
             createdAt: now,
             updatedAt: now,
@@ -118,6 +141,7 @@ export function createSubjectsService(
 
     update(id, patch, actorId) {
       const now = clock();
+      checkIconUpload(patch.iconUploadId);
       return db.transaction(() => {
         const current = requireRow(id);
         const set: Partial<SubjectRow> = {};
@@ -127,9 +151,24 @@ export function createSubjectsService(
           set.nameKey = subjectNameKey(patch.name);
           changed.push('name');
         }
-        if (patch.icon !== undefined && patch.icon !== current.icon) {
-          set.icon = patch.icon;
+        // One icon at a time: choosing a built-in one drops the upload and the other way round.
+        let icon = current.icon;
+        let iconUploadId = current.iconUploadId;
+        if (patch.icon !== undefined) {
+          icon = patch.icon;
+          if (patch.icon !== null) iconUploadId = null;
+        }
+        if (patch.iconUploadId !== undefined) {
+          iconUploadId = patch.iconUploadId;
+          if (patch.iconUploadId !== null) icon = null;
+        }
+        if (icon !== current.icon) {
+          set.icon = icon;
           changed.push('icon');
+        }
+        if (iconUploadId !== current.iconUploadId) {
+          set.iconUploadId = iconUploadId;
+          changed.push('iconUploadId');
         }
         if (patch.sort !== undefined && patch.sort !== current.sort) {
           set.sort = patch.sort;
@@ -152,6 +191,7 @@ export function createSubjectsService(
           changed,
           ...(set.name !== undefined && { name: set.name }),
           ...(set.icon !== undefined && { icon: set.icon }),
+          ...(set.iconUploadId !== undefined && { iconUploadId: set.iconUploadId }),
           ...(set.sort !== undefined && { sort: set.sort }),
           ...(set.archivedAt !== undefined && { archived: set.archivedAt !== null }),
         });

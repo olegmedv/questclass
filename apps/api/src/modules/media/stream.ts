@@ -14,6 +14,8 @@ const CONTENT_TYPES: Readonly<Record<MediaExtension, string>> = {
   '.webp': 'image/webp',
   '.png': 'image/png',
   '.jpg': 'image/jpeg',
+  '.mp3': 'audio/mpeg',
+  '.ogg': 'audio/ogg',
   '.vtt': 'text/vtt; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
 };

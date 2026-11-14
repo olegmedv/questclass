@@ -62,6 +62,13 @@ const ACTIONS: readonly SearchEntry[] = [
     keywords: 'субтитры полоса видео',
   },
   {
+    id: 'appearance',
+    title: 'Заменить картинку, логотип или звук',
+    trail: ['Оформление'],
+    href: '/admin/appearance',
+    keywords: 'оформление логотип иконка значок картинка анимация звук фон комната герой заменить',
+  },
+  {
     id: 'subjects',
     title: 'Предметы',
     trail: ['Предметы'],

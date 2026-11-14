@@ -32,6 +32,7 @@ import { createChoresService } from './task-types/chore/service';
 import { createTaskTypeRegistry } from './task-types/registry';
 import { createWatchService } from './task-types/video_lesson/watch';
 import { createUploadsService } from './modules/uploads/service';
+import { createAppearanceService } from './modules/appearance/service';
 import { createUsersService } from './modules/users/service';
 import { createWishesService } from './modules/wishes/service';
 
@@ -88,7 +89,11 @@ export async function openRuntime(config: Config): Promise<Runtime> {
     const auth = createAuthService(db, { config, audit, settings, keyring, users });
     const ledger = createLedgerService(db, { settings });
     const taskTypes = createTaskTypeRegistry();
-    const subjects = createSubjectsService(db, { audit });
+    // `uploads` is created further down (it needs media); the lookup runs per request.
+    const subjects = createSubjectsService(db, {
+      audit,
+      describeUpload: (id) => uploads.describe(id),
+    });
     const tasks = createTasksService(db, { audit, settings, ledger, users, subjects, taskTypes });
     const questions = createQuestionsService(db, { audit });
     const streak = createStreakService(db, { settings, ledger });
@@ -125,10 +130,12 @@ export async function openRuntime(config: Config): Promise<Runtime> {
     const rewards = createRewardsService(db, { audit, ledger, users, subjects, tasks });
     const chores = createChoresService(db, { audit, settings, ledger, tasks, progress });
     const uploads = createUploadsService(db, { audit, media });
+    const appearance = createAppearanceService(db, { audit, uploads });
     const catalog = createCatalogService(db, {
       audit,
       describeUpload: (id) => uploads.describe(id),
       hasPurchases: (id) => itemHasPurchases(db, id),
+      replacedDurationMs: (file) => appearance.durationOf(file),
     });
     const shop = createShopService(db, { catalog, ledger });
     const wishes = createWishesService(db, { audit, users });
@@ -162,6 +169,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       chores,
       catalog,
       uploads,
+      appearance,
       shop,
       wishes,
       character,
