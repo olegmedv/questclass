@@ -4,8 +4,8 @@ Generated: 2026-11-14. Description: "MVP (Этап 1) КвестКласс 2 п�
 
 ## Summary
 - Total items: 54
-- Pending: 54 | Done: 0 | Blocked: 0 | Superseded: 0
-- Items requiring user decision: 3 — FEAT-050 (SSH и правка Caddyfile для проверки из РФ), FEAT-046 (SSH для деплоя), FEAT-047 (куда класть бэкап)
+- Pending: 52 | Done: 0 | Blocked: 2 (FEAT-050 ждёт замера из РФ, FEAT-047 отложен до после MVP) | Superseded: 0
+- Items requiring user decision: 3 — FEAT-050 и FEAT-046: SSH разрешён пользователем 14.11.2026; FEAT-047 отложен до после MVP
 - Critic iterations: 3 (+ патч после вердикта)
 - Critic verdict: halted at max iterations; HIGH и MED третьего круга закрыты патчем после вердикта (повторно не критиковались), 11 LOW — известные риски
 
@@ -118,7 +118,7 @@ Discovery выполнен вручную, без Explore-агента: в ре�
     - разминка и обучение ребёнка → Этап 2.
 
 ### FEAT-050 — Проверка доступа из РФ (спайк на сервере)
-- **Status**: pending
+- **Status**: blocked — развёрнуто 14.11.2026 (deploy/spike/README.md), ждёт замера пользователя из РФ (Wi-Fi и мобильный)
 - **Risk**: HIGH
 - **Requires decision**: Y — разрешение на SSH и правку общего Caddyfile в момент выполнения
 - **Spec reference**: SPEC §2 «Проверка до запуска видео: тестовый файл 50–100 МБ без VPN»; Critique 1 HIGH#9.
@@ -917,7 +917,7 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - `https://questclass.duckdns.org/api/health` → 200. Остальные домены сервера отвечают тем же кодом, что до деплоя. Setup-токен взят из логов, админ создан.
 
 ### FEAT-047 — Бэкапы
-- **Status**: pending
+- **Status**: blocked — отложено пользователем до после MVP (14.11.2026)
 - **Risk**: MED
 - **Requires decision**: Y — где второе место (второй сервер или S3)
 - **Spec reference**: SPEC §1 «мастер-ключ бэкапится отдельно»; research/hosting-ru; Critique 1 HIGH#8, LOW (sqlite3 CLI).

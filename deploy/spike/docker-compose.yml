@@ -1,0 +1,23 @@
+# FEAT-050: временный контейнер для проверки доступа из РФ.
+# Отдаёт статику с поддержкой Range. Позже его заменит приложение (FEAT-046)
+# под тем же именем `questclass`, блок Caddy при этом не меняется.
+services:
+  questclass:
+    image: caddy:2-alpine
+    container_name: questclass
+    restart: unless-stopped
+    command: caddy file-server --root /srv --listen :8080
+    volumes:
+      - ./www:/srv:ro
+    networks:
+      - shared_web
+    mem_limit: 64m
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+networks:
+  shared_web:
+    external: true
