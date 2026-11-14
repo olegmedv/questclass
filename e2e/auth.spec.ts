@@ -40,7 +40,7 @@ test('setup → make this device the children’s → the learner signs in with 
   await expect(page.getByRole('heading', { level: 1, name: 'Привет, Саша!' })).toBeVisible();
   await page.keyboard.type('2468');
   await page.keyboard.press('Enter');
-  await expect(page.getByRole('heading', { level: 1, name: 'Учёба' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: 'Саша, начнём?' })).toBeVisible();
   await expect(page.getByRole('navigation', { name: 'Разделы' })).toBeVisible();
 });
 

@@ -14,3 +14,9 @@ export const STORAGE = {
 } as const;
 
 export type Persona = keyof typeof STORAGE | 'anon';
+
+/** Sessions of the second installation, used by the learner-screen specs (fixtures/learning.ts). */
+export const LEARNING_STORAGE = {
+  admin: join(AUTH_DIR, 'learning-admin.json'),
+  device: join(AUTH_DIR, 'learning-device.json'),
+} as const;

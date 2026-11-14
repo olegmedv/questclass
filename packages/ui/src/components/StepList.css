@@ -67,3 +67,11 @@
   width: 14px;
   height: 14px;
 }
+
+.qc-steps[data-compact] {
+  gap: var(--q-space-3);
+}
+
+.qc-steps[data-compact] .qc-steps-item {
+  flex: 0 0 auto;
+}

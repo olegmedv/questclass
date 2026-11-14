@@ -2,7 +2,11 @@
 // error (CLAUDE.md rule 8). Built only from @questclass/ui; no CSS of its own.
 import {
   Accordion,
+  ActionList,
   AnimatedHero,
+  ChoiceTile,
+  LessonCard,
+  StreakCard,
   AuthFrame,
   Notice,
   Avatar,
@@ -272,6 +276,201 @@ const STREAK_MOVIE = {
   poster: '/assets/celebrations/streak-five-poster.webp',
   durationMs: 10_083,
 };
+
+const MATH_ICON = '/assets/game/subjects-pixel/math.webp';
+const BLUE_HERO = '/assets/game/animated/repaired/blue-idle-cover.webp';
+
+/** Components of the learner's home: lesson card, streak card, choice tiles, lesson list. */
+function HomeSections() {
+  const [expanded, setExpanded] = useState(true);
+  const [subject, setSubject] = useState('all');
+  const lessonSteps = (status: 'current' | 'done') => [
+    { id: 'video', label: 'Видео', icon: <Play />, status },
+    {
+      id: 'quiz',
+      label: 'Вопросы',
+      icon: <CircleQuestionMark />,
+      status: status === 'done' ? status : ('todo' as const),
+    },
+    {
+      id: 'reward',
+      label: 'Награда',
+      icon: <Gift />,
+      status: status === 'done' ? status : ('todo' as const),
+    },
+  ];
+  return (
+    <>
+      <Demo
+        id="lesson-card"
+        title="LessonCard"
+        description="Следующий урок на главной: предмет, название, герой, кнопка «Начать», шаги значками."
+        states={{
+          default: (
+            <LessonCard
+              subject={{ name: 'Математика', icon: <img src={MATH_ICON} alt="" /> }}
+              title="Сложение и вычитание в пределах 100"
+              meta="Урок от 12.11.2026 · Задание от родителя"
+              hero={<AnimatedHero poster={BLUE_HERO} alt="Твой герой" playing={false} />}
+              action={
+                <Button variant="start" size="lg" block icon={<Flag />}>
+                  Начать урок
+                </Button>
+              }
+              steps={lessonSteps('current')}
+            />
+          ),
+          disabled: (
+            <LessonCard
+              subject={{
+                name: 'Чтение',
+                icon: <Placeholder kind="subject" label="Значок предмета" size="sm" />,
+              }}
+              title="Устное народное творчество"
+              hero={<AnimatedHero poster={BLUE_HERO} alt="Твой герой" playing={false} />}
+              action={
+                <Button variant="start" size="lg" block icon={<Flag />}>
+                  Посмотреть результат
+                </Button>
+              }
+              steps={lessonSteps('done')}
+            />
+          ),
+          loading: <LessonCard loading title="" />,
+          empty: { na: 'без урока главная показывает EmptyState «Все уроки пройдены!»' },
+          error: { na: 'ошибку загрузки главная показывает через EmptyState' },
+        }}
+      />
+      <Demo
+        id="streak-card"
+        title="StreakCard"
+        description="«Серия занятий N/5»: компактная строка раскрывается в дни, бонус и правило."
+        states={{
+          default: (
+            <StreakCard
+              progress={3}
+              cycleDays={5}
+              reward={{ coins: 200, xp: 200 }}
+              expanded={expanded}
+              onToggle={() => setExpanded(!expanded)}
+            >
+              <Text tone="muted" size="sm">
+                День засчитывается, когда ты завершаешь тест урока. Ошибки не мешают серии.
+              </Text>
+              <Inline>
+                <Button size="sm" variant="ghost" icon={<Play />}>
+                  Предпросмотр награды за серию
+                </Button>
+              </Inline>
+            </StreakCard>
+          ),
+          disabled: { na: 'карточку можно раскрыть всегда' },
+          loading: (
+            <StreakCard
+              progress={0}
+              cycleDays={5}
+              reward={{ coins: 0, xp: 0 }}
+              expanded={false}
+              onToggle={() => {}}
+              loading
+            />
+          ),
+          empty: (
+            <StreakCard
+              progress={0}
+              cycleDays={5}
+              reward={{ coins: 200, xp: 200 }}
+              expanded={false}
+              onToggle={() => {}}
+            />
+          ),
+          error: { na: 'без данных серии главная её не показывает' },
+        }}
+      />
+      <Demo
+        id="choice-tile"
+        title="ChoiceTile"
+        description="Плитка выбора: предметы в окне «Выбери урок»."
+        states={{
+          default: (
+            <Grid min="sm" gap="sm">
+              <ChoiceTile
+                icon={<BookOpen />}
+                label="Все предметы"
+                selected={subject === 'all'}
+                onClick={() => setSubject('all')}
+              />
+              <ChoiceTile
+                icon={<img src={MATH_ICON} alt="" />}
+                label="Математика"
+                selected={subject === 'math'}
+                onClick={() => setSubject('math')}
+              />
+            </Grid>
+          ),
+          disabled: (
+            <Grid min="sm" gap="sm">
+              <ChoiceTile icon={<BookOpen />} label="Нет уроков" disabled />
+            </Grid>
+          ),
+          loading: { na: 'предметы приходят вместе с уроками' },
+          empty: (
+            <Grid min="sm" gap="sm">
+              <ChoiceTile
+                icon={<Placeholder kind="subject" label="Значок предмета" size="sm" />}
+                label="Новый предмет"
+              />
+            </Grid>
+          ),
+          error: { na: 'плитка не загружает данные' },
+        }}
+      />
+      <Demo
+        id="action-list"
+        title="ActionList"
+        description="Список уроков со статусом: открыть, выполнено, недоступно."
+        states={{
+          default: (
+            <ActionList
+              label="Уроки"
+              items={[
+                {
+                  id: '1',
+                  title: 'Что нас окружает. Повторение',
+                  description: 'Окружающий мир · Можно открыть',
+                  href: '/dev/ui',
+                },
+                {
+                  id: '2',
+                  title: 'Устное народное творчество',
+                  description: 'Чтение · Выполнено',
+                  status: 'done',
+                  href: '/dev/ui',
+                },
+              ]}
+            />
+          ),
+          disabled: (
+            <ActionList
+              label="Уроки"
+              items={[
+                {
+                  id: '3',
+                  title: 'Входная проверочная работа',
+                  description: 'Русский язык · После предыдущего урока',
+                  status: 'locked',
+                },
+              ]}
+            />
+          ),
+          loading: { na: 'список показывается, когда уроки загружены' },
+          empty: <ActionList label="Уроки" items={[]} empty="Здесь пока нет открытых уроков." />,
+          error: { na: 'ошибку загрузки показывает экран' },
+        }}
+      />
+    </>
+  );
+}
 
 type CelebrationDemo =
   'pass' | 'pass-empty' | 'purchase' | 'streak' | 'streak-reduced' | 'streak-broken';
@@ -921,6 +1120,8 @@ export function UiGallery() {
               error: { na: 'ошибку шага показывает плеер задания' },
             }}
           />
+
+          <HomeSections />
 
           <Demo
             id="empty"

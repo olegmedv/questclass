@@ -37,6 +37,15 @@ export {
 } from './components/Button';
 export { Card, type CardProps } from './components/Card';
 export {
+  ActionList,
+  ActionRow,
+  ChoiceTile,
+  type ActionListProps,
+  type ActionRowProps,
+  type ActionRowStatus,
+  type ChoiceTileProps,
+} from './components/ChoiceTile';
+export {
   Celebration,
   type CelebrationProps,
   type CelebrationReward,
@@ -70,6 +79,7 @@ export {
 export { FileInput, type FileInputProps } from './components/FileInput';
 export { ItemCard, type ItemCardProps } from './components/ItemCard';
 export { Container, Grid, Inline, Stack, type Gap } from './components/Layout';
+export { LessonCard, type LessonCardProps } from './components/LessonCard';
 export { UiLink, UiLinkProvider, type UiLinkProps } from './components/Link';
 export { Menu, type MenuAction, type MenuProps } from './components/Menu';
 export { Notice, type NoticeProps, type NoticeTone } from './components/Notice';
@@ -97,6 +107,7 @@ export { Slider, type SliderProps } from './components/Slider';
 export { Spinner, type SpinnerProps } from './components/Spinner';
 export { StatChip, type StatChipProps, type StatKind } from './components/StatChip';
 export { StepList, type Step, type StepStatus } from './components/StepList';
+export { StreakCard, type StreakCardProps } from './components/StreakCard';
 export {
   SegmentedControl,
   Tabs,

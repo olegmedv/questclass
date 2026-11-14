@@ -21,12 +21,15 @@ const statusText: Record<StepStatus, string> = {
 export function StepList({
   steps,
   label,
+  compact = false,
 }: {
   readonly steps: readonly Step[];
   readonly label: string;
+  /** Icons only (the labels stay for screen readers), as on the lesson card of the home. */
+  readonly compact?: boolean;
 }) {
   return (
-    <ol className="qc-steps" aria-label={label}>
+    <ol className="qc-steps" aria-label={label} data-compact={compact || undefined}>
       {steps.map((step, index) => (
         <Fragment key={step.id}>
           {index > 0 && (
@@ -42,7 +45,7 @@ export function StepList({
             <span className="qc-steps-icon" aria-hidden="true">
               {step.status === 'done' ? <Check /> : step.icon}
             </span>
-            <span className="qc-steps-label">{step.label}</span>
+            <span className={compact ? 'qc-visually-hidden' : 'qc-steps-label'}>{step.label}</span>
             <span className="qc-visually-hidden">: {statusText[step.status]}</span>
           </li>
         </Fragment>

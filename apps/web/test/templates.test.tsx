@@ -119,7 +119,7 @@ describe('learner and admin layouts in the app', () => {
   it('«Родителям» opens the admin login without signing the learner out', async () => {
     const { calls } = mockApi(sessionApi(learner));
     const { router } = renderRoute('/');
-    await screen.findByRole('heading', { level: 1, name: 'Учёба' });
+    await screen.findByRole('heading', { level: 1, name: 'Саша, начнём?' });
     await userEvent.click(screen.getByRole('button', { name: 'Профиль' }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Родителям' }));
     expect(router.state.location.pathname + router.state.location.search).toBe('/login?as=admin');

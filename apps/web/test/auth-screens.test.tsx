@@ -193,7 +193,9 @@ describe('learner login', () => {
       userId: 2,
       pin: '2468',
     });
-    expect(await screen.findByRole('heading', { level: 1, name: 'Учёба' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Саша, начнём?' }),
+    ).toBeInTheDocument();
   });
 
   it('a wrong PIN is announced and the pad is cleared; «Другой ученик» goes back', async () => {
