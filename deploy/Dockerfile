@@ -7,9 +7,12 @@
 # Runtime configuration is PORT, DATA_DIR and NODE_ENV only (CLAUDE.md 7); the data volume is
 # /data and must be writable by uid 1000. Dev tools (sharp, ffmpeg, Playwright) are never
 # installed here (CLAUDE.md 13): only the API and the web app are installed and built.
-# Alpine keeps the image under the 250 MB budget; better-sqlite3 ships a musl prebuild.
+# Alpine keeps the image under the 250 MB budget; better-sqlite3 ships a musl prebuild. The
+# runtime is plain Alpine plus the Node binary: deleting npm/yarn from a node image in a later
+# layer would only hide them, the image would still ship them. Both tags name one Alpine release.
 
-ARG NODE_IMAGE=node:22-alpine
+ARG NODE_IMAGE=node:22-alpine3.24
+ARG ALPINE_IMAGE=alpine:3.24
 
 # ---------------------------------------------------------------------------------------------
 FROM ${NODE_IMAGE} AS build
@@ -50,15 +53,18 @@ RUN set -eux; \
     cp "$sqlite/prebuilds/linuxmusl-$(node -p process.arch).node" "$dest/prebuilds/"
 
 # ---------------------------------------------------------------------------------------------
-FROM ${NODE_IMAGE} AS runtime
-# tini as PID 1: forwards SIGTERM to Node (graceful shutdown) and reaps zombies. npm, corepack
-# and yarn are not needed at runtime.
-RUN apk add --no-cache tini \
-  && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack /opt/yarn-* \
-  && rm -f /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
-       /usr/local/bin/yarn /usr/local/bin/yarnpkg \
+FROM ${NODE_IMAGE} AS node
+
+# ---------------------------------------------------------------------------------------------
+FROM ${ALPINE_IMAGE} AS runtime
+# Node's shared libraries; tini as PID 1 forwards SIGTERM to Node (graceful shutdown) and reaps
+# zombies. User `node` has uid/gid 1000 as in the official images.
+RUN apk add --no-cache libstdc++ libgcc tini \
+  && addgroup -g 1000 node \
+  && adduser -u 1000 -G node -s /bin/sh -D node \
   && mkdir -p /data \
   && chown node:node /data
+COPY --from=node /usr/local/bin/node /usr/local/bin/node
 
 ENV NODE_ENV=production \
     PORT=8080 \
