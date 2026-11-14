@@ -2,6 +2,7 @@ import type { TaskTypeContract } from '@questclass/shared/tasks/contract';
 import type { TaskStatus } from '@questclass/shared/tasks/dto';
 import type { Db } from '../db/client';
 import type { SettingsService } from '../modules/settings/service';
+import { choreTaskType } from './chore';
 import { quizTaskType } from './quiz';
 import { videoLessonTaskType } from './video_lesson';
 
@@ -70,6 +71,7 @@ export interface TaskTypePlugin<C = unknown, S = unknown> {
 const BUILT_IN_TYPES: readonly TaskTypePlugin[] = [
   quizTaskType,
   videoLessonTaskType,
+  choreTaskType,
   // add task type plugins here
 ];
 

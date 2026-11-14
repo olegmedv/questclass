@@ -92,6 +92,13 @@
       "when": 1794672929266,
       "tag": "0012_rewards",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1794673379082,
+      "tag": "0013_chore_completions",
+      "breakpoints": true
     }
   ]
 }

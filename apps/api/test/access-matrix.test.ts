@@ -71,6 +71,14 @@ interface MatrixData {
     /** An award of learner A (cancelled by its row). */
     readonly awardA: number;
   };
+  /** Published chores assigned to learner A only. */
+  readonly chores: {
+    /** Not reported yet. */
+    readonly fresh: number;
+    /** Pending reports of learner A. */
+    readonly toApprove: number;
+    readonly toReject: number;
+  };
 }
 
 const prepared = new WeakMap<TwoLearners, MatrixData>();
@@ -236,6 +244,24 @@ function prepareRewards(f: TwoLearners): MatrixData['rewards'] {
   return { reasonId, awardA: award.id };
 }
 
+/** Chores of learner A: one not reported yet and two pending reports. */
+function prepareChores(f: TwoLearners): MatrixData['chores'] {
+  const { ctx } = f.runtime;
+  const choreOfA = (title: string): number => {
+    const id = ctx.tasks.create({ type: 'chore', title }, f.ids.admin).id;
+    ctx.tasks.update(id, { status: 'published' }, f.ids.admin);
+    ctx.tasks.assign(id, f.ids.learnerA, f.ids.admin);
+    return id;
+  };
+  const reported = (title: string): number =>
+    ctx.chores.report(f.ids.learnerA, choreOfA(title)).completion.id;
+  return {
+    fresh: choreOfA('Дело: не сдано'),
+    toApprove: reported('Дело: одобрить'),
+    toReject: reported('Дело: отклонить'),
+  };
+}
+
 /** Adds the domain data rows need (task types beyond the built-ins come from fixtures). */
 function prepare(f: TwoLearners): TwoLearners {
   const { ctx } = f.runtime;
@@ -269,6 +295,7 @@ function prepare(f: TwoLearners): TwoLearners {
     video: prepareVideos(f),
     imports: prepareImports(f),
     rewards: prepareRewards(f),
+    chores: prepareChores(f),
   });
   return f;
 }
@@ -751,6 +778,32 @@ const MATRIX: readonly MatrixRow[] = [
     expect: adminOnly(201),
   },
   { route: 'GET /api/me/awards', expect: learnerOnly(200) },
+
+  // chores
+  {
+    route: 'GET /api/tasks/:taskId/chore-completions',
+    url: (f) => `/api/tasks/${data(f).chores.fresh}/chore-completions`,
+    learnerOwned: true,
+    expect: ownedByA(200),
+  },
+  {
+    route: 'POST /api/tasks/:taskId/chore-completions',
+    url: (f) => `/api/tasks/${data(f).chores.fresh}/chore-completions`,
+    learnerOwned: true,
+    expect: ownedByA(201),
+  },
+  { route: 'GET /api/admin/chores/reviews', expect: adminOnly(200) },
+  {
+    route: 'POST /api/admin/chores/reviews/:id/approval',
+    url: (f) => `/api/admin/chores/reviews/${data(f).chores.toApprove}/approval`,
+    expect: adminOnly(201),
+  },
+  {
+    route: 'POST /api/admin/chores/reviews/:id/rejection',
+    url: (f) => `/api/admin/chores/reviews/${data(f).chores.toReject}/rejection`,
+    body: () => ({ comment: 'Ещё не готово' }),
+    expect: adminOnly(201),
+  },
 ];
 
 function splitRoute(key: string): { method: string; path: string } {

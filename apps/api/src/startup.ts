@@ -21,6 +21,7 @@ import { createStreakService } from './modules/streak/service';
 import { seedSubjectsOnFirstStart } from './modules/subjects/seed';
 import { createSubjectsService } from './modules/subjects/service';
 import { createTasksService } from './modules/tasks/service';
+import { createChoresService } from './task-types/chore/service';
 import { createTaskTypeRegistry } from './task-types/registry';
 import { createWatchService } from './task-types/video_lesson/watch';
 import { createUsersService } from './modules/users/service';
@@ -107,6 +108,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       taskTypes,
     });
     const rewards = createRewardsService(db, { audit, ledger, users, subjects, tasks });
+    const chores = createChoresService(db, { audit, settings, ledger, tasks, progress });
     const ctx: AppContext = {
       config,
       db,
@@ -127,6 +129,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       watch,
       imports,
       rewards,
+      chores,
       trustedProxies: trustedProxiesFromSettings(settings),
     };
     return { ctx, closers };

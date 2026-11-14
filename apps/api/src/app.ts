@@ -35,6 +35,8 @@ import type { TasksService } from './modules/tasks/service';
 import { usersRoutes } from './modules/users/routes';
 import type { UsersService } from './modules/users/service';
 import { healthRoutes } from './modules/health/routes';
+import { choreRoutes } from './task-types/chore/routes';
+import type { ChoresService } from './task-types/chore/service';
 import type { TaskTypeRegistry } from './task-types/registry';
 import { videoLessonRoutes } from './task-types/video_lesson/routes';
 import type { WatchService } from './task-types/video_lesson/watch';
@@ -66,6 +68,8 @@ export interface AppContext {
   readonly imports: ImportService;
   /** Reward reasons and manual awards. */
   readonly rewards: RewardsService;
+  /** Reports of chores and their review (chore). */
+  readonly chores: ChoresService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -100,6 +104,7 @@ function collectRoutes(ctx: AppContext): RouteDef[] {
     ...videoLessonRoutes(ctx),
     ...importRoutes(ctx),
     ...rewardsRoutes(ctx),
+    ...choreRoutes(ctx),
   ];
 }
 

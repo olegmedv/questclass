@@ -552,7 +552,13 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - `complete` сверяет размеры и sha256 → `ready` (тест).
 
 ### FEAT-014 — Тип `chore`: дела с подтверждением
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Маршруты. Learner: `GET /api/tasks/:taskId/chore-completions` (`{repeat, periodKey, current, items[]}` — текущий период и до 50 отчётов, новые первыми), `POST /api/tasks/:taskId/chore-completions` («Я сделал»: 201 — новый `pending`; если в периоде уже есть `pending|approved`, он и возвращается, 200). Admin: `GET /api/admin/chores/reviews?status=pending|approved|rejected&learnerId` (по умолчанию `pending`, ожидающие — старые первыми), `POST /api/admin/chores/reviews/:id/approval` (201 / 200 повтор), `POST /api/admin/chores/reviews/:id/rejection {comment?}` (201 / 200 повтор). Одобрить отклонённое или отклонить одобренное → 409 `already_reviewed`.
+  - Config `{repeat: once|daily|weekly}` (по умолчанию `once`), `publicConfig` = config; submission пуст (`{}`). `grade` нет — движок попыток отвечает 409 `no_questions`. Чужое, невидимое, черновик и задание другого типа → 404; закрытое правилами открытия → 409 `task_locked`. Отчёт отмечает задание начатым (`progress.markStarted`); task_progress зачётом не пишется — награда только через `chore:<id>`, а не через ключ `task:…:pass`.
+  - Колонки сверх DoD: `reward_xp`, `reward_coins` (что выплатило одобрение — снимок награды задания на тот момент, как у попыток), `note` — комментарий отклонения. Ревью меняет строку ровно один раз. Индекс `(learner, task)` для истории. `period_key` — `dayKey`/`weekKey` по `settings.timezone` на момент отчёта. Audit `chore.approved|rejected` (с `learnerId`).
+  - Вне Scope: `packages/shared/src/task-types/chore/dto.ts` (в маске Scope), регистрация в `app.ts`, `startup.ts` (`ctx.chores`), реестрах типов (api и shared), `schema/index.ts`. Строки FEAT-049 добавлены (5 маршрутов, learnerB → 404 на делах ученика A). Тестов 661 (+2 пропущено), было 647.
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: SPEC §8 «chore»; Critique 1 HIGH#11.
