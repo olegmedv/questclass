@@ -6,6 +6,7 @@ import { snapshotsDir } from './db/snapshot';
 import { trustedProxiesFromSettings } from './http/clientIp';
 import { createAuditService } from './modules/audit/service';
 import { createAuthService } from './modules/auth/service';
+import { createLedgerService } from './modules/ledger/service';
 import { createKeyring } from './modules/settings/crypto';
 import { loadOrCreateMasterKey } from './modules/settings/masterKey';
 import { createSettingsService } from './modules/settings/service';
@@ -50,6 +51,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
     const settings = createSettingsService(db, { audit, keyring });
     const users = createUsersService(db, { audit });
     const auth = createAuthService(db, { config, audit, settings, keyring, users });
+    const ledger = createLedgerService(db, { settings });
     const ctx: AppContext = {
       config,
       db,
@@ -58,6 +60,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       settings,
       users,
       auth,
+      ledger,
       trustedProxies: trustedProxiesFromSettings(settings),
     };
     return { ctx, closers };

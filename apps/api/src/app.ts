@@ -9,6 +9,8 @@ import { auditRoutes } from './modules/audit/routes';
 import type { AuditService } from './modules/audit/service';
 import { authMiddleware, authRoutes } from './modules/auth/routes';
 import type { AuthService } from './modules/auth/service';
+import { ledgerRoutes } from './modules/ledger/routes';
+import type { LedgerService } from './modules/ledger/service';
 import type { Keyring } from './modules/settings/crypto';
 import { settingsRoutes } from './modules/settings/routes';
 import type { SettingsService } from './modules/settings/service';
@@ -26,6 +28,7 @@ export interface AppContext {
   readonly settings: SettingsService;
   readonly users: UsersService;
   readonly auth: AuthService;
+  readonly ledger: LedgerService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -49,6 +52,7 @@ function collectRoutes(ctx: AppContext): RouteDef[] {
     ...authRoutes(ctx),
     ...usersRoutes(ctx),
     ...settingsRoutes(ctx),
+    ...ledgerRoutes(ctx),
   ];
 }
 

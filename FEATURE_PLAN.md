@@ -296,7 +296,15 @@ Discovery выполнен вручную, без Explore-агента: в ре�
 ### Фаза B — домен и API
 
 ### FEAT-007 — Журнал начислений (ledger), баланс, уровень
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Ключи: `idemKey(...parts)` (брендированный тип `IdemKey`, части `[A-Za-z0-9_-]`, разделитель `:`) и `requestKey(source, learner, requestId)` → `<source>:<learner>:<requestId>`; `requestIdSchema` (8–64 символа `[A-Za-z0-9_-]`) — в `@questclass/shared/economy/dto`. Повтор ключа возвращает первую строку (`created:false`, суммы не сравниваются — «платим один раз»); тот же ключ для другого ученика или источника → 409 `idempotency_conflict`.
+  - Отмена сохраняет `source_type/source_id` отменяемой строки (нетто по источнику = сумма строк), ключ `reversal:<id>`; отменить отмену нельзя (409 `cannot_reverse_reversal`), повторная отмена → 409 `already_reversed`. Ledger сам audit не пишет — действие аудирует вызывающий модуль (FEAT-009, FEAT-016).
+  - Сервис сверх DoD (для следующих пунктов): `spend()` (покупки, FEAT-019), `sourceTotals()` (доплата FEAT-009), `hasSource()` (проверка истории перед удалением, FEAT-008). `LEDGER_SOURCE_TYPES`: task, streak, award, chore, purchase, coins_reset; добавлен индекс `(source_type, source_id)`.
+  - `/api/me/wallet` и `/api/me/ledger` — роль `learner` (админу 403). Фильтр `type` в админском журнале = `source_type`.
+  - Перед пунктом отдельным коммитом исправлено форматирование `scripts/parity-check.mjs` (lint был красным с FEAT-051; поведение не менялось).
+  - RSS в простое 70,5 МиБ.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: SPEC §7 принцип 5; spec/02 §2.1 «уровень = floor(XP/300)+1; баланс может уйти в минус, тогда покупки блокируются»; Critique 1 MED#2.

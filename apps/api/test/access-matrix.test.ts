@@ -42,6 +42,14 @@ const adminOnly = (ok: number): Expectation => ({
   learnerB: 403,
   admin: ok,
 });
+/** Routes about the caller's own learner data (`/api/me/...`). */
+const learnerOnly = (ok: number): Expectation => ({
+  anon: 401,
+  import: 401,
+  learnerA: ok,
+  learnerB: ok,
+  admin: 403,
+});
 const signedIn = (ok: number): Expectation => ({
   anon: 401,
   import: 401,
@@ -133,6 +141,15 @@ const MATRIX: readonly MatrixRow[] = [
     route: 'DELETE /api/admin/secrets/:key',
     url: () => '/api/admin/secrets/not.registered',
     expect: adminOnly(404),
+  },
+
+  // ledger
+  { route: 'GET /api/me/wallet', expect: learnerOnly(200) },
+  { route: 'GET /api/me/ledger', expect: learnerOnly(200) },
+  {
+    route: 'GET /api/admin/learners/:id/ledger',
+    url: (f) => `/api/admin/learners/${f.ids.learnerA}/ledger`,
+    expect: adminOnly(200),
   },
 ];
 

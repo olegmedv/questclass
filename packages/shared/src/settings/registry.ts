@@ -1,11 +1,13 @@
 import { combineKeys, type SecretDef, type SettingDef } from './define';
 import { coreSecrets, coreSettings } from './keys/core';
+import { economySettings } from './keys/economy';
 
 export { defineSetting, type SecretDef, type SettingDef } from './define';
 
 /** All settings. Each module adds its `keys/<module>.ts` file here. */
 export const SETTINGS = combineKeys(
   coreSettings,
+  economySettings,
   // add module settings here
 );
 
