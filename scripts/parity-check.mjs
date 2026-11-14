@@ -59,7 +59,10 @@ function specItems(rel) {
 
 // Splits a Markdown table row on unescaped pipes and unescapes `\|` inside cells.
 function splitRow(line) {
-  const body = line.trim().replace(/^\|/, '').replace(/(?<!\\)\|$/, '');
+  const body = line
+    .trim()
+    .replace(/^\|/, '')
+    .replace(/(?<!\\)\|$/, '');
   return body.split(/(?<!\\)\|/).map((cell) => cell.trim().replace(/\\\|/g, '|'));
 }
 
@@ -69,8 +72,11 @@ function classify(label) {
   for (const rule of LABEL_RULES) {
     const m = rule.re.exec(label);
     if (m) {
-      const feats = rule.kind === 'MVP' || rule.kind === 'Покрыто иначе' ? (m[1] ?? '').match(/FEAT-\d{3}/g) ?? [] : [];
-      return { kind: rule.kind, feats, gap: rule.kind === 'MVP' ? m[2] ?? null : null };
+      const feats =
+        rule.kind === 'MVP' || rule.kind === 'Покрыто иначе'
+          ? ((m[1] ?? '').match(/FEAT-\d{3}/g) ?? [])
+          : [];
+      return { kind: rule.kind, feats, gap: rule.kind === 'MVP' ? (m[2] ?? null) : null };
     }
   }
   return null;
@@ -111,7 +117,13 @@ function parseParity(text) {
 }
 
 function emptyCounts() {
-  return { items: 0, rows: 0, ...Object.fromEntries(KINDS.map((k) => [k, 0])), noFeat: 0, decisionY: 0 };
+  return {
+    items: 0,
+    rows: 0,
+    ...Object.fromEntries(KINDS.map((k) => [k, 0])),
+    noFeat: 0,
+    decisionY: 0,
+  };
 }
 
 // Order of «Сводка» columns after «Файл».
@@ -149,7 +161,9 @@ function main() {
     counts.items = items.length;
     counts.rows = rows.length;
     if (items.length !== rows.length) {
-      errors.push(`${spec.id}: в ${spec.path} пунктов ${items.length}, в ${PARITY_PATH} строк ${rows.length}`);
+      errors.push(
+        `${spec.id}: в ${spec.path} пунктов ${items.length}, в ${PARITY_PATH} строк ${rows.length}`,
+      );
     }
     for (let i = 0; i < Math.max(items.length, rows.length); i++) {
       const expectedId = `${spec.id}-${String(i + 1).padStart(3, '0')}`;
@@ -165,7 +179,9 @@ function main() {
         continue;
       }
       if (row.cells.length !== COLUMNS) {
-        errors.push(`${where}: ожидается ${COLUMNS} колонок, найдено ${row.cells.length} (неэкранированный «|»?)`);
+        errors.push(
+          `${where}: ожидается ${COLUMNS} колонок, найдено ${row.cells.length} (неэкранированный «|»?)`,
+        );
         continue;
       }
       const [id, , text, label, decision] = row.cells;
@@ -173,7 +189,9 @@ function main() {
 
       const shortened = text.endsWith(ELLIPSIS);
       const shown = norm(shortened ? text.slice(0, -ELLIPSIS.length) : text);
-      const textOk = shortened ? shown.length >= Math.min(20, item.length) && item.startsWith(shown) : shown === item;
+      const textOk = shortened
+        ? shown.length >= Math.min(20, item.length) && item.startsWith(shown)
+        : shown === item;
       if (!textOk) errors.push(`${where}: текст не совпадает с пунктом спеки «${clip(item)}»`);
 
       const cls = classify(label);
@@ -182,24 +200,30 @@ function main() {
       } else {
         counts[cls.kind]++;
         for (const feat of cls.feats) {
-          if (planFeats && !planFeats.has(feat)) errors.push(`${where}: ${feat} нет в ${PLAN_PATH}`);
+          if (planFeats && !planFeats.has(feat))
+            errors.push(`${where}: ${feat} нет в ${PLAN_PATH}`);
         }
         if (cls.gap) {
           counts.noFeat++;
           usedGaps.add(cls.gap);
           noFeatRows.push(`${expectedId} → ${cls.gap}`);
-          if (!parity.gaps.has(cls.gap)) errors.push(`${where}: ${cls.gap} нет в разделе «${GAPS_HEADING}»`);
+          if (!parity.gaps.has(cls.gap))
+            errors.push(`${where}: ${cls.gap} нет в разделе «${GAPS_HEADING}»`);
         }
       }
       if (decision === 'Y') counts.decisionY++;
-      else if (decision !== 'N') errors.push(`${where}: «Нужно решение пользователя» должно быть Y или N, найдено «${decision}»`);
+      else if (decision !== 'N')
+        errors.push(
+          `${where}: «Нужно решение пользователя» должно быть Y или N, найдено «${decision}»`,
+        );
     }
     for (const key of Object.keys(totals)) totals[key] += counts[key];
     perSpec.push({ spec, counts });
   }
 
   for (const gap of parity.gaps) {
-    if (!usedGaps.has(gap)) warnings.push(`${gap} описан в «${GAPS_HEADING}», но ни одна строка на него не ссылается`);
+    if (!usedGaps.has(gap))
+      warnings.push(`${gap} описан в «${GAPS_HEADING}», но ни одна строка на него не ссылается`);
   }
 
   // «Сводка» must match the computed counts.
@@ -214,7 +238,9 @@ function main() {
     }
     SUMMARY_COLUMNS.forEach(([field, title], i) => {
       if (row.values[i] !== counts[field]) {
-        errors.push(`${PARITY_PATH}:${row.lineNo}: «${SUMMARY_HEADING}», ${name}, «${title}» = ${row.values[i]}, по таблице ${counts[field]}`);
+        errors.push(
+          `${PARITY_PATH}:${row.lineNo}: «${SUMMARY_HEADING}», ${name}, «${title}» = ${row.values[i]}, по таблице ${counts[field]}`,
+        );
       }
     });
   }
