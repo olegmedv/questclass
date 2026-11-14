@@ -43,6 +43,13 @@
       "when": 1794665796448,
       "tag": "0005_questions_transcripts",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1794666328723,
+      "tag": "0006_progress",
+      "breakpoints": true
     }
   ]
 }

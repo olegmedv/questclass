@@ -65,6 +65,8 @@ function prepare(f: TwoLearners): TwoLearners {
   ctx.tasks.assign(taskA, f.ids.learnerA, admin);
   const assignedToB = task('Для Бори');
   ctx.tasks.assign(assignedToB, f.ids.learnerB, admin);
+  // Learner B has started the draft assigned to them (the reopening row needs a result).
+  ctx.progress.markStarted(f.ids.learnerB, assignedToB);
   for (const key of ['q1', 'q-spare']) {
     ctx.questions.create(taskA, { key, ...SAMPLE_QUESTION }, admin);
   }
@@ -330,6 +332,37 @@ const MATRIX: readonly MatrixRow[] = [
       source: 'manual',
       segments: [{ start: 0, end: 1, text: 'Привет' }],
     }),
+    expect: adminOnly(201),
+  },
+
+  // progress and manual control
+  { route: 'GET /api/me/progress', expect: learnerOnly(200) },
+  {
+    route: 'GET /api/admin/learners/:id/progress',
+    url: (f) => `/api/admin/learners/${f.ids.learnerA}/progress`,
+    expect: adminOnly(200),
+  },
+  {
+    route: 'POST /api/admin/learners/:id/progress/:taskId/closure',
+    url: (f) => `/api/admin/learners/${f.ids.learnerA}/progress/${data(f).taskA}/closure`,
+    body: () => ({ withReward: false }),
+    expect: adminOnly(201),
+  },
+  {
+    route: 'POST /api/admin/learners/:id/progress/:taskId/reopening',
+    url: (f) => `/api/admin/learners/${f.ids.learnerB}/progress/${data(f).assignedToB}/reopening`,
+    expect: adminOnly(201),
+  },
+  {
+    route: 'POST /api/admin/learners/:id/progress-resets',
+    url: (f) => `/api/admin/learners/${f.ids.learnerB}/progress-resets`,
+    body: () => ({ requestId: 'matrix-reset-0001' }),
+    expect: adminOnly(201),
+  },
+  {
+    route: 'POST /api/admin/learners/:id/coins-resets',
+    url: (f) => `/api/admin/learners/${f.ids.learnerA}/coins-resets`,
+    body: () => ({ requestId: 'matrix-coins-0001' }),
     expect: adminOnly(201),
   },
 ];

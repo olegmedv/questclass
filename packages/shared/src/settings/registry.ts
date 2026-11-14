@@ -1,6 +1,7 @@
 import { combineKeys, type SecretDef, type SettingDef } from './define';
 import { coreSecrets, coreSettings } from './keys/core';
 import { economySettings } from './keys/economy';
+import { progressSettings } from './keys/progress';
 
 export { defineSetting, type SecretDef, type SettingDef } from './define';
 
@@ -8,6 +9,7 @@ export { defineSetting, type SecretDef, type SettingDef } from './define';
 export const SETTINGS = combineKeys(
   coreSettings,
   economySettings,
+  progressSettings,
   // add module settings here
 );
 

@@ -4,6 +4,8 @@ export * from './assignments';
 export * from './audit';
 export * from './ledger';
 export * from './loginThrottle';
+export * from './progress';
+export * from './progressResets';
 export * from './questions';
 export * from './secrets';
 export * from './sessions';
