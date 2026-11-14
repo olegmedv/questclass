@@ -508,6 +508,9 @@ const MATRIX: readonly MatrixRow[] = [
   // audit
   { route: 'GET /api/admin/audit', expect: adminOnly(200) },
 
+  // the admin home «Что нужно сделать?»
+  { route: 'GET /api/admin/inbox', expect: adminOnly(200) },
+
   // settings and secrets
   { route: 'GET /api/admin/settings', expect: adminOnly(200) },
   {

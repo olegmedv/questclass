@@ -6,6 +6,7 @@ import { handleError, handleNotFound } from './http/errors';
 import type { Scheduler } from './jobs/scheduler';
 import { sameOriginOnly } from './http/origin';
 import { mountRoutes, type AppEnv, type RouteDef } from './http/route';
+import { adminInboxRoutes } from './modules/admin-inbox/routes';
 import { attemptsRoutes } from './modules/attempts/routes';
 import type { AttemptsService } from './modules/attempts/service';
 import { auditRoutes } from './modules/audit/routes';
@@ -133,6 +134,7 @@ function collectRoutes(ctx: AppContext): RouteDef[] {
     ...shopRoutes(ctx),
     ...wishesRoutes(ctx),
     ...characterRoutes(ctx),
+    ...adminInboxRoutes(ctx),
   ];
 }
 

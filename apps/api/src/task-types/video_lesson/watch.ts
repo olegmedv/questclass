@@ -58,6 +58,11 @@ export interface WatchService {
   ): WatchProgressDto;
   /** The admin confirms by hand that the learner watched the lesson's current video. */
   confirm(learnerId: number, taskId: number, actorId: number | null): ConfirmResult;
+  /**
+   * Lessons in `manual` mode whose current video an active learner has opened and that wait for
+   * the admin's confirmation (the lesson is visible and not done yet). Read-only.
+   */
+  pendingConfirmations(): { learnerId: number; taskId: number }[];
 }
 
 export interface WatchDeps {
@@ -253,6 +258,29 @@ export function createWatchService(db: Db, deps: WatchDeps): WatchService {
           .run();
         return progressDto(task, video.media.id, video.durationSec, updated);
       });
+    },
+
+    pendingConfirmations() {
+      const rows = db
+        .select({
+          learnerId: watchProgress.learnerId,
+          taskId: watchProgress.taskId,
+          mediaId: watchProgress.mediaId,
+        })
+        .from(watchProgress)
+        .where(isNull(watchProgress.confirmedAt))
+        .all();
+      return rows
+        .filter((row) => {
+          const task = tasks.record(row.taskId);
+          if (task?.type !== VIDEO_LESSON_TYPE) return false;
+          const config = (task as TaskRecord<VideoLessonConfig>).config;
+          if (config.watchMode !== 'manual' || config.mediaId !== row.mediaId) return false;
+          if (users.findRow(row.learnerId)?.active !== true) return false;
+          const standing = progress.standing(row.learnerId, row.taskId);
+          return standing.visible && !standing.completed;
+        })
+        .map(({ learnerId, taskId }) => ({ learnerId, taskId }));
     },
 
     confirm(learnerId, taskId, actorId) {

@@ -65,7 +65,10 @@ export const routes: RouteObject[] = [
               {
                 element: <AdminLayout />,
                 children: [
-                  { index: true, element: <AdminStub title="Кабинет родителя" /> },
+                  {
+                    index: true,
+                    lazy: async () => ({ Component: (await import('../screens/admin/Home')).Home }),
+                  },
                   { path: 'device', element: <TrustDevice /> },
                   {
                     path: 'users',
