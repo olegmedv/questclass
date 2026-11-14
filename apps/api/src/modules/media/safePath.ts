@@ -1,7 +1,7 @@
 import { lstat } from 'node:fs/promises';
 import path from 'node:path';
 
-/** File types a media directory may hold (HLS, MP4, pictures, subtitles, metadata). */
+/** File types a media directory may hold (HLS, MP4, pictures, sounds, subtitles, metadata). */
 export const MEDIA_EXTENSIONS = [
   '.m3u8',
   '.ts',
@@ -10,6 +10,8 @@ export const MEDIA_EXTENSIONS = [
   '.webp',
   '.png',
   '.jpg',
+  '.mp3',
+  '.ogg',
   '.vtt',
   '.json',
 ] as const;

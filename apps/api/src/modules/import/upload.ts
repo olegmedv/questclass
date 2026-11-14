@@ -141,10 +141,18 @@ export function createUploader(deps: UploaderDeps): Uploader {
       })),
     );
 
+  /** Imports bring videos and pictures; a sound is only ever an admin upload (FEAT-058). */
+  const importKind = (kind: MediaRow['kind']): ImportMediaDto['kind'] => {
+    if (kind === 'audio') {
+      throw new Error('A sound is not an imported medium');
+    }
+    return kind;
+  };
+
   const mediaDto = async (row: MediaRow): Promise<ImportMediaDto> => ({
     id: row.id,
     role: row.role === 'question_image' ? 'question_image' : 'video',
-    kind: row.kind,
+    kind: importKind(row.kind),
     status: row.status,
     files: await fileDtos(row, media.files(row.id)),
   });

@@ -476,7 +476,7 @@ describe('/admin/subjects', () => {
     expect(await within(edit).findByText(/можно только убрать в архив/)).toBeInTheDocument();
   });
 
-  it('picks an uploaded picture as the icon; animations are not offered', async () => {
+  it('picks an uploaded picture as the icon; animations and sounds are not offered', async () => {
     const { calls } = mockApi(
       sessionApi(admin, {
         'GET /api/admin/subjects': { body: subjects },
@@ -486,6 +486,7 @@ describe('/admin/subjects', () => {
               id: 7,
               url: '/api/uploads/7',
               mime: 'image/png',
+              kind: 'image',
               sizeBytes: 2048,
               animated: false,
               durationMs: null,
@@ -495,9 +496,20 @@ describe('/admin/subjects', () => {
               id: 8,
               url: '/api/uploads/8',
               mime: 'image/webp',
+              kind: 'image',
               sizeBytes: 4096,
               animated: true,
               durationMs: 800,
+              createdAt: '2026-11-14T10:00:00.000Z',
+            },
+            {
+              id: 9,
+              url: '/api/uploads/9',
+              mime: 'audio/mpeg',
+              kind: 'audio',
+              sizeBytes: 9000,
+              animated: false,
+              durationMs: null,
               createdAt: '2026-11-14T10:00:00.000Z',
             },
           ],
@@ -513,6 +525,7 @@ describe('/admin/subjects', () => {
     expect(within(edit).getByRole('radio', { name: 'Встроенный значок «math»' })).toBeChecked();
     const own = await within(edit).findByRole('radio', { name: 'Загрузка № 7' });
     expect(within(edit).queryByRole('radio', { name: 'Загрузка № 8' })).not.toBeInTheDocument();
+    expect(within(edit).queryByRole('radio', { name: 'Загрузка № 9' })).not.toBeInTheDocument();
     await userEvent.click(own);
     await userEvent.click(within(edit).getByRole('button', { name: 'Сохранить' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());

@@ -4,7 +4,7 @@ Generated: 2026-11-14. Description: "MVP (Этап 1) КвестКласс 2 п�
 
 ## Summary
 - Total items: 61
-- Pending: 4 (FEAT-058–FEAT-061, фаза F «оформление из кабинета») | Done: 56 (FEAT-001–FEAT-046, FEAT-048–FEAT-057; FEAT-046 с оговоркой про GHCR-токен; FEAT-050 условно — нет замера из Калининграда) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
+- Pending: 3 (FEAT-059–FEAT-061, фаза F «оформление из кабинета») | Done: 57 (FEAT-001–FEAT-046, FEAT-048–FEAT-058; FEAT-046 с оговоркой про GHCR-токен; FEAT-050 условно — нет замера из Калининграда) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
 - Items requiring user decision: 1 — FEAT-047 (где хранить бэкапы), после MVP. Открытый вопрос из FEAT-041: должен ли сброс прогресса требовать пересмотра видео (сейчас нет).
 - Critic iterations: 3 (+ патч после вердикта)
 - Critic verdict: halted at max iterations; HIGH и MED третьего круга закрыты патчем после вердикта (повторно не критиковались), 11 LOW — известные риски
@@ -1462,7 +1462,13 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - `IconImage`, `IconPicker` в галерее `/dev/ui` в пяти состояниях (e2e-база из Docker).
 
 ### FEAT-058 — Загрузки: звук (MP3/OGG) и лимиты по месту назначения
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-15
+- **Notes**:
+  - Места замены — `packages/shared/src/assets/slots.ts` (`ASSET_SLOTS`, `assetSlot`, `assetSlotOfFile`, `ASSET_GROUPS`): все картинки, анимации и звуки манифеста (пара OGG+MP3 — одно место с ключом `.mp3`; шрифты и тексты — нет); перенесено сюда из FEAT-059, потому что `?for=` проверяет место уже при загрузке.
+  - `POST /api/admin/uploads?for=<файл>`: `uploadLimits(slot)` — не ниже общих и до двух встроенных (байты, стороны до 4096), кадры и длительность — не меньше встроенных; тело запроса до 20 МБ. Звук (`audio.ts`: ID3 / кадровая синхронизация MPEG / `OggS`, без декодирования) — только для звукового места; картинка для звукового места и звук без места — 415; неизвестное место — 400 `unknown_slot`. `media.kind = audio`, `.mp3`/`.ogg` в медиа-каталоге и в `/api/uploads/:id`.
+  - `UploadDto.kind`, `uploads.slotKind(id)` (image / animation / audio) для FEAT-059; `describe` для звука — undefined (каталог звук не возьмёт). Выбор картинок (товары, значки предметов) показывает только `kind = image`.
+  - Тесты: 3 в `uploads.test.ts` (звук только для места и отдаётся обратно; лимиты по встроенному: комната 1536 × 1024, ролик 121 кадр; неизвестное место), 3 в `packages/shared/test/slots.test.ts`, web — звук не предлагается значком. Всего 933.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: инвентаризация — звуков нельзя загрузить вообще; встроенные комнаты (1536 × 1024) и ролик серии (6 МБ, 121 кадр) больше общих лимитов загрузки.

@@ -21,7 +21,7 @@ import {
 } from './helpers/client';
 import { quickAdmin, quickLearner } from './helpers/fastUsers';
 import { createTestRuntime, type TestRuntime } from './helpers/db';
-import { png, jpeg, webpStill, webpAnimation, frames, MIB } from './fixtures/images';
+import { png, jpeg, webpStill, webpAnimation, frames, MIB, mp3, ogg } from './fixtures/images';
 
 const ASSETS = fileURLToPath(new URL('../../web/public/assets/', import.meta.url));
 const manifest = manifestJson as Record<
@@ -54,9 +54,13 @@ const ENV = {
 const cookieHeader = (client: TestClient) =>
   [...client.cookies].map(([k, v]) => `${k}=${v}`).join('; ');
 
-async function post(body: Uint8Array, client: TestClient = admin): Promise<Response> {
+async function post(
+  body: Uint8Array,
+  client: TestClient = admin,
+  path = '/api/admin/uploads',
+): Promise<Response> {
   return await createApp(runtime.ctx).app.request(
-    '/api/admin/uploads',
+    path,
     {
       method: 'POST',
       headers: { 'content-type': 'application/octet-stream', cookie: cookieHeader(client) },
@@ -266,5 +270,75 @@ describe('uploads in the catalog', () => {
     });
     expect(wrong.status).toBe(400);
     expect(await errorCode(wrong)).toBe('invalid_item');
+  });
+});
+
+describe('uploads that replace a built-in file (?for=)', () => {
+  const entry = (key: string) => {
+    const found = manifest[key];
+    if (!found) throw new Error(`Not in the manifest: ${key}`);
+    return found;
+  };
+  const SOUND = Object.keys(manifest).find(
+    (k) => k.startsWith('game/ui-audio/') && k.endsWith('.ogg'),
+  );
+  const ROOM = 'game/rooms/night-hotel/room_base.webp';
+  const MOVIE = 'celebrations/streak-five-v1.webp';
+  const forFile = (file: string) => `/api/admin/uploads?for=${encodeURIComponent(file)}`;
+
+  it('takes a sound only for a sound slot (MP3 or Ogg) and serves it back', async () => {
+    if (!SOUND) throw new Error('No built-in sound');
+    const plain = await post(mp3());
+    expect(plain.status).toBe(415);
+    expect(await errorCode(plain)).toBe('unsupported_type');
+
+    const res = await post(mp3(), admin, forFile(SOUND));
+    expect(res.status, await res.clone().text()).toBe(201);
+    const sound = (await res.json()) as CreatedUploadDto;
+    expect(sound).toMatchObject({
+      kind: 'audio',
+      mime: 'audio/mpeg',
+      width: null,
+      animated: false,
+    });
+    expect((await post(ogg(), admin, forFile(SOUND))).status).toBe(201);
+
+    const file = await admin.get(sound.url);
+    expect(file.status).toBe(200);
+    expect(file.headers.get('content-type')).toBe('audio/mpeg');
+    const list = (await (await admin.get('/api/admin/uploads')).json()) as UploadDto[];
+    expect(list.find((u) => u.id === sound.id)?.kind).toBe('audio');
+
+    // A picture for a sound slot and a sound for a picture slot are refused.
+    expect((await post(png(64, 64), admin, forFile(SOUND))).status).toBe(415);
+    expect((await post(mp3(), admin, forFile(ROOM))).status).toBe(415);
+    // The catalog never takes a sound for a picture.
+    expect(runtime.ctx.uploads.describe(sound.id)).toBeUndefined();
+    expect(runtime.ctx.uploads.slotKind(sound.id)).toBe('audio');
+  });
+
+  it('raises the limits to the built-in file it replaces', async () => {
+    const room = entry(ROOM);
+    const big = webpStill(room.w ?? 0, room.h ?? 0);
+    expect((await post(big)).status).toBe(422);
+    const replaced = await post(big, admin, forFile(ROOM));
+    expect(replaced.status, await replaced.clone().text()).toBe(201);
+    expect(runtime.ctx.uploads.slotKind(((await replaced.json()) as UploadDto).id)).toBe('image');
+
+    const movie = entry(MOVIE);
+    const long = webpAnimation(64, 64, frames(movie.frames ?? 0, 80));
+    expect((await post(long)).status).toBe(422);
+    const res = await post(long, admin, forFile(MOVIE));
+    expect(res.status, await res.clone().text()).toBe(201);
+    expect(runtime.ctx.uploads.slotKind(((await res.json()) as UploadDto).id)).toBe('animation');
+    // Still twice the built-in at most.
+    const huge = webpStill(4 * (room.w ?? 0), 64);
+    expect((await post(huge, admin, forFile(ROOM))).status).toBe(422);
+  });
+
+  it('refuses an unknown target', async () => {
+    const res = await post(png(32, 32), admin, forFile('game/nothing-here.webp'));
+    expect(res.status).toBe(400);
+    expect(await errorCode(res)).toBe('unknown_slot');
   });
 });

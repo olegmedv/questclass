@@ -1,4 +1,4 @@
-// Pictures for upload tests: headers of real formats (PNG, JPEG, WebP still and animated),
+// Files for upload tests: headers of real formats (PNG, JPEG, WebP still and animated, MP3, Ogg),
 // built byte by byte, so the checks run on the format rules and not on bundled files.
 export const bytes = (...parts: (number[] | Uint8Array | string)[]): Uint8Array => {
   const arrays = parts.map((p) =>
@@ -109,3 +109,10 @@ export function webpAnimation(
 
 export const frames = (n: number, ms = 100) => Array.from({ length: n }, () => ms);
 export const MIB = 1024 * 1024;
+
+/** An MP3 as the uploads see it: an ID3v2 tag header, then frame bytes. */
+export const mp3 = (padding = 64): Uint8Array =>
+  bytes('ID3', [4, 0, 0, 0, 0, 0, 0], [0xff, 0xfb, 0x90, 0x64], new Uint8Array(padding));
+
+/** An Ogg stream: the first page header. */
+export const ogg = (padding = 64): Uint8Array => bytes('OggS', [0, 2], new Uint8Array(padding));

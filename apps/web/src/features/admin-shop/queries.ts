@@ -20,6 +20,8 @@ export interface UploadDto {
   readonly id: number;
   readonly url: string;
   readonly mime: string;
+  /** A sound replaces a built-in sound only («Оформление»); pictures are offered everywhere else. */
+  readonly kind: 'image' | 'audio';
   readonly sizeBytes: number;
   readonly animated: boolean;
   readonly durationMs: number | null;

@@ -98,7 +98,7 @@ function SubjectIconPicker({
   const uploads = useUploads();
   const upload = useUploadPicture();
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const stills = (uploads.data ?? []).filter((item) => !item.animated);
+  const stills = (uploads.data ?? []).filter((item) => item.kind === 'image' && !item.animated);
   const options: IconPickerOption[] = [
     { value: NO_ICON, label: 'Без значка', icon: <ImageOff /> },
     ...SUBJECT_ICONS.map((icon) => ({
