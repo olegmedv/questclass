@@ -731,7 +731,13 @@ Discovery выполнен вручную, без Explore-агента: в ре�
     - считает sha256 и докачивает с `offset` (тесты: ffmpeg мокается, сервер — тестовый экземпляр API).
 
 ### FEAT-048 — Сид 5 уроков
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Фикстуры извлечены разово скриптом вне репозитория (в git не попал, в Scope его нет) из `QuestClass-Source/lib/subtitle-lesson-pack.json`: 5 уроков SPEC §9, предметы оригинала → ключи (`математика`→`math`, `изо`→`art`, `Окр мир`→`world`, `Русский`→`russian`, `чтение`→`reading`), ключи вопросов `q1…q8`, `correct` индекс → `a–d`, `helpVideo {startSeconds,endSeconds,quote}` → `evidence {start,end,quote}`. 53 PNG из `public/quiz` → WebP без потерь (sharp), имена `q<N>.webp` / `q<N>-<a–d>.webp` в `seed/images/<videoId>/` (0,97 → 0,35 МБ). Подписи `alt` картинок оригинала не перенесены: в схеме вопроса их нет. Расшифровок в пакете оригинала нет — сид без них.
+  - `lesson-prep seed [--videos] [--out]` (по умолчанию `videos` из настроек, `out` = `<videos>/packages`) пишет `<out>/<videoId>/lesson.json` (`externalId` = `yt-<videoId>`, `video` — абсолютный путь к `<videos>/<videoId>.mp4`, без копии) и `images/`; `hls/` между запусками сохраняется. Нет видео → перечисляются id и готовая команда `lesson-prep fetch … --out "<videos>"`, код выхода 2. `lesson-prep fetch [<ids>…] --out [--yt-dlp]` (без id — сид-уроки) вызывает установленный yt-dlp: `bv*[height<=480]+ba/b[height<=480]`, MP4, уже скачанные пропускаются.
+  - Тест «seed + import»: 5 черновиков, по 8 вопросов с evidence, 53 картинки (`media/<id>/q…webp`), видео `ready`; сэмпл-видео — `ffmpeg -f lavfi testsrc` 3 с (с настоящим ffmpeg, а без него ffmpeg мокается), сервер — тестовый экземпляр API в процессе. Фикстуры проверяются схемой манифеста и сигнатурой WebP; от `QuestClass-Source` тесты не зависят.
+  - Вне Scope: регистрация команд `seed` и `fetch` в `tools/lesson-prep/src/cli.ts` и раздел в `tools/lesson-prep/README.md`. Тестов 467 (+1 пропущен), было 462.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: SPEC §9 «5 уроков»; Critique 1 MED#9.

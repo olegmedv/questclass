@@ -1,0 +1,1218 @@
+{
+  "source": "QuestClass-Source/lib/subtitle-lesson-pack.json (SPEC §9), extracted once; pictures: public/quiz → WebP lossless",
+  "lessons": [
+    {
+      "videoId": "9rj3EcFE3eQ",
+      "subjectKey": "math",
+      "title": "Логические задачи",
+      "lessonDate": "2026-09-24",
+      "questions": [
+        {
+          "key": "q1",
+          "text": "Чему равно 24 : 8?",
+          "image": "q1.webp",
+          "options": [
+            {
+              "id": "a",
+              "text": "4",
+              "image": "q1-a.webp"
+            },
+            {
+              "id": "b",
+              "text": "32",
+              "image": "q1-b.webp"
+            },
+            {
+              "id": "c",
+              "text": "16",
+              "image": "q1-c.webp"
+            },
+            {
+              "id": "d",
+              "text": "3",
+              "image": "q1-d.webp"
+            }
+          ],
+          "correct": "d",
+          "evidence": {
+            "start": 440,
+            "end": 535,
+            "quote": null
+          }
+        },
+        {
+          "key": "q2",
+          "text": "Чему равно 35 : 7?",
+          "image": "q2.webp",
+          "options": [
+            {
+              "id": "a",
+              "text": "5",
+              "image": "q2-a.webp"
+            },
+            {
+              "id": "b",
+              "text": "42",
+              "image": "q2-b.webp"
+            },
+            {
+              "id": "c",
+              "text": "28",
+              "image": "q2-c.webp"
+            },
+            {
+              "id": "d",
+              "text": "6",
+              "image": "q2-d.webp"
+            }
+          ],
+          "correct": "a",
+          "evidence": {
+            "start": 470,
+            "end": 565,
+            "quote": null
+          }
+        },
+        {
+          "key": "q3",
+          "text": "Чему равно 27 : 9?",
+          "image": "q3.webp",
+          "options": [
+            {
+              "id": "a",
+              "text": "3",
+              "image": "q3-a.webp"
+            },
+            {
+              "id": "b",
+              "text": "4",
+              "image": "q3-b.webp"
+            },
+            {
+              "id": "c",
+              "text": "18",
+              "image": "q3-c.webp"
+            },
+            {
+              "id": "d",
+              "text": "36",
+              "image": "q3-d.webp"
+            }
+          ],
+          "correct": "a",
+          "evidence": {
+            "start": 675,
+            "end": 770,
+            "quote": null
+          }
+        },
+        {
+          "key": "q4",
+          "text": "Какое число лишнее среди чётных, если в ряду есть 9?",
+          "options": [
+            {
+              "id": "a",
+              "text": "6",
+              "image": "q4-a.webp"
+            },
+            {
+              "id": "b",
+              "text": "9",
+              "image": "q4-b.webp"
+            },
+            {
+              "id": "c",
+              "text": "12",
+              "image": "q4-c.webp"
+            },
+            {
+              "id": "d",
+              "text": "8",
+              "image": "q4-d.webp"
+            }
+          ],
+          "correct": "b",
+          "evidence": {
+            "start": 795,
+            "end": 890,
+            "quote": null
+          }
+        },
+        {
+          "key": "q5",
+          "text": "Чему равна сумма 9 + 19 + 14?",
+          "options": [
+            {
+              "id": "a",
+              "text": "52",
+              "image": "q5-a.webp"
+            },
+            {
+              "id": "b",
+              "text": "32",
+              "image": "q5-b.webp"
+            },
+            {
+              "id": "c",
+              "text": "41",
+              "image": "q5-c.webp"
+            },
+            {
+              "id": "d",
+              "text": "42",
+              "image": "q5-d.webp"
+            }
+          ],
+          "correct": "d",
+          "evidence": {
+            "start": 1170,
+            "end": 1265,
+            "quote": null
+          }
+        },
+        {
+          "key": "q6",
+          "text": "Если 42 уменьшить на 10, получится",
+          "image": "q6.webp",
+          "options": [
+            {
+              "id": "a",
+              "text": "10",
+              "image": "q6-a.webp"
+            },
+            {
+              "id": "b",
+              "text": "42",
+              "image": "q6-b.webp"
+            },
+            {
+              "id": "c",
+              "text": "32",
+              "image": "q6-c.webp"
+            },
+            {
+              "id": "d",
+              "text": "52",
+              "image": "q6-d.webp"
+            }
+          ],
+          "correct": "c",
+          "evidence": {
+            "start": 1390,
+            "end": 1485,
+            "quote": null
+          }
+        },
+        {
+          "key": "q7",
+          "text": "Стол высотой 8 дм, шкаф на 10 дм выше. Высота шкафа",
+          "image": "q7.webp",
+          "options": [
+            {
+              "id": "a",
+              "text": "8 дм",
+              "image": "q7-a.webp"
+            },
+            {
+              "id": "b",
+              "text": "2 дм",
+              "image": "q7-b.webp"
+            },
+            {
+              "id": "c",
+              "text": "10 дм",
+              "image": "q7-c.webp"
+            },
+            {
+              "id": "d",
+              "text": "18 дм",
+              "image": "q7-d.webp"
+            }
+          ],
+          "correct": "d",
+          "evidence": {
+            "start": 2300,
+            "end": 2395,
+            "quote": null
+          }
+        },
+        {
+          "key": "q8",
+          "text": "Шкаф 18 дм, стул на 14 дм ниже. Высота стула",
+          "image": "q8.webp",
+          "options": [
+            {
+              "id": "a",
+              "text": "14 дм",
+              "image": "q8-a.webp"
+            },
+            {
+              "id": "b",
+              "text": "4 дм",
+              "image": "q8-b.webp"
+            },
+            {
+              "id": "c",
+              "text": "32 дм",
+              "image": "q8-c.webp"
+            },
+            {
+              "id": "d",
+              "text": "18 дм",
+              "image": "q8-d.webp"
+            }
+          ],
+          "correct": "b",
+          "evidence": {
+            "start": 2335,
+            "end": 2430,
+            "quote": null
+          }
+        }
+      ]
+    },
+    {
+      "videoId": "AYusQ1cUPLg",
+      "subjectKey": "art",
+      "title": "Орнамент и смешивание красок",
+      "lessonDate": "2026-09-23",
+      "questions": [
+        {
+          "key": "q1",
+          "text": "Что такое орнамент?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Только портрет"
+            },
+            {
+              "id": "b",
+              "text": "Только пустой лист"
+            },
+            {
+              "id": "c",
+              "text": "Любая случайная клякса"
+            },
+            {
+              "id": "d",
+              "text": "Повторяющийся узор"
+            }
+          ],
+          "correct": "d",
+          "evidence": {
+            "start": 370,
+            "end": 465,
+            "quote": null
+          }
+        },
+        {
+          "key": "q2",
+          "text": "Как должны располагаться элементы орнамента?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Повторяться в определённом порядке"
+            },
+            {
+              "id": "b",
+              "text": "Только один раз"
+            },
+            {
+              "id": "c",
+              "text": "Только в одном углу"
+            },
+            {
+              "id": "d",
+              "text": "Всегда случайно"
+            }
+          ],
+          "correct": "a",
+          "evidence": {
+            "start": 400,
+            "end": 495,
+            "quote": null
+          }
+        },
+        {
+          "key": "q3",
+          "text": "Какие цвета называли основными в задании с красками?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Фиолетовый, зелёный и оранжевый",
+              "image": "q3-a.webp"
+            },
+            {
+              "id": "b",
+              "text": "Красный, жёлтый и синий",
+              "image": "q3-b.webp"
+            },
+            {
+              "id": "c",
+              "text": "Чёрный, белый и коричневый",
+              "image": "q3-c.webp"
+            },
+            {
+              "id": "d",
+              "text": "Зелёный, розовый и серый",
+              "image": "q3-d.webp"
+            }
+          ],
+          "correct": "b",
+          "evidence": {
+            "start": 675,
+            "end": 770,
+            "quote": null
+          }
+        },
+        {
+          "key": "q4",
+          "text": "Какой цвет получится из жёлтой и красной краски?",
+          "image": "q4.webp",
+          "options": [
+            {
+              "id": "a",
+              "text": "Белый",
+              "image": "q4-a.webp"
+            },
+            {
+              "id": "b",
+              "text": "Синий",
+              "image": "q4-b.webp"
+            },
+            {
+              "id": "c",
+              "text": "Зелёный",
+              "image": "q4-c.webp"
+            },
+            {
+              "id": "d",
+              "text": "Оранжевый",
+              "image": "q4-d.webp"
+            }
+          ],
+          "correct": "d",
+          "evidence": {
+            "start": 860,
+            "end": 955,
+            "quote": null
+          }
+        },
+        {
+          "key": "q5",
+          "text": "Какой цвет получится из синей и жёлтой краски?",
+          "image": "q5.webp",
+          "options": [
+            {
+              "id": "a",
+              "text": "Оранжевый",
+              "image": "q5-a.webp"
+            },
+            {
+              "id": "b",
+              "text": "Красный",
+              "image": "q5-b.webp"
+            },
+            {
+              "id": "c",
+              "text": "Белый",
+              "image": "q5-c.webp"
+            },
+            {
+              "id": "d",
+              "text": "Зелёный",
+              "image": "q5-d.webp"
+            }
+          ],
+          "correct": "d",
+          "evidence": {
+            "start": 1025,
+            "end": 1120,
+            "quote": null
+          }
+        },
+        {
+          "key": "q6",
+          "text": "Чем ставили повторяющиеся отпечатки на уроке?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Линейкой"
+            },
+            {
+              "id": "b",
+              "text": "Штампиками"
+            },
+            {
+              "id": "c",
+              "text": "Ножницами"
+            },
+            {
+              "id": "d",
+              "text": "Ластиком"
+            }
+          ],
+          "correct": "b",
+          "evidence": {
+            "start": 1235,
+            "end": 1330,
+            "quote": null
+          }
+        },
+        {
+          "key": "q7",
+          "text": "Где удобно смешивать краски?",
+          "options": [
+            {
+              "id": "a",
+              "text": "В закрытой тетради"
+            },
+            {
+              "id": "b",
+              "text": "На палитре"
+            },
+            {
+              "id": "c",
+              "text": "На одежде"
+            },
+            {
+              "id": "d",
+              "text": "На клавиатуре"
+            }
+          ],
+          "correct": "b",
+          "evidence": {
+            "start": 875,
+            "end": 970,
+            "quote": null
+          }
+        },
+        {
+          "key": "q8",
+          "text": "Продолжи узор: квадрат, круг, точка, квадрат, круг, …",
+          "image": "q8.webp",
+          "options": [
+            {
+              "id": "a",
+              "text": "Точка"
+            },
+            {
+              "id": "b",
+              "text": "Квадрат"
+            },
+            {
+              "id": "c",
+              "text": "Лист"
+            },
+            {
+              "id": "d",
+              "text": "Ещё один круг"
+            }
+          ],
+          "correct": "a",
+          "evidence": {
+            "start": 510,
+            "end": 605,
+            "quote": null
+          }
+        }
+      ]
+    },
+    {
+      "videoId": "2dIuk82WpX4",
+      "subjectKey": "world",
+      "title": "Что нас окружает. Повторение",
+      "lessonDate": "2026-09-07",
+      "questions": [
+        {
+          "key": "q1",
+          "text": "Сколько часов в сутках?",
+          "options": [
+            {
+              "id": "a",
+              "text": "7"
+            },
+            {
+              "id": "b",
+              "text": "12"
+            },
+            {
+              "id": "c",
+              "text": "24"
+            },
+            {
+              "id": "d",
+              "text": "60"
+            }
+          ],
+          "correct": "c",
+          "evidence": {
+            "start": 365,
+            "end": 460,
+            "quote": null
+          }
+        },
+        {
+          "key": "q2",
+          "text": "Сколько дней в неделе?",
+          "options": [
+            {
+              "id": "a",
+              "text": "10"
+            },
+            {
+              "id": "b",
+              "text": "7"
+            },
+            {
+              "id": "c",
+              "text": "30"
+            },
+            {
+              "id": "d",
+              "text": "5"
+            }
+          ],
+          "correct": "b",
+          "evidence": {
+            "start": 970,
+            "end": 1065,
+            "quote": null
+          }
+        },
+        {
+          "key": "q3",
+          "text": "Что мы обычно делаем ночью?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Гуляем на солнце"
+            },
+            {
+              "id": "b",
+              "text": "Спим"
+            },
+            {
+              "id": "c",
+              "text": "Обедаем"
+            },
+            {
+              "id": "d",
+              "text": "Идём в школу"
+            }
+          ],
+          "correct": "b",
+          "evidence": {
+            "start": 365,
+            "end": 460,
+            "quote": null
+          }
+        },
+        {
+          "key": "q4",
+          "text": "Живая природа — это то, что",
+          "options": [
+            {
+              "id": "a",
+              "text": "дышит, питается, растёт"
+            },
+            {
+              "id": "b",
+              "text": "сделано руками человека"
+            },
+            {
+              "id": "c",
+              "text": "светит только ночью"
+            },
+            {
+              "id": "d",
+              "text": "лежит без движения всегда"
+            }
+          ],
+          "correct": "a",
+          "evidence": {
+            "start": 1080,
+            "end": 1175,
+            "quote": null
+          }
+        },
+        {
+          "key": "q5",
+          "text": "Что относится к неживой природе?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Улитка"
+            },
+            {
+              "id": "b",
+              "text": "Берёза"
+            },
+            {
+              "id": "c",
+              "text": "Камень"
+            },
+            {
+              "id": "d",
+              "text": "Ромашка"
+            }
+          ],
+          "correct": "c",
+          "evidence": {
+            "start": 1160,
+            "end": 1255,
+            "quote": null
+          }
+        },
+        {
+          "key": "q6",
+          "text": "Что из этого овощ?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Абрикос"
+            },
+            {
+              "id": "b",
+              "text": "Мандарин"
+            },
+            {
+              "id": "c",
+              "text": "Яблоко"
+            },
+            {
+              "id": "d",
+              "text": "Морковь"
+            }
+          ],
+          "correct": "d",
+          "evidence": {
+            "start": 1720,
+            "end": 1815,
+            "quote": null
+          }
+        },
+        {
+          "key": "q7",
+          "text": "Земля — это",
+          "options": [
+            {
+              "id": "a",
+              "text": "планета"
+            },
+            {
+              "id": "b",
+              "text": "гриб"
+            },
+            {
+              "id": "c",
+              "text": "спутник"
+            },
+            {
+              "id": "d",
+              "text": "звезда"
+            }
+          ],
+          "correct": "a",
+          "evidence": {
+            "start": 2135,
+            "end": 2230,
+            "quote": null
+          }
+        },
+        {
+          "key": "q8",
+          "text": "Мухомор — это гриб",
+          "options": [
+            {
+              "id": "a",
+              "text": "несъедобный"
+            },
+            {
+              "id": "b",
+              "text": "фрукт"
+            },
+            {
+              "id": "c",
+              "text": "съедобный"
+            },
+            {
+              "id": "d",
+              "text": "овощ"
+            }
+          ],
+          "correct": "a",
+          "evidence": {
+            "start": 2310,
+            "end": 2405,
+            "quote": null
+          }
+        }
+      ]
+    },
+    {
+      "videoId": "JRvhRLBz4-I",
+      "subjectKey": "russian",
+      "title": "Входная проверочная работа (повтор знаний)",
+      "lessonDate": "2026-09-07",
+      "questions": [
+        {
+          "key": "q1",
+          "text": "Как проверить парную согласную на конце слова?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Написать слово с большой буквы"
+            },
+            {
+              "id": "b",
+              "text": "Подобрать проверочное слово"
+            },
+            {
+              "id": "c",
+              "text": "Поставить мягкий знак"
+            },
+            {
+              "id": "d",
+              "text": "Посчитать слоги"
+            }
+          ],
+          "correct": "b",
+          "evidence": {
+            "start": 215,
+            "end": 310,
+            "quote": null
+          }
+        },
+        {
+          "key": "q2",
+          "text": "Чем подчёркивают подлежащее?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Волной"
+            },
+            {
+              "id": "b",
+              "text": "Одной чертой"
+            },
+            {
+              "id": "c",
+              "text": "Точками"
+            },
+            {
+              "id": "d",
+              "text": "Двумя чертами"
+            }
+          ],
+          "correct": "b",
+          "evidence": {
+            "start": 800,
+            "end": 895,
+            "quote": null
+          }
+        },
+        {
+          "key": "q3",
+          "text": "Чем подчёркивают сказуемое?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Двумя чертами"
+            },
+            {
+              "id": "b",
+              "text": "Кружком"
+            },
+            {
+              "id": "c",
+              "text": "Галочкой"
+            },
+            {
+              "id": "d",
+              "text": "Одной чертой"
+            }
+          ],
+          "correct": "a",
+          "evidence": {
+            "start": 800,
+            "end": 895,
+            "quote": null
+          }
+        },
+        {
+          "key": "q4",
+          "text": "Слова с противоположным значением — это",
+          "options": [
+            {
+              "id": "a",
+              "text": "Предложения"
+            },
+            {
+              "id": "b",
+              "text": "Антонимы"
+            },
+            {
+              "id": "c",
+              "text": "Однокоренные слова"
+            },
+            {
+              "id": "d",
+              "text": "Окончания"
+            }
+          ],
+          "correct": "b",
+          "evidence": {
+            "start": 1670,
+            "end": 1765,
+            "quote": null
+          }
+        },
+        {
+          "key": "q5",
+          "text": "Какая часть слова изменяется?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Заголовок"
+            },
+            {
+              "id": "b",
+              "text": "Весь текст"
+            },
+            {
+              "id": "c",
+              "text": "Корень"
+            },
+            {
+              "id": "d",
+              "text": "Окончание"
+            }
+          ],
+          "correct": "d",
+          "evidence": {
+            "start": 1420,
+            "end": 1515,
+            "quote": null
+          }
+        },
+        {
+          "key": "q6",
+          "text": "Как пишется кличка животного?",
+          "options": [
+            {
+              "id": "a",
+              "text": "С большой буквы"
+            },
+            {
+              "id": "b",
+              "text": "Только цифрами"
+            },
+            {
+              "id": "c",
+              "text": "С маленькой буквы"
+            },
+            {
+              "id": "d",
+              "text": "Без букв"
+            }
+          ],
+          "correct": "a",
+          "evidence": {
+            "start": 625,
+            "end": 720,
+            "quote": null
+          }
+        },
+        {
+          "key": "q7",
+          "text": "Имя существительное отвечает на вопросы",
+          "options": [
+            {
+              "id": "a",
+              "text": "Кто? Что?"
+            },
+            {
+              "id": "b",
+              "text": "Что делать? Что сделать?"
+            },
+            {
+              "id": "c",
+              "text": "Какой? Какая?"
+            },
+            {
+              "id": "d",
+              "text": "Где? Куда?"
+            }
+          ],
+          "correct": "a",
+          "evidence": {
+            "start": 960,
+            "end": 1055,
+            "quote": null
+          }
+        },
+        {
+          "key": "q8",
+          "text": "Глагол обозначает",
+          "options": [
+            {
+              "id": "a",
+              "text": "Признак предмета"
+            },
+            {
+              "id": "b",
+              "text": "Действие"
+            },
+            {
+              "id": "c",
+              "text": "Предмет"
+            },
+            {
+              "id": "d",
+              "text": "Число"
+            }
+          ],
+          "correct": "b",
+          "evidence": {
+            "start": 1020,
+            "end": 1115,
+            "quote": null
+          }
+        }
+      ]
+    },
+    {
+      "videoId": "uilgFrGZlsU",
+      "subjectKey": "reading",
+      "title": "Устное народное творчество",
+      "lessonDate": "2026-09-08",
+      "questions": [
+        {
+          "key": "q1",
+          "text": "Фольклор — это",
+          "options": [
+            {
+              "id": "a",
+              "text": "только современные песни по радио"
+            },
+            {
+              "id": "b",
+              "text": "устное народное творчество"
+            },
+            {
+              "id": "c",
+              "text": "только газеты"
+            },
+            {
+              "id": "d",
+              "text": "только школьные учебники"
+            }
+          ],
+          "correct": "b",
+          "evidence": {
+            "start": 28,
+            "end": 123,
+            "quote": null
+          }
+        },
+        {
+          "key": "q2",
+          "text": "Как передавали фольклор?",
+          "options": [
+            {
+              "id": "a",
+              "text": "только по телефону"
+            },
+            {
+              "id": "b",
+              "text": "только по компьютеру"
+            },
+            {
+              "id": "c",
+              "text": "только в магазине"
+            },
+            {
+              "id": "d",
+              "text": "из уст в уста, из поколения в поколение"
+            }
+          ],
+          "correct": "d",
+          "evidence": {
+            "start": 28,
+            "end": 123,
+            "quote": null
+          }
+        },
+        {
+          "key": "q3",
+          "text": "Что относится к малым жанрам фольклора?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Загадка и пословица"
+            },
+            {
+              "id": "b",
+              "text": "Учебник математики"
+            },
+            {
+              "id": "c",
+              "text": "Роман"
+            },
+            {
+              "id": "d",
+              "text": "Газета"
+            }
+          ],
+          "correct": "a",
+          "evidence": {
+            "start": 728,
+            "end": 823,
+            "quote": null
+          }
+        },
+        {
+          "key": "q4",
+          "text": "Колыбельная песня нужна, чтобы",
+          "options": [
+            {
+              "id": "a",
+              "text": "убаюкать ребёнка"
+            },
+            {
+              "id": "b",
+              "text": "посчитать игроков"
+            },
+            {
+              "id": "c",
+              "text": "вызвать дождь"
+            },
+            {
+              "id": "d",
+              "text": "танцевать"
+            }
+          ],
+          "correct": "a",
+          "evidence": {
+            "start": 1225,
+            "end": 1320,
+            "quote": null
+          }
+        },
+        {
+          "key": "q5",
+          "text": "Закличка — это песня, в которой",
+          "options": [
+            {
+              "id": "a",
+              "text": "читают новости"
+            },
+            {
+              "id": "b",
+              "text": "решают примеры"
+            },
+            {
+              "id": "c",
+              "text": "обращаются к природе"
+            },
+            {
+              "id": "d",
+              "text": "учат таблицу"
+            }
+          ],
+          "correct": "c",
+          "evidence": {
+            "start": 1410,
+            "end": 1505,
+            "quote": null
+          }
+        },
+        {
+          "key": "q6",
+          "text": "Кто из героев — богатырь из былин?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Колобок"
+            },
+            {
+              "id": "b",
+              "text": "Репка"
+            },
+            {
+              "id": "c",
+              "text": "Муха"
+            },
+            {
+              "id": "d",
+              "text": "Илья Муромец"
+            }
+          ],
+          "correct": "d",
+          "evidence": {
+            "start": 1000,
+            "end": 1095,
+            "quote": null
+          }
+        },
+        {
+          "key": "q7",
+          "text": "Кто сочиняет народные сказки?",
+          "options": [
+            {
+              "id": "a",
+              "text": "Только актёр"
+            },
+            {
+              "id": "b",
+              "text": "Народ"
+            },
+            {
+              "id": "c",
+              "text": "Только художник"
+            },
+            {
+              "id": "d",
+              "text": "Только один известный писатель"
+            }
+          ],
+          "correct": "b",
+          "evidence": {
+            "start": 825,
+            "end": 920,
+            "quote": null
+          }
+        },
+        {
+          "key": "q8",
+          "text": "«Девица в темнице, а коса на улице» — загадка про",
+          "options": [
+            {
+              "id": "a",
+              "text": "морковь"
+            },
+            {
+              "id": "b",
+              "text": "солнце"
+            },
+            {
+              "id": "c",
+              "text": "лошадь"
+            },
+            {
+              "id": "d",
+              "text": "дом"
+            }
+          ],
+          "correct": "a",
+          "evidence": {
+            "start": 500,
+            "end": 595,
+            "quote": null
+          }
+        }
+      ]
+    }
+  ]
+}

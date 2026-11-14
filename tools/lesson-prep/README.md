@@ -97,3 +97,17 @@ lesson-prep import <папка> [<папка>…] [--config файл] [--server 
 - опубликованный урок — ревизия, которую админ принимает или отклоняет в админке.
 
 Повторный запуск без изменений ничего не перекодирует и не загружает.
+
+## Сид: 5 уроков оригинала (`seed`, `fetch`)
+
+`seed/original-5.json` и `seed/images/` — разово извлечённые из оригинала (`lib/subtitle-lesson-pack.json`) 5 уроков SPEC §9, по одному на предмет: вопросы, варианты, ответы, фрагменты-подсказки (evidence) и 53 картинки (WebP без потерь). Оригинал для работы не нужен.
+
+```sh
+lesson-prep fetch --out D:/QuestClassMedia/seed          # видео сид-уроков в 480p (нужен yt-dlp)
+lesson-prep seed --videos D:/QuestClassMedia/seed        # пакеты в <videos>/packages/<videoId>/
+lesson-prep import D:/QuestClassMedia/seed/packages/*    # HLS + загрузка, 5 черновиков
+```
+
+- `seed` пишет `lesson.json` и `images/`; видео не копируется (`"video"` указывает на файл в папке видео), готовый `hls/` сохраняется между запусками. Если какого-то видео нет, `seed` называет его и печатает команду `fetch` (код выхода 2).
+- `fetch [<videoId>…] --out <папка> [--yt-dlp <путь>]` вызывает установленный yt-dlp (лучшее до 480p, MP4) и пропускает уже скачанные.
+- Папку видео можно задать в настройках: `"videos": "D:/QuestClassMedia/seed"`.

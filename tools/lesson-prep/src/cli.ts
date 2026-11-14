@@ -1,7 +1,9 @@
 // lesson-prep: prepares lessons on the admin's PC and uploads them to QuestClass.
 import path from 'node:path';
 import { parseArgs } from 'node:util';
+import { fetchVideos, FetchError } from './commands/fetch';
 import { importLesson, LessonError } from './commands/import';
+import { buildSeed, loadSeed, SeedError } from './commands/seed';
 import {
   ConfigError,
   DEFAULT_CONFIG_PATH,
@@ -19,6 +21,11 @@ const USAGE = `Использование: lesson-prep <команда> [пар�
 Команды:
   import <папка>…    проверить lesson.json, сделать HLS 360p + 480p (ffmpeg, NVENC если есть)
                      и загрузить урок в КвестКласс (прерванная загрузка продолжается)
+  seed [--videos <папка>] [--out <папка>]
+                     собрать пакеты 5 сид-уроков из <videos>/<videoId>.mp4
+                     (по умолчанию videos из настроек, out = <videos>/packages)
+  fetch [<videoId>…] --out <папка> [--yt-dlp <путь>]
+                     скачать видео YouTube в 480p установленным yt-dlp (по умолчанию — сид-уроки)
 
 Параметры:
   --config <файл>    файл настроек (по умолчанию ${DEFAULT_CONFIG_PATH})
@@ -67,6 +74,67 @@ async function runImport(argv: readonly string[]): Promise<number> {
   return 0;
 }
 
+/** Settings when the file exists; seed and fetch can do without them. */
+function optionalConfig(file: string | undefined) {
+  try {
+    return loadConfig(file ?? DEFAULT_CONFIG_PATH);
+  } catch (err) {
+    if (err instanceof ConfigError && file === undefined) {
+      return undefined;
+    }
+    throw err;
+  }
+}
+
+async function runSeed(argv: readonly string[]): Promise<number> {
+  const { values } = parseArgs({
+    args: [...argv],
+    options: {
+      config: { type: 'string' },
+      videos: { type: 'string' },
+      out: { type: 'string' },
+    },
+  });
+  const videos = values.videos ?? optionalConfig(values.config)?.videos;
+  if (videos === undefined) {
+    throw new ConfigError('Укажите папку с видео: --videos <папка> или "videos" в настройках');
+  }
+  const out = path.resolve(values.out ?? path.join(videos, 'packages'));
+  log(`Сид-уроки → ${out}`);
+  const result = await buildSeed({ videos: path.resolve(videos), out, log });
+  if (result.packages.length > 0) {
+    const folders = result.packages.map((p) => `"${p}"`).join(' ');
+    log(`Дальше: lesson-prep import ${folders}`);
+  }
+  return result.missing.length > 0 ? 2 : 0;
+}
+
+async function runFetch(argv: readonly string[]): Promise<number> {
+  const { values, positionals } = parseArgs({
+    args: [...argv],
+    allowPositionals: true,
+    options: {
+      config: { type: 'string' },
+      out: { type: 'string' },
+      'yt-dlp': { type: 'string' },
+    },
+  });
+  const out = values.out ?? optionalConfig(values.config)?.videos;
+  if (out === undefined) {
+    throw new ConfigError('Укажите папку: --out <папка> или "videos" в настройках');
+  }
+  const ids =
+    positionals.length > 0 ? positionals : (await loadSeed()).map((lesson) => lesson.videoId);
+  const result = await fetchVideos(ids, {
+    out: path.resolve(out),
+    run: spawnRunner,
+    ...(values['yt-dlp'] !== undefined && { ytDlp: values['yt-dlp'] }),
+    log,
+  });
+  log(`Скачано: ${result.downloaded.length}, уже были: ${result.skipped.length}`);
+  return 0;
+}
+
 async function main(argv: readonly string[]): Promise<number> {
   const [command, ...rest] = argv;
   if (command === undefined || command === '--help' || command === '-h') {
@@ -83,6 +151,10 @@ async function main(argv: readonly string[]): Promise<number> {
     switch (command) {
       case 'import':
         return await runImport(rest);
+      case 'seed':
+        return await runSeed(rest);
+      case 'fetch':
+        return await runFetch(rest);
       default:
         process.stderr.write(`Неизвестная команда: ${command}\n${USAGE}\n`);
         return 1;
@@ -92,7 +164,9 @@ async function main(argv: readonly string[]): Promise<number> {
       err instanceof ConfigError ||
       err instanceof LessonError ||
       err instanceof FfmpegError ||
-      err instanceof UploadError
+      err instanceof UploadError ||
+      err instanceof SeedError ||
+      err instanceof FetchError
     ) {
       process.stderr.write(`Ошибка: ${err.message}\n`);
       return 1;
