@@ -3,8 +3,8 @@
 Generated: 2026-11-14. Description: "MVP (Этап 1) КвестКласс 2 по docs/SPEC.md §9 с учётом §1–§8; поведение — docs/spec/01 и 02 (только пункты MVP); визуал — docs/reference-screens/. Репозиторий пустой — план с нуля: каркас, дизайн-система, auth, задания с плагинами типов, импорт видео, плеер, прогресс с ручным управлением админом, экономика, магазин, герой, админка, настройки с секретами, сид 5 уроков, деплой на общий Caddy немецкого VPS. Ограничение: ≤200 МБ RAM." Source CLAUDE.md: `CLAUDE.md`.
 
 ## Summary
-- Total items: 54
-- Pending: 52 | Done: 1 (FEAT-050, условно) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
+- Total items: 56
+- Pending: 53 | Done: 2 (FEAT-050 условно, FEAT-051) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
 - Items requiring user decision: 3 — FEAT-050 и FEAT-046: SSH разрешён пользователем 14.11.2026; FEAT-047 отложен до после MVP
 - Critic iterations: 3 (+ патч после вердикта)
 - Critic verdict: halted at max iterations; HIGH и MED третьего круга закрыты патчем после вердикта (повторно не критиковались), 11 LOW — известные риски
@@ -95,7 +95,7 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - stylelint настроен: цвета (`color-no-hex` и именованные) разрешены только в `packages/ui/src/tokens.css`.
 
 ### FEAT-051 — Сортировка чеклистов паритета (PARITY.md)
-- **Status**: pending
+- **Status**: done — docs/PARITY.md, scripts/parity-check.mjs (--strict зелёный), решения пользователя 14.11.2026 внесены
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: SPEC §11 «все пункты модулей… отмечены, или перенесены в „не переносить“, или отложены с причиной»; Critique 1 HIGH#10.
@@ -306,6 +306,9 @@ Discovery выполнен вручную, без Explore-агента: в ре�
 - **DoD**:
   - `task_progress(learner, task, epoch, state started|passed|closed, score, completed_at, closed_by, closed_reason)`; UNIQUE `(learner, task, epoch)`.
   - `progress_resets(id, learner, task NULL=все, at, by)`. Сброс увеличивает epoch: прежние попытки и факты не учитываются, ledger не трогается, повторная награда не выплачивается (тот же `idem_key`) (тест).
+  - Решения пользователя 14.11.2026:
+    - по умолчанию `rotation`, круг `progress.rotationSubjects` = russian → math → world → reading, шаг круга — после **зачёта теста**; ИЗО и труд — по порядку или по назначению;
+    - назначенные ученику задания идут первыми в «следующем» (тест).
   - Доступность вычисляется при чтении и ничего не пишет (тест). Режим `progress.unlockMode`:
     - `sequential` — по порядку в предмете;
     - `rotation` — следующий предмет по кругу, как автоматическая ротация оригинала;
@@ -313,7 +316,8 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Админ:
     - `close {withReward}` — награда через `idem_key = task:<t>:learner:<l>:pass`, выплатить дважды нельзя;
     - `reopen` («Пройти с мамой»): новая попытка в новом epoch. Если результат лучше, доплачивается разница до награды за лучший результат (`idem_key = task:<t>:learner:<l>:topup:<epoch>`), дважды не платится (тест);
-    - `reset` — по заданию или по всем.
+    - `reset` — по заданию или по всем: попытки, прохождения и серия. Монеты, покупки и герой остаются;
+    - `coins-reset` — «Обнулить монеты» одной компенсирующей строкой ledger до 0, идемпотентно по requestId (тест).
 
     Каждое действие пишется в audit (тесты + строки FEAT-049).
   - `GET /api/admin/learners/:id/progress` — задания с состоянием, баллом, датами и доступностью (тест).
@@ -705,6 +709,7 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - `apps/web/src/screens/learner/Home.tsx`, `apps/web/src/features/{tasks,streak,wallet}/*`, `apps/web/test/home.test.tsx`, `e2e/home.spec.ts`
 - **Depends on**: FEAT-028, FEAT-009, FEAT-015, FEAT-021, FEAT-035, FEAT-053
 - **DoD**:
+  - Счётчик «Задания от родителя: X из Y», если есть назначенные (решение 14.11.2026).
   - Карточка следующего задания: предмет, название, герой (живой 3 с), «Начать», шаги. «Серия занятий» N/5 раскрывается. Выбор предмета или задания. Пустые состояния (тесты).
   - e2e-скриншоты 390 и 1440. В PR — ручная сверка с reference-screens 01, 02, 04 (отметка в PARITY.md).
 
@@ -718,6 +723,7 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - `apps/web/src/task-types/quiz/{Player.tsx,Result.tsx}`, `apps/web/src/features/attempts/*`, `apps/web/test/quiz-player.test.tsx`, `e2e/quiz.spec.ts`
 - **Depends on**: FEAT-027, FEAT-010, FEAT-038, FEAT-053
 - **DoD**:
+  - «Послушать вопрос»: браузерный `speechSynthesis` ru-RU читает вопрос и варианты. Если русского голоса нет, кнопка скрыта (тест с моком). Решение 14.11.2026; «Читать автоматически» — этап 2.
   - QuestionCard и OptionTile с картинками. Ответ фиксируется сразу. Результат по каждому вопросу и награда (Celebration). «Пересдать», если разрешено, иначе «Попросить пересдачу» (`retry_request`).
   - e2e: зачёт, провал с автопересдачей, исчерпанные пересдачи.
 
@@ -863,13 +869,44 @@ Discovery выполнен вручную, без Explore-агента: в ре�
 - **Status**: pending
 - **Risk**: LOW
 - **Requires decision**: N
-- **Spec reference**: reference-screens 21 («История»).
+- **Spec reference**: раздел «История» кабинета оригинала (события, результаты); эталон 21 — это главная кабинета, см. FEAT-055.
 - **Rule**: CLAUDE.md 8
 - **Scope**:
   - `apps/web/src/screens/admin/History.tsx`, тесты
 - **Depends on**: FEAT-039, FEAT-006, FEAT-007
 - **DoD**:
   - Лента начислений и действий админа с фильтрами по ученику, типу и дате, постранично (тест).
+
+### FEAT-055 — Админка: главная «Что нужно сделать?»
+- **Status**: pending
+- **Risk**: LOW
+- **Requires decision**: N
+- **Spec reference**: PARITY G-1 (строка 01-087), reference-screens 21 («Кабинет родителя»).
+- **Rule**: CLAUDE.md 2, 8, 11
+- **Scope**:
+  - `apps/api/src/modules/admin-inbox/{routes.ts,service.ts}`, `apps/web/src/screens/admin/Home.tsx`, `apps/api/test/admin-inbox.test.ts`, `apps/web/test/admin-home.test.tsx`
+- **Depends on**: FEAT-039, FEAT-041, FEAT-042, FEAT-012, FEAT-053
+- **DoD**:
+  - `GET /api/admin/inbox` (admin) только читает. Отдаёт счётчики очередей: дела на проверку, просьбы о пересдаче, желания и Robux к выдаче, ревизии импорта, просмотры, ждущие подтверждения (тест + строки FEAT-049).
+  - `/admin` по умолчанию открывает главную:
+    - карточки очередей со ссылками;
+    - быстрые действия «Выдать желание», «Проверить дела», «Открыть задания»;
+    - поиск по разделам и ключам настроек;
+    - хлебные крошки.
+  - e2e-скриншот. Ручная сверка с reference 21 — отметка в PARITY.md.
+
+### FEAT-056 — Смена своего пароля админом
+- **Status**: pending
+- **Risk**: LOW
+- **Requires decision**: N
+- **Spec reference**: PARITY 01-085 (решение пользователя 14.11.2026).
+- **Rule**: CLAUDE.md 11
+- **Scope**:
+  - `apps/api/src/modules/auth/{routes.ts,service.ts}` (маршрут смены пароля), `apps/web/src/screens/admin/Profile.tsx`, `apps/api/test/password-change.test.ts`
+- **Depends on**: FEAT-004, FEAT-039
+- **DoD**:
+  - `PUT /api/me/password {current, next}` (admin): нужен верный текущий пароль, иначе 403 с той же защитой от перебора. Остальные сессии этого админа отзываются, текущая остаётся. Пишется в audit без значений (тесты + FEAT-049).
+  - Экран «Профиль» в админке с формой смены пароля (тест).
 
 ### Фаза E — деплой
 
