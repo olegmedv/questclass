@@ -1,4 +1,6 @@
 .qc-table-wrap {
+  /* Keeps visually hidden cell text (absolutely positioned) inside the scrolling frame. */
+  position: relative;
   width: 100%;
   max-width: 100%;
   overflow-x: auto;

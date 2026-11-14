@@ -41,3 +41,6 @@ export {
   X,
   Zap,
 } from 'lucide-react';
+
+// Admin screens (FEAT-039…056).
+export { Copy, Pencil, Plus } from 'lucide-react';

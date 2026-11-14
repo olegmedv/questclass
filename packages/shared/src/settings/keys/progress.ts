@@ -6,7 +6,9 @@ import { defineSetting } from '../define';
 /** How tasks open for learners (spec/01 §2.7–2.8; user decision 14.11.2026). */
 export const progressSettings = {
   'progress.unlockMode': defineSetting<UnlockMode>({
-    schema: z.enum(UNLOCK_MODES),
+    schema: z.enum(UNLOCK_MODES).meta({
+      optionLabels: { rotation: 'По кругу предметов', sequential: 'По порядку', all: 'Все сразу' },
+    }),
     default: 'rotation',
     label: 'Как открываются задания',
     description:

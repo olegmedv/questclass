@@ -1,5 +1,5 @@
 // Route layouts: the learner pages live inside LearnerShell, the admin pages inside AdminShell.
-import { House, TabletSmartphone } from '@questclass/ui';
+import { House, Settings, TabletSmartphone, ToastProvider, Users } from '@questclass/ui';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { useLogout, useMe } from '../api/queries/auth';
 import { useWallet } from '../features/wallet/queries';
@@ -14,6 +14,13 @@ export const ADMIN_SECTIONS: readonly AdminSection[] = [
     label: 'Устройства',
     href: '/admin/device',
     icon: <TabletSmartphone aria-hidden="true" />,
+  },
+  { id: 'users', label: 'Пользователи', href: '/admin/users', icon: <Users aria-hidden="true" /> },
+  {
+    id: 'settings',
+    label: 'Настройки',
+    href: '/admin/settings',
+    icon: <Settings aria-hidden="true" />,
   },
 ];
 
@@ -74,7 +81,9 @@ export function AdminLayout() {
         logout.mutate();
       }}
     >
-      <Outlet />
+      <ToastProvider>
+        <Outlet />
+      </ToastProvider>
     </AdminShell>
   );
 }

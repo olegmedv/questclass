@@ -57,6 +57,7 @@ export const routes: RouteObject[] = [
               { path: '/tasks/:id', element: <TaskScreen /> },
             ],
           },
+          // Admin screens are loaded on demand: a learner's tablet never downloads them.
           {
             path: '/admin',
             element: <RequireRole role="admin" />,
@@ -66,6 +67,30 @@ export const routes: RouteObject[] = [
                 children: [
                   { index: true, element: <AdminStub title="Кабинет родителя" /> },
                   { path: 'device', element: <TrustDevice /> },
+                  {
+                    path: 'users',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/Users')).Users,
+                    }),
+                  },
+                  {
+                    path: 'settings',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/Settings')).Settings,
+                    }),
+                  },
+                  {
+                    path: 'settings/secrets',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/Secrets')).Secrets,
+                    }),
+                  },
+                  {
+                    path: 'settings/import-tokens',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/ImportTokens')).ImportTokens,
+                    }),
+                  },
                   { path: '*', element: <AdminStub title="Такой страницы нет" /> },
                 ],
               },
