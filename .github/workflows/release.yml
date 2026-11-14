@@ -1,0 +1,70 @@
+# Production image → private GHCR: ghcr.io/<owner>/questclass:<commit sha>, plus :latest from main.
+# The server only pulls it (CLAUDE.md «Деплой»); it never builds.
+name: Release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  image:
+    name: Build and push the image
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      IMAGE: ghcr.io/${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Tags
+        id: tags
+        run: |
+          image="${IMAGE,,}"
+          tags="$image:${GITHUB_SHA}"
+          if [ "$GITHUB_REF" = "refs/heads/main" ]; then
+            tags="$tags,$image:latest"
+          fi
+          echo "tags=$tags" >> "$GITHUB_OUTPUT"
+          echo "Tags: $tags"
+
+      - uses: docker/setup-buildx-action@v4
+
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: deploy/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          # One plain manifest per tag (no attestation entries listed as untagged versions).
+          provenance: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # The budget of FEAT-044: under 250 MB unpacked (what `docker images` shows on the server).
+      - name: Image size
+        run: |
+          ref="${IMAGE,,}:${GITHUB_SHA}"
+          docker pull -q "$ref"
+          unpacked=$(docker image inspect "$ref" --format '{{.Size}}')
+          compressed=$(docker buildx imagetools inspect --raw "$ref" | jq '[.layers[].size] | add')
+          echo "Unpacked: $((unpacked / 1000000)) MB, compressed in GHCR: $((compressed / 1000000)) MB"
+          test "$unpacked" -lt 250000000

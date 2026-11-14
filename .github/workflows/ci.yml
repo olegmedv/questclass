@@ -1,0 +1,101 @@
+# Checks of every push and pull request: lint, typecheck, unit/integration tests, e2e (Chromium).
+# Needs nothing outside the repository (no QuestClass-Source: tests that would read it skip).
+name: CI
+
+on:
+  push:
+    branches: ['**']
+    paths-ignore: ['docs/**', '**/*.md']
+  pull_request:
+    paths-ignore: ['docs/**', '**/*.md']
+
+# A newer push to the same branch cancels the run in progress (keeps Actions minutes down).
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+
+jobs:
+  check:
+    name: Lint, typecheck, test
+    # A pull request from a branch of this repository is already checked by its push run.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          package-manager-cache: false
+
+      - name: pnpm via corepack
+        run: |
+          corepack enable
+          echo "PNPM_STORE=$(corepack pnpm store path --silent)" >> "$GITHUB_ENV"
+
+      - uses: actions/cache@v6
+        with:
+          path: ${{ env.PNPM_STORE }}
+          key: pnpm-store-${{ runner.os }}-node22-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-store-${{ runner.os }}-node22-
+
+      # Real-ffmpeg tests of lesson-prep (HLS) run instead of being skipped.
+      - name: ffmpeg
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends ffmpeg > /dev/null
+
+      - run: corepack pnpm install --frozen-lockfile
+      - run: corepack pnpm lint
+      - run: corepack pnpm typecheck
+      - run: corepack pnpm test
+
+  e2e:
+    name: e2e (Chromium)
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    # The same image (and the same additions) as e2e/Dockerfile, where the screenshot baselines
+    # are made: the Playwright version comes from e2e/package.json and must match this tag.
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --ipc=host --init
+    env:
+      CI: '1'
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Runner tools (as in e2e/Dockerfile)
+        run: |
+          test "$(node -p "require('./e2e/package.json').devDependencies['@playwright/test']")" = 1.64.1
+          apt-get update -qq
+          apt-get install -y -qq --no-install-recommends ffmpeg > /dev/null
+          npm install -g --force corepack@0.36.0 > /dev/null
+          echo "PNPM_STORE=$(corepack pnpm store path --silent)" >> "$GITHUB_ENV"
+
+      - uses: actions/cache@v6
+        with:
+          path: ${{ env.PNPM_STORE }}
+          key: pnpm-store-playwright-1.64.1-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-store-playwright-1.64.1-
+
+      - run: corepack pnpm install --frozen-lockfile
+      - run: corepack pnpm build
+      - name: Playwright
+        working-directory: e2e
+        run: corepack pnpm exec playwright test
+
+      - name: Report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-report
+          path: e2e/.output
+          retention-days: 7

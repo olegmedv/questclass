@@ -1217,7 +1217,18 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Локальный `docker run` с томом: RSS после прогрева < 150 МБ. Под нагрузкой (`scripts/load.mjs`: 10 параллельных потоков видео + 50 запросов/с к API в течение 2 минут) — < 200 МБ (`measure-rss`).
 
 ### FEAT-045 — CI и публикация в GHCR
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `ci.yml` — на push в любую ветку и на PR (PR из ветки этого репо не дублирует прогон push; `docs/**` и `*.md` CI не запускают; новый push в ту же ветку отменяет текущий прогон). Две параллельные задачи на `ubuntu-24.04`:
+    - `check`: Node 22 (`setup-node`), pnpm через corepack, кэш pnpm store по `pnpm-lock.yaml`, ffmpeg из apt (иначе тесты lesson-prep с настоящим ffmpeg пропускаются), затем `lint`, `typecheck`, `test`.
+    - `e2e`: контейнер `mcr.microsoft.com/playwright:v1.64.1-noble` (`--ipc=host --init`) с теми же добавками, что `e2e/Dockerfile` (ffmpeg `--no-install-recommends`, corepack 0.36.0). Так окружение совпадает с тем, где сделаны скриншот-базы; шаг проверяет, что версия `@playwright/test` в `e2e/package.json` равна тегу образа. Затем `pnpm build` и `playwright test` (оба проекта — Chromium, 390×844 и 1440×900). При падении отчёт и трейсы `e2e/.output` — артефакт на 7 дней.
+  - `QuestClass-Source` CI не нужен: `apps/web/test/assets.test.ts` без него пропускает сверку с оригиналом (это единственный пропущенный тест на Linux).
+  - `release.yml` — на push в `main` и `workflow_dispatch`: buildx + `docker/build-push-action` (`deploy/Dockerfile`, linux/amd64, кэш слоёв `type=gha`, `provenance: false` — один манифест на тег, без «untagged» версий-аттестаций), вход в GHCR через `GITHUB_TOKEN` (`packages: write`). Теги: `ghcr.io/olegmedv/questclass:<sha>` всегда, `:latest` только из `main` (ручной запуск с другой ветки `latest` не перезаписывает). После публикации образ скачивается обратно и проверяется бюджет FEAT-044: распакованный < 250 МБ, иначе задача падает. Пакет приватный: анонимный запрос манифеста → 403. Release не ждёт CI: в `main` попадают только слияния веток, уже прошедших CI.
+  - Проверка: `workflow_dispatch` работает, только когда файл есть в ветке по умолчанию, поэтому release проверялся на временной ветке `feat/deploy-ci-trial` с временным триггером push (в этом коммите его нет).
+    - Первый прогон CI зелёный: https://github.com/olegmedv/questclass/actions/runs/43623418987 — check 5 мин (747 passed, 1 skipped), e2e 2 мин (52 passed).
+    - Release: https://github.com/olegmedv/questclass/actions/runs/43623419040 (образ 250,7 МБ — отсюда фикс FEAT-044), https://github.com/olegmedv/questclass/actions/runs/43624639238 — `ghcr.io/olegmedv/questclass:b333b20b4af1bf390e8645871b605e1096da2e81`, распакованный 223 МБ, сжатый 129 МБ.
+  - Для FEAT-046: на сервере нужен `docker login ghcr.io` классическим PAT только со scope `read:packages`. У `gh` на ПК scope `read:packages` нет, поэтому список версий пакета через API не читается — смотреть в логе release или на вкладке Packages. Тег для деплоя — `<sha>` коммита из `main` (или `latest`).
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: Clarification «GitHub Actions → GHCR».
