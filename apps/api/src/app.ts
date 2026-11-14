@@ -27,6 +27,8 @@ import type { QuestionsService } from './modules/questions/service';
 import type { LedgerService } from './modules/ledger/service';
 import type { Keyring } from './modules/settings/crypto';
 import { settingsRoutes } from './modules/settings/routes';
+import { shopRoutes } from './modules/shop/routes';
+import type { ShopService } from './modules/shop/service';
 import { streakRoutes } from './modules/streak/routes';
 import type { StreakService } from './modules/streak/service';
 import type { SettingsService } from './modules/settings/service';
@@ -78,6 +80,8 @@ export interface AppContext {
   readonly catalog: CatalogService;
   /** Pictures uploaded by the admin (media `role = upload`). */
   readonly uploads: UploadsService;
+  /** The learner's shop, purchases and what they own. */
+  readonly shop: ShopService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -115,6 +119,7 @@ function collectRoutes(ctx: AppContext): RouteDef[] {
     ...choreRoutes(ctx),
     ...catalogRoutes(ctx),
     ...uploadsRoutes(ctx),
+    ...shopRoutes(ctx),
   ];
 }
 

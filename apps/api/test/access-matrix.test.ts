@@ -11,6 +11,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { QuestionContent } from '@questclass/shared/questions/schema';
 import { taskRevisions } from '../src/db/schema/taskRevisions';
 import { ROLES } from '../src/http/route';
+import { requestKey } from '../src/modules/ledger/service';
 import { NOTE_TYPE, READY_NOTE, noteTaskType } from './fixtures/noteTaskType';
 import {
   createTwoLearners,
@@ -83,6 +84,8 @@ interface MatrixData {
   readonly catalogItem: number;
   /** A picture uploaded by the admin. */
   readonly upload: number;
+  /** A ticket both learners can afford (each of them got coins). */
+  readonly shopItem: { readonly id: number; readonly version: number };
 }
 
 const prepared = new WeakMap<TwoLearners, MatrixData>();
@@ -272,6 +275,22 @@ function prepareChores(f: TwoLearners): MatrixData['chores'] {
   };
 }
 
+/** Coins for both learners and an item they can buy. */
+function prepareShop(f: TwoLearners): MatrixData['shopItem'] {
+  const { ctx } = f.runtime;
+  for (const learner of [f.ids.learnerA, f.ids.learnerB]) {
+    ctx.ledger.post({
+      learnerId: learner,
+      coins: 500,
+      sourceType: 'award',
+      idemKey: requestKey('award', learner, 'matrix-coins-gift'),
+    });
+  }
+  // A ticket: the catalog rows edit an outfit (its version changes).
+  const item = ctx.catalog.items({ kind: 'ticket', activeOnly: true })[0];
+  return { id: item?.id ?? 0, version: item?.version ?? 0 };
+}
+
 /** Adds the domain data rows need (task types beyond the built-ins come from fixtures). */
 function prepare(f: TwoLearners): TwoLearners {
   const { ctx } = f.runtime;
@@ -308,6 +327,7 @@ function prepare(f: TwoLearners): TwoLearners {
     chores: prepareChores(f),
     catalogItem: ctx.catalog.items({ kind: 'outfit', activeOnly: true })[0]?.id ?? 0,
     upload: ctx.uploads.create(readFileSync(SMALL_PICTURE), admin).id,
+    shopItem: prepareShop(f),
   });
   return f;
 }
@@ -844,6 +864,18 @@ const MATRIX: readonly MatrixRow[] = [
     route: 'GET /api/uploads/:id',
     url: (f) => `/api/uploads/${data(f).upload}`,
     expect: signedIn(200),
+  },
+
+  // shop: each learner buys their own copy under their own key
+  { route: 'GET /api/shop', expect: learnerOnly(200) },
+  {
+    route: 'POST /api/shop/purchases',
+    body: (f) => ({
+      itemId: data(f).shopItem.id,
+      version: data(f).shopItem.version,
+      requestId: 'matrix-purchase-1',
+    }),
+    expect: learnerOnly(201),
   },
 ];
 

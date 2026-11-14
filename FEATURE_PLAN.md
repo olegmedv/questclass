@@ -683,7 +683,14 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - `GET /api/uploads/:id` (роли learner и admin) отдаёт файл для витрины и наград. Строки FEAT-049.
 
 ### FEAT-019 — Покупки в магазине
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Маршруты (learner): `GET /api/shop` → `{coins, items[]}` — активные несид-стартовые товары (`CatalogItemDto` + `affordable`, `missingCoins`), без купленного и уже имеющегося, билеты всегда; живые первыми, дальше порядок каталога. `POST /api/shop/purchases {itemId, version, requestId}` → 201 `{purchase, coins}` (повтор `requestId` — 200 с той же покупкой).
+  - `purchases` — одна вставка на покупку, не меняется: снимок `kind, title, description, price, item_version, reward_type/amount` + `snapshot` (JSON-объект-значение: `hero/room/roomCategory/animation/ticket/animated` из DTO каталога на момент покупки — правило 1b, как снимок вопроса) + `visual_key`. Списание — `ledger.spend` с ключом `purchase:<learner>:<requestId>`, `source_id` = id покупки, `note` = название; покупка и списание в одной транзакции (нехватка монет откатывает вставку). UNIQUE `(learner, request_id)`.
+  - Отказы (409): тот же `requestId` для другого товара — `request_conflict`; выключенный, стартовый или несуществующий — `item_unavailable`; версия ≠ текущей — `item_changed {version}`; уже есть (купленный товар, стартовый или такой же по картинке+анимации) — `already_owned` с текстом оригинала для героя/комнаты; монет меньше цены или баланс < 0 — `insufficient_coins` (FEAT-007). Билеты — сколько угодно раз.
+  - `ownership.ts`: `visualKey` (вид + картинка из библиотеки или загрузка + анимация или `still`) и `owned(learner)` — стартовые (по флагу `starter`, текущий вид из каталога) + купленное (снимок), дубли по `visual_key` схлопнуты; для FEAT-021. `itemHasPurchases` подключён к каталогу FEAT-017 (`hasPurchases` → 409 `kind_locked`). Отдельного списка покупок по HTTP нет (сервис `purchases(learner)` для FEAT-020/021); в «Истории» покупка видна строкой ledger.
+  - Вне Scope: `packages/shared/src/shop/dto.ts`, регистрация в `app.ts`, `startup.ts` (`ctx.shop`, `hasPurchases` каталога), `schema/index.ts`. Строки FEAT-049 добавлены (2 маршрута; оба ученика с монетами покупают билет каждый под своим ключом). Тестов 699 (+2 пропущено), было 691.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: spec/02 §2.5.

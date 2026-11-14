@@ -13,6 +13,7 @@ export * from './loginThrottle';
 export * from './media';
 export * from './progress';
 export * from './progressResets';
+export * from './purchases';
 export * from './questions';
 export * from './retryGrants';
 export * from './retryRequests';

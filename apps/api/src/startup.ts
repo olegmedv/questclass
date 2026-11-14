@@ -19,6 +19,8 @@ import { createRewardsService } from './modules/rewards/service';
 import { createKeyring } from './modules/settings/crypto';
 import { loadOrCreateMasterKey } from './modules/settings/masterKey';
 import { createSettingsService } from './modules/settings/service';
+import { itemHasPurchases } from './modules/shop/ownership';
+import { createShopService } from './modules/shop/service';
 import { createStreakService } from './modules/streak/service';
 import { seedSubjectsOnFirstStart } from './modules/subjects/seed';
 import { createSubjectsService } from './modules/subjects/service';
@@ -119,7 +121,9 @@ export async function openRuntime(config: Config): Promise<Runtime> {
     const catalog = createCatalogService(db, {
       audit,
       describeUpload: (id) => uploads.describe(id),
+      hasPurchases: (id) => itemHasPurchases(db, id),
     });
+    const shop = createShopService(db, { catalog, ledger });
     const ctx: AppContext = {
       config,
       db,
@@ -143,6 +147,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       chores,
       catalog,
       uploads,
+      shop,
       trustedProxies: trustedProxiesFromSettings(settings),
     };
     return { ctx, closers };
