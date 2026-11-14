@@ -63,6 +63,7 @@ const SECTIONS = [
   'hero-scene',
   'hero-ribbon',
   'live-rooms',
+  'icon-picker',
 ];
 
 test('gallery shows every component in five states and fits the screen', async ({ page }) => {

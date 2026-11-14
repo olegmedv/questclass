@@ -28,6 +28,7 @@ const subjects: SubjectDto[] = [
     key: 'russian',
     name: 'Русский язык',
     icon: 'game/subjects-pixel/russian',
+    iconUploadId: null,
     sort: 1,
     archived: false,
   },
@@ -36,10 +37,11 @@ const subjects: SubjectDto[] = [
     key: 'math',
     name: 'Математика',
     icon: 'game/subjects-pixel/math',
+    iconUploadId: null,
     sort: 2,
     archived: false,
   },
-  { id: 3, key: 'own', name: 'Шахматы', icon: null, sort: 3, archived: false },
+  { id: 3, key: 'own', name: 'Шахматы', icon: null, iconUploadId: null, sort: 3, archived: false },
 ];
 
 function task(id: number, patch: Partial<LearnerTaskDto> = {}): LearnerTaskDto {

@@ -11,6 +11,8 @@ export interface ClientOptions {
 
 export interface RequestOptions {
   readonly json?: unknown;
+  /** Raw bytes (a file upload), sent as `application/octet-stream`. */
+  readonly bytes?: Uint8Array;
   readonly headers?: Record<string, string>;
 }
 
@@ -51,10 +53,13 @@ export function createClient(app: Hono<AppEnv>, options: ClientOptions = {}): Te
     if (options.forwardedFor) {
       headers['x-forwarded-for'] = options.forwardedFor;
     }
-    let body: string | undefined;
+    let body: string | Uint8Array | undefined;
     if (opts.json !== undefined) {
       headers['content-type'] = 'application/json';
       body = JSON.stringify(opts.json);
+    } else if (opts.bytes !== undefined) {
+      headers['content-type'] = 'application/octet-stream';
+      body = opts.bytes;
     }
     const res = await app.request(path, { method, headers, ...(body && { body }) }, env);
     for (const header of res.headers.getSetCookie()) {

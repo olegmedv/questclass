@@ -17,10 +17,19 @@ const subjects: SubjectDto[] = [
     key: 'math',
     name: 'Математика',
     icon: 'game/subjects-pixel/math',
+    iconUploadId: null,
     sort: 10,
     archived: false,
   },
-  { id: 2, key: 'world', name: 'Окружающий мир', icon: null, sort: 20, archived: false },
+  {
+    id: 2,
+    key: 'world',
+    name: 'Окружающий мир',
+    icon: null,
+    iconUploadId: null,
+    sort: 20,
+    archived: false,
+  },
 ];
 
 const learners: UserDto[] = [
@@ -451,19 +460,63 @@ describe('/admin/subjects', () => {
     const dialog = await screen.findByRole('dialog', { name: 'Новый предмет' });
     await userEvent.type(within(dialog).getByLabelText(/Название/), 'Музыка');
     await userEvent.type(within(dialog).getByLabelText('Ключ'), 'music');
-    await userEvent.selectOptions(within(dialog).getByLabelText('Значок'), 'art');
+    await userEvent.click(within(dialog).getByRole('radio', { name: 'Встроенный значок «art»' }));
     await userEvent.click(within(dialog).getByRole('button', { name: 'Сохранить' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
     expect(calls.find((call) => call.method === 'POST')?.body).toEqual({
       name: 'Музыка',
       key: 'music',
       icon: 'game/subjects-pixel/art',
+      iconUploadId: null,
     });
 
     await userEvent.click(screen.getByRole('button', { name: 'Изменить: Математика' }));
     const edit = await screen.findByRole('dialog', { name: 'Предмет «Математика»' });
     await userEvent.click(within(edit).getByRole('button', { name: 'Удалить' }));
     expect(await within(edit).findByText(/можно только убрать в архив/)).toBeInTheDocument();
+  });
+
+  it('picks an uploaded picture as the icon; animations are not offered', async () => {
+    const { calls } = mockApi(
+      sessionApi(admin, {
+        'GET /api/admin/subjects': { body: subjects },
+        'GET /api/admin/uploads': {
+          body: [
+            {
+              id: 7,
+              url: '/api/uploads/7',
+              mime: 'image/png',
+              sizeBytes: 2048,
+              animated: false,
+              durationMs: null,
+              createdAt: '2026-11-14T10:00:00.000Z',
+            },
+            {
+              id: 8,
+              url: '/api/uploads/8',
+              mime: 'image/webp',
+              sizeBytes: 4096,
+              animated: true,
+              durationMs: 800,
+              createdAt: '2026-11-14T10:00:00.000Z',
+            },
+          ],
+        },
+        'PATCH /api/admin/subjects/1': (body) => ({
+          body: { ...subjects[0], icon: null, ...(body as object) },
+        }),
+      }),
+    );
+    renderRoute('/admin/subjects');
+    await userEvent.click(await screen.findByRole('button', { name: 'Изменить: Математика' }));
+    const edit = await screen.findByRole('dialog', { name: 'Предмет «Математика»' });
+    expect(within(edit).getByRole('radio', { name: 'Встроенный значок «math»' })).toBeChecked();
+    const own = await within(edit).findByRole('radio', { name: 'Загрузка № 7' });
+    expect(within(edit).queryByRole('radio', { name: 'Загрузка № 8' })).not.toBeInTheDocument();
+    await userEvent.click(own);
+    await userEvent.click(within(edit).getByRole('button', { name: 'Сохранить' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(calls.find((call) => call.method === 'PATCH')?.body).toEqual({ iconUploadId: 7 });
   });
 });
 

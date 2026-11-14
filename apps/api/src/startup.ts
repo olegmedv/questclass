@@ -88,7 +88,11 @@ export async function openRuntime(config: Config): Promise<Runtime> {
     const auth = createAuthService(db, { config, audit, settings, keyring, users });
     const ledger = createLedgerService(db, { settings });
     const taskTypes = createTaskTypeRegistry();
-    const subjects = createSubjectsService(db, { audit });
+    // `uploads` is created further down (it needs media); the lookup runs per request.
+    const subjects = createSubjectsService(db, {
+      audit,
+      describeUpload: (id) => uploads.describe(id),
+    });
     const tasks = createTasksService(db, { audit, settings, ledger, users, subjects, taskTypes });
     const questions = createQuestionsService(db, { audit });
     const streak = createStreakService(db, { settings, ledger });

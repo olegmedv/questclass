@@ -1,5 +1,5 @@
-// /admin/subjects — subjects of the lessons: name (unique regardless of case), built-in icon,
-// order. A subject with lessons is archived instead of deleted.
+// /admin/subjects — subjects of the lessons: name (unique regardless of case), icon (a built-in
+// picture or the admin's own upload), order. A subject with lessons is archived instead of deleted.
 import manifestJson from '@questclass/shared/assets/manifest.json';
 import {
   subjectCreateSchema,
@@ -11,19 +11,21 @@ import {
   Button,
   DataTable,
   Field,
-  Inline,
+  FileInput,
+  IconPicker,
+  ImageOff,
   Modal,
   Notice,
   NumberInput,
   Pencil,
   Plus,
-  Select,
   Stack,
   Switch,
   TextInput,
   VisuallyHidden,
   useToast,
   type Column,
+  type IconPickerOption,
 } from '@questclass/ui';
 import { useId, useState, type FormEvent } from 'react';
 import { isApiError } from '../../api/client';
@@ -34,6 +36,8 @@ import {
   useDeleteSubject,
   useUpdateSubject,
 } from '../../features/admin-tasks/queries';
+import { useUploadPicture, useUploads } from '../../features/admin-shop/queries';
+import { subjectIconUrl } from '../../features/tasks/assets';
 import { SubjectIcon } from '../../features/tasks/SubjectIcon';
 import { AdminPage } from '../../templates/AdminShell';
 
@@ -45,12 +49,107 @@ export const SUBJECT_ICONS: readonly string[] = Object.keys(manifestJson as Reco
   .map((key) => key.slice(0, -'.webp'.length))
   .sort();
 
-interface Draft {
+interface IconChoice {
+  icon: string | null;
+  iconUploadId: number | null;
+}
+
+interface Draft extends IconChoice {
   name: string;
   key: string;
-  icon: string;
   sort: number | null;
   archived: boolean;
+}
+
+const NO_ICON = '';
+const ASSET = 'asset:';
+const UPLOAD = 'upload:';
+
+const choiceValue = ({ icon, iconUploadId }: IconChoice): string =>
+  iconUploadId !== null ? `${UPLOAD}${iconUploadId}` : icon ? `${ASSET}${icon}` : NO_ICON;
+
+function choiceOf(value: string): IconChoice {
+  if (value.startsWith(UPLOAD)) {
+    return { icon: null, iconUploadId: Number(value.slice(UPLOAD.length)) };
+  }
+  if (value.startsWith(ASSET)) return { icon: value.slice(ASSET.length), iconUploadId: null };
+  return { icon: null, iconUploadId: null };
+}
+
+const uploadOption = (id: number, src: string): IconPickerOption => ({
+  value: `${UPLOAD}${id}`,
+  label: `Загрузка № ${id}`,
+  src,
+});
+
+/**
+ * The icon of a subject: tiles of the built-in pictures and of the admin's still uploads (the same
+ * library as the shop's), plus a button that uploads a new picture and chooses it.
+ */
+function SubjectIconPicker({
+  value,
+  error,
+  onChange,
+}: {
+  value: IconChoice;
+  error?: string | undefined;
+  onChange: (choice: IconChoice) => void;
+}) {
+  const uploads = useUploads();
+  const upload = useUploadPicture();
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const stills = (uploads.data ?? []).filter((item) => !item.animated);
+  const options: IconPickerOption[] = [
+    { value: NO_ICON, label: 'Без значка', icon: <ImageOff /> },
+    ...SUBJECT_ICONS.map((icon) => ({
+      value: `${ASSET}${icon}`,
+      label: `Встроенный значок «${icon.slice(ICON_DIR.length)}»`,
+      src: subjectIconUrl(icon) ?? '',
+      pixelated: true,
+    })),
+    ...stills.map((item) => uploadOption(item.id, item.url)),
+  ];
+  // The current upload stays a tile while the list loads (or if it is not in the list).
+  const chosen = value.iconUploadId;
+  if (chosen !== null && !stills.some((item) => item.id === chosen)) {
+    options.push(uploadOption(chosen, `/api/uploads/${chosen}`));
+  }
+  const failure =
+    uploadError ??
+    (upload.isError ? errorText(upload.error) : null) ??
+    (uploads.isError ? errorText(uploads.error) : null);
+  return (
+    <IconPicker
+      legend="Значок"
+      hint="Встроенные значки и картинки, загруженные в кабинете. Своя картинка: PNG, JPEG или WebP до 2 МБ, лучше квадрат 256 × 256."
+      error={error ?? failure ?? undefined}
+      options={options}
+      value={choiceValue(value)}
+      loading={uploads.isPending}
+      onChange={(next) => onChange(choiceOf(next))}
+      footer={
+        <FileInput
+          accept="image/png,image/jpeg,image/webp"
+          buttonLabel={upload.isPending ? 'Загружаем…' : 'Загрузить свою картинку'}
+          disabled={upload.isPending}
+          onChange={(files) => {
+            const file = files[0];
+            if (!file) return;
+            setUploadError(null);
+            upload.mutate(file, {
+              onSuccess: (created) => {
+                if (created.animated) {
+                  setUploadError('Для значка нужна обычная картинка, не анимация');
+                  return;
+                }
+                onChange({ icon: null, iconUploadId: created.id });
+              },
+            });
+          }}
+        />
+      }
+    />
+  );
 }
 
 function SubjectDialog({ subject, onClose }: { subject: SubjectDto | null; onClose: () => void }) {
@@ -63,7 +162,8 @@ function SubjectDialog({ subject, onClose }: { subject: SubjectDto | null; onClo
   const [draft, setDraft] = useState<Draft>({
     name: subject?.name ?? '',
     key: subject?.key ?? '',
-    icon: subject?.icon ?? '',
+    icon: subject?.icon ?? null,
+    iconUploadId: subject?.iconUploadId ?? null,
     sort: subject?.sort ?? null,
     archived: subject?.archived ?? false,
   });
@@ -73,7 +173,7 @@ function SubjectDialog({ subject, onClose }: { subject: SubjectDto | null; onClo
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    const icon = draft.icon === '' ? null : draft.icon;
+    const { icon, iconUploadId } = draft;
     const done = () => {
       toast.show('Предмет сохранён', { tone: 'success' });
       onClose();
@@ -83,6 +183,7 @@ function SubjectDialog({ subject, onClose }: { subject: SubjectDto | null; onClo
         name: draft.name,
         ...(draft.key.trim() !== '' && { key: draft.key.trim() }),
         icon,
+        iconUploadId,
         ...(draft.sort !== null && { sort: draft.sort }),
       });
       if (!check.success) return setErrors(issuesByField(check.error.issues));
@@ -92,7 +193,15 @@ function SubjectDialog({ subject, onClose }: { subject: SubjectDto | null; onClo
     }
     const patch: Record<string, unknown> = {};
     if (draft.name.trim() !== subject.name) patch['name'] = draft.name;
-    if (icon !== subject.icon) patch['icon'] = icon;
+    // Only the field that got a value: the server drops the other one itself.
+    if (iconUploadId !== null && iconUploadId !== subject.iconUploadId) {
+      patch['iconUploadId'] = iconUploadId;
+    } else if (icon !== null && icon !== subject.icon) {
+      patch['icon'] = icon;
+    } else if (icon === null && iconUploadId === null) {
+      if (subject.icon !== null) patch['icon'] = null;
+      if (subject.iconUploadId !== null) patch['iconUploadId'] = null;
+    }
     if (draft.sort !== null && draft.sort !== subject.sort) patch['sort'] = draft.sort;
     if (draft.archived !== subject.archived) patch['archived'] = draft.archived;
     if (Object.keys(patch).length === 0) return onClose();
@@ -166,31 +275,11 @@ function SubjectDialog({ subject, onClose }: { subject: SubjectDto | null; onClo
               />
             </Field>
           )}
-          <Field label="Значок" error={errors['icon']}>
-            <Select
-              options={[
-                { value: '', label: 'Без значка' },
-                ...SUBJECT_ICONS.map((icon) => ({
-                  value: icon,
-                  label: icon.slice(ICON_DIR.length),
-                })),
-              ]}
-              value={draft.icon}
-              onChange={(event) => set('icon', event.currentTarget.value)}
-            />
-          </Field>
-          <Inline>
-            <SubjectIcon
-              subject={{
-                id: 0,
-                key: draft.key,
-                name: draft.name,
-                icon: draft.icon === '' ? null : draft.icon,
-                sort: 0,
-                archived: false,
-              }}
-            />
-          </Inline>
+          <SubjectIconPicker
+            value={draft}
+            error={errors['icon'] ?? errors['iconUploadId']}
+            onChange={(choice) => setDraft((current) => ({ ...current, ...choice }))}
+          />
           <Field label="Порядок" hint="Меньше — раньше в списках." error={errors['sort']}>
             <NumberInput
               value={draft.sort}
@@ -220,7 +309,7 @@ export function Subjects() {
     {
       key: 'icon',
       header: <VisuallyHidden>Значок</VisuallyHidden>,
-      render: (subject) => <SubjectIcon subject={subject} />,
+      render: (subject) => <SubjectIcon subject={subject} size="sm" />,
     },
     { key: 'name', header: 'Название' },
     { key: 'key', header: 'Ключ', secondary: true },

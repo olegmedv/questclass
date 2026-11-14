@@ -30,22 +30,38 @@ export function subjectNameKey(name: string): string {
   return name.trim().replace(/\s+/g, ' ').toLocaleLowerCase('ru-RU');
 }
 
-export const subjectCreateSchema = z.object({
-  key: subjectKeySchema.optional(),
-  name: subjectNameSchema,
-  icon: assetKeySchema.nullable().optional(),
-  sort: z.number().int().min(0).max(100_000).optional(),
-});
+/** Id of a still picture the admin uploaded (`/api/admin/uploads`). */
+const uploadIdSchema = z.number().int().positive();
+
+/** A subject has a built-in icon or an uploaded one, never both. */
+const ONE_ICON = {
+  message: 'Выберите один значок: встроенный или загруженный',
+  path: ['icon'],
+};
+const oneIcon = (value: { icon?: string | null; iconUploadId?: number | null }) =>
+  !(typeof value.icon === 'string' && typeof value.iconUploadId === 'number');
+
+export const subjectCreateSchema = z
+  .object({
+    key: subjectKeySchema.optional(),
+    name: subjectNameSchema,
+    icon: assetKeySchema.nullable().optional(),
+    iconUploadId: uploadIdSchema.nullable().optional(),
+    sort: z.number().int().min(0).max(100_000).optional(),
+  })
+  .refine(oneIcon, ONE_ICON);
 
 export const subjectUpdateSchema = z
   .object({
     name: subjectNameSchema,
     icon: assetKeySchema.nullable(),
+    iconUploadId: uploadIdSchema.nullable(),
     sort: z.number().int().min(0).max(100_000),
     archived: z.boolean(),
   })
   .partial()
-  .refine((patch) => Object.keys(patch).length > 0, 'Нечего менять');
+  .refine((patch) => Object.keys(patch).length > 0, 'Нечего менять')
+  .refine(oneIcon, ONE_ICON);
 
 const titleSchema = z
   .string()
@@ -99,7 +115,10 @@ export interface SubjectDto {
   readonly id: number;
   readonly key: string;
   readonly name: string;
+  /** Built-in icon: asset key without the extension. */
   readonly icon: string | null;
+  /** Uploaded icon (`/api/uploads/<id>`); null when the icon is built-in or missing. */
+  readonly iconUploadId: number | null;
   readonly sort: number;
   readonly archived: boolean;
 }

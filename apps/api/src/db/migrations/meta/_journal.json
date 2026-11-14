@@ -134,6 +134,13 @@
       "when": 1794676525423,
       "tag": "0018_job_runs",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "6",
+      "when": 1794688877777,
+      "tag": "0019_subject_icon_upload",
+      "breakpoints": true
     }
   ]
 }
