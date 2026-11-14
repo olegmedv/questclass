@@ -8,6 +8,7 @@
 #                   its frames), OGG -> OGG + MP3, MP3 -> MP3 + OGG, MP4 -> animated WebP (+ OGG/MP3 of
 #                   its soundtrack, if any).
 #   keep            copy the file byte for byte (platform icons that must stay PNG).
+#   icon            PNG/WebP -> WebP downscaled to fit 256x256 (small UI pictures such as subject icons).
 # Every line must match at least one file, otherwise the import fails.
 # Quiz images are not listed here: they travel with lessons through the lesson import.
 # Excludes below are files the original's code does not reference (superseded versions, leftovers).
@@ -51,8 +52,8 @@ game/menu/**
 game/ui-audio/**
 
 # Subjects, sprite sheets, Robux icon.
-game/subjects-pixel/**
-game/subjects.png
+game/subjects-pixel/**  icon
+game/subjects.png  icon
 game/report-robux.svg
 game/heroes.png
 game/special.png

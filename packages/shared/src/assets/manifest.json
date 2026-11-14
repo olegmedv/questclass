@@ -1375,51 +1375,51 @@
   },
   "game/subjects-pixel/art.webp": {
     "kind": "image",
-    "w": 1254,
-    "h": 1254,
-    "bytes": 500898,
+    "w": 256,
+    "h": 256,
+    "bytes": 17856,
     "animated": false
   },
   "game/subjects-pixel/craft.webp": {
     "kind": "image",
-    "w": 1254,
-    "h": 1254,
-    "bytes": 349632,
+    "w": 256,
+    "h": 256,
+    "bytes": 14998,
     "animated": false
   },
   "game/subjects-pixel/math.webp": {
     "kind": "image",
-    "w": 1254,
-    "h": 1254,
-    "bytes": 390522,
+    "w": 256,
+    "h": 256,
+    "bytes": 18492,
     "animated": false
   },
   "game/subjects-pixel/reading.webp": {
     "kind": "image",
-    "w": 1254,
-    "h": 1254,
-    "bytes": 450728,
+    "w": 256,
+    "h": 256,
+    "bytes": 10764,
     "animated": false
   },
   "game/subjects-pixel/russian.webp": {
     "kind": "image",
-    "w": 1254,
-    "h": 1254,
-    "bytes": 486998,
+    "w": 256,
+    "h": 256,
+    "bytes": 16254,
     "animated": false
   },
   "game/subjects-pixel/world.webp": {
     "kind": "image",
-    "w": 1254,
-    "h": 1254,
-    "bytes": 417530,
+    "w": 256,
+    "h": 256,
+    "bytes": 15798,
     "animated": false
   },
   "game/subjects.webp": {
     "kind": "image",
-    "w": 1254,
-    "h": 1254,
-    "bytes": 652792,
+    "w": 256,
+    "h": 256,
+    "bytes": 25594,
     "animated": false
   },
   "game/ui-audio/collection-blessing.mp3": {
