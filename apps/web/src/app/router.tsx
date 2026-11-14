@@ -91,6 +91,36 @@ export const routes: RouteObject[] = [
                       Component: (await import('../screens/admin/ImportTokens')).ImportTokens,
                     }),
                   },
+                  {
+                    path: 'subjects',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/Subjects')).Subjects,
+                    }),
+                  },
+                  {
+                    path: 'tasks',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/Tasks')).Tasks,
+                    }),
+                  },
+                  {
+                    path: 'tasks/revisions',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/TaskRevisions')).TaskRevisions,
+                    }),
+                  },
+                  {
+                    path: 'tasks/revisions/:id',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/TaskRevisions')).TaskRevision,
+                    }),
+                  },
+                  {
+                    path: 'tasks/:id',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/TaskEdit')).TaskEdit,
+                    }),
+                  },
                   { path: '*', element: <AdminStub title="Такой страницы нет" /> },
                 ],
               },

@@ -139,14 +139,17 @@ function videoFiles(kind: 'hls' | 'mp4', video: { mp4: string; hls: string }): L
 }
 
 /**
- * A published video lesson assigned to one learner, uploaded like `lesson-prep import` does:
- * an import token, the manifest, the files, the completion with the duration.
+ * A video lesson uploaded like `lesson-prep import` does — an import token, the manifest, the
+ * files, the completion with the duration — and left a draft, as an import leaves it.
  */
-export async function createVideoLesson(
+export async function importVideoLesson(
   admin: APIRequestContext,
   baseURL: string,
   video: { mp4: string; hls: string },
-  spec: TaskSpec & { readonly kind?: 'hls' | 'mp4'; readonly watchMinPercent?: number },
+  spec: Omit<TaskSpec, 'learnerId'> & {
+    readonly kind?: 'hls' | 'mp4';
+    readonly watchMinPercent?: number;
+  },
 ): Promise<number> {
   const kind = spec.kind ?? 'hls';
   const token = await ok<{ token: string }>(
@@ -206,11 +209,22 @@ export async function createVideoLesson(
         }),
       );
     }
-    await assignAndPublish(admin, result.taskId, spec.learnerId);
     return result.taskId;
   } finally {
     await importer.dispose();
   }
+}
+
+/** A published video lesson assigned to one learner (imported, then assigned and published). */
+export async function createVideoLesson(
+  admin: APIRequestContext,
+  baseURL: string,
+  video: { mp4: string; hls: string },
+  spec: TaskSpec & { readonly kind?: 'hls' | 'mp4'; readonly watchMinPercent?: number },
+): Promise<number> {
+  const taskId = await importVideoLesson(admin, baseURL, video, spec);
+  await assignAndPublish(admin, taskId, spec.learnerId);
+  return taskId;
 }
 
 /** The admin allows one more attempt (after the free retries are used up). */

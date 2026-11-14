@@ -1,9 +1,12 @@
 // Web side of the task-type plugins (CLAUDE.md rule 10): each type contributes a Player for the
 // learner and an Editor for the admin. Shared code only ever renders through this registry.
 import type { TaskProgressDto } from '@questclass/shared/progress/dto';
-import type { LearnerTaskDto, SubjectDto } from '@questclass/shared/tasks/dto';
+import type { LearnerTaskDto, SubjectDto, TaskDto } from '@questclass/shared/tasks/dto';
 import { createElement, type ComponentType, type ReactElement } from 'react';
+import { choreAdmin } from './chore/Editor';
+import { quizAdmin } from './quiz/Editor';
 import { quizTaskType } from './quiz/Player';
+import { videoLessonAdmin } from './video_lesson/Editor';
 import { videoLessonTaskType } from './video_lesson/Player';
 
 /**
@@ -24,6 +27,21 @@ export interface TaskEditorProps {
   readonly disabled?: boolean;
 }
 
+/** What the admin sections of a type get (question bank, transcript…): the whole task. */
+export interface TaskSectionsProps {
+  readonly task: TaskDto;
+}
+
+/**
+ * The admin half of a type (FEAT-040): the config Editor and the type's own sections of the task
+ * page. Registered apart from the Players, so a type can be edited before its Player exists.
+ */
+export interface TaskTypeAdmin {
+  readonly type: string;
+  readonly Editor?: ComponentType<TaskEditorProps>;
+  readonly Sections?: ComponentType<TaskSectionsProps>;
+}
+
 export interface WebTaskType {
   /** Same key as the type's contract in `@questclass/shared`. */
   readonly type: string;
@@ -37,12 +55,19 @@ export interface WebTaskType {
 /** Registered task types. Each type adds its line here (quiz, video_lesson, chore…). */
 const TASK_TYPES: readonly WebTaskType[] = [quizTaskType, videoLessonTaskType];
 
+/** Admin editors of the types. Each type adds its line here. */
+const TASK_EDITORS: readonly TaskTypeAdmin[] = [quizAdmin, videoLessonAdmin, choreAdmin];
+
 export interface TaskTypeRegistry {
   readonly types: readonly WebTaskType[];
   get(type: string): WebTaskType | undefined;
   /** Renders the type's Player, or a clear error when the type is unknown to this build. */
   renderPlayer(props: TaskPlayerProps): ReactElement;
   renderEditor(type: string, props: TaskEditorProps): ReactElement;
+  /** Whether the admin can change the type's config in the task page. */
+  hasEditor(type: string): boolean;
+  /** The type's own sections of the admin task page, or null. */
+  renderSections(props: TaskSectionsProps): ReactElement | null;
 }
 
 /** A type without an editor in this build: its config is set by import or later versions. */
@@ -67,7 +92,10 @@ export function UnknownTaskType({ type }: { type: string }): ReactElement {
   );
 }
 
-export function createTaskTypeRegistry(types: readonly WebTaskType[]): TaskTypeRegistry {
+export function createTaskTypeRegistry(
+  types: readonly WebTaskType[],
+  editors: readonly TaskTypeAdmin[] = [],
+): TaskTypeRegistry {
   const byType = new Map<string, WebTaskType>();
   for (const entry of types) {
     if (byType.has(entry.type)) {
@@ -75,6 +103,14 @@ export function createTaskTypeRegistry(types: readonly WebTaskType[]): TaskTypeR
     }
     byType.set(entry.type, entry);
   }
+  const adminOf = new Map<string, TaskTypeAdmin>();
+  for (const entry of editors) {
+    if (adminOf.has(entry.type)) {
+      throw new Error(`Task type editor registered twice: ${entry.type}`);
+    }
+    adminOf.set(entry.type, entry);
+  }
+  const editorOf = (type: string) => adminOf.get(type)?.Editor ?? byType.get(type)?.Editor;
   return {
     types,
     get: (type) => byType.get(type),
@@ -85,11 +121,18 @@ export function createTaskTypeRegistry(types: readonly WebTaskType[]): TaskTypeR
         : createElement(UnknownTaskType, { type: props.task.type });
     },
     renderEditor(type, props) {
-      const entry = byType.get(type);
-      if (!entry) return createElement(UnknownTaskType, { type });
-      return entry.Editor ? createElement(entry.Editor, props) : createElement(NoEditor);
+      const Editor = editorOf(type);
+      if (Editor) return createElement(Editor, props);
+      return byType.has(type) || adminOf.has(type)
+        ? createElement(NoEditor)
+        : createElement(UnknownTaskType, { type });
+    },
+    hasEditor: (type) => editorOf(type) !== undefined,
+    renderSections(props) {
+      const Sections = adminOf.get(props.task.type)?.Sections;
+      return Sections ? createElement(Sections, props) : null;
     },
   };
 }
 
-export const taskTypes: TaskTypeRegistry = createTaskTypeRegistry(TASK_TYPES);
+export const taskTypes: TaskTypeRegistry = createTaskTypeRegistry(TASK_TYPES, TASK_EDITORS);

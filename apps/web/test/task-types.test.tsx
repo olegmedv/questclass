@@ -58,10 +58,27 @@ describe('task-type registry', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('«hologram»');
   });
 
-  it('the app registers the quiz; a type without an editor says so', () => {
+  it('the app registers the quiz and its editor; a type without an editor says so', () => {
     expect(taskTypes.get('quiz')?.label).toBe('Тест');
-    render(taskTypes.renderEditor('quiz', { config: {}, onChange: () => {} }));
+    expect(taskTypes.hasEditor('quiz')).toBe(true);
+    const { unmount } = render(taskTypes.renderEditor('quiz', { config: {}, onChange: () => {} }));
+    expect(screen.getByText(/У теста нет своих настроек/)).toBeInTheDocument();
+    unmount();
+    const bare = createTaskTypeRegistry([{ ...demo, Editor: undefined }]);
+    expect(bare.hasEditor('demo')).toBe(false);
+    render(bare.renderEditor('demo', { config: {}, onChange: () => {} }));
     expect(screen.getByRole('status')).toHaveTextContent('пока меняются только импортом');
+  });
+
+  it('an admin editor may come without a Player and is registered once', () => {
+    const editorOnly = { type: 'deed', Editor: () => <p>Редактор дела</p> };
+    const registry = createTaskTypeRegistry([demo], [editorOnly]);
+    expect(registry.hasEditor('deed')).toBe(true);
+    render(registry.renderEditor('deed', { config: {}, onChange: () => {} }));
+    expect(screen.getByText('Редактор дела')).toBeInTheDocument();
+    expect(() => createTaskTypeRegistry([demo], [editorOnly, editorOnly])).toThrow(
+      /editor registered twice: deed/,
+    );
   });
 
   it('a type cannot be registered twice', () => {
