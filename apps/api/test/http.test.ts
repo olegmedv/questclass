@@ -1,12 +1,9 @@
-import os from 'node:os';
-import path from 'node:path';
 import { serve, type ServerType } from '@hono/node-server';
 import { DEFAULT_TRUSTED_PROXIES } from '@questclass/shared/net';
 import { Hono, type MiddlewareHandler } from 'hono';
 import { afterEach, describe, expect, it } from 'vitest';
 import { z } from 'zod';
-import { buildApp, type AppContext } from '../src/app';
-import { loadConfig } from '../src/config';
+import { buildApp, type HttpContext } from '../src/app';
 import { DEFAULT_BODY_LIMIT } from '../src/http/bodyLimit';
 import { clientIp } from '../src/http/clientIp';
 import { conflict } from '../src/http/errors';
@@ -17,11 +14,8 @@ interface ErrorJson {
   error: { code: string; message: string; details?: { path: string; message: string }[] };
 }
 
-function testCtx(trusted: readonly string[] = DEFAULT_TRUSTED_PROXIES): AppContext {
-  return {
-    config: loadConfig({ NODE_ENV: 'test', DATA_DIR: path.join(os.tmpdir(), 'qc-unused') }),
-    trustedProxies: () => trusted,
-  };
+function testCtx(trusted: readonly string[] = DEFAULT_TRUSTED_PROXIES): HttpContext {
+  return { trustedProxies: () => trusted };
 }
 
 const probeRoutes: RouteDef[] = [

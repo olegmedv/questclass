@@ -1,5 +1,6 @@
 import { Hono, type MiddlewareHandler } from 'hono';
 import type { Config } from './config';
+import type { Db } from './db/client';
 import { clientIpMiddleware, type TrustedProxiesSource } from './http/clientIp';
 import { handleError, handleNotFound } from './http/errors';
 import { sameOriginOnly } from './http/origin';
@@ -9,6 +10,7 @@ import { healthRoutes } from './modules/health/routes';
 /** Dependencies shared by all modules; built once at startup (see startup.ts). */
 export interface AppContext {
   readonly config: Config;
+  readonly db: Db;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -34,9 +36,12 @@ function collectMiddlewares(_ctx: AppContext): MiddlewareHandler<AppEnv>[] {
   return [];
 }
 
+/** What the HTTP layer itself needs (routes and middlewares bring their own dependencies). */
+export type HttpContext = Pick<AppContext, 'trustedProxies'>;
+
 /** Assembles a Hono app from explicit routes; used directly by tests of the HTTP layer. */
 export function buildApp(
-  ctx: AppContext,
+  ctx: HttpContext,
   routes: readonly RouteDef[],
   options: BuildOptions = {},
 ): BuiltApp {

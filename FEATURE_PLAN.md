@@ -165,7 +165,14 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - RSS в простое < 80 МБ (`measure-rss`).
 
 ### FEAT-003 — БД, миграции, dayKey/weekKey
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Своих таблиц пока нет, поэтому папки `migrations/` в git ещё нет (первую миграцию создаст FEAT-006 через `pnpm db:generate`); отсутствие журнала = «миграций нет». Механизм проверен тестами на фикстурных миграциях: новый БД без снимка, снимок перед новой миграцией, хранится 5, откат упавшей миграции.
+  - Снимок делается только если в БД уже есть применённые миграции (новой пустой БД защищать нечего).
+  - `weekKey` = ISO-неделя `YYYY-Www` (с понедельника), чтобы ключ недели не совпадал с форматом `dayKey`.
+  - Вне Scope (необходимо): `apps/api/build.mjs` копирует миграции в `dist/migrations`; `apps/api/package.json` (better-sqlite3 ~13.1.1, drizzle-orm, drizzle-kit, `db:generate`); `pnpm-workspace.yaml` — better-sqlite3 в `ignoredBuiltDependencies`: v13 содержит N-API prebuilds (в т.ч. linux-x64/musl), компиляция не нужна. `AppContext` получил `db`, поэтому тесты FEAT-002 (`health`, `http`) переведены на временный DATA_DIR через `test/helpers/db.ts` (проверки не ослаблены); `buildApp` принимает только `HttpContext`.
+  - Закрытие БД по SIGTERM проверено в `db.test.ts` (closer из `startup.ts`).
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: SPEC §1 «SQLite (WAL)… миграции явные»; CLAUDE.md 2, 12; Critique 1 LOW (weekKey), MED#19 (снимок перед миграцией).

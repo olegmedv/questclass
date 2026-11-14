@@ -1,18 +1,24 @@
 import { EventEmitter } from 'node:events';
-import os from 'node:os';
 import path from 'node:path';
 import { serve, type ServerType } from '@hono/node-server';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, describe, expect, it } from 'vitest';
 import { buildApp, createApp } from '../src/app';
 import { ConfigError, DEFAULT_PORT, loadConfig } from '../src/config';
 import { route } from '../src/http/route';
 import { registerShutdown } from '../src/shutdown';
-import { startup } from '../src/startup';
+import { createTestRuntime, type TestRuntime } from './helpers/db';
 
-const DATA_DIR = path.join(os.tmpdir(), 'qc-health-test');
+const runtimes: TestRuntime[] = [];
+afterAll(async () => {
+  for (const runtime of runtimes) {
+    await runtime.close();
+  }
+});
 
 async function testRuntime() {
-  return startup(loadConfig({ NODE_ENV: 'test', DATA_DIR }));
+  const runtime = await createTestRuntime();
+  runtimes.push(runtime);
+  return runtime;
 }
 
 function listen(fetchHandler: Parameters<typeof serve>[0]['fetch']) {

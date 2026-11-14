@@ -1,8 +1,11 @@
 // Bundles the API into dist/. Workspace packages (shared) are inlined;
 // native modules stay external and are resolved from node_modules at runtime.
+import { cpSync, existsSync, rmSync } from 'node:fs';
 import { build } from 'esbuild';
 
 const external = ['better-sqlite3'];
+
+rmSync('dist', { recursive: true, force: true });
 
 await build({
   entryPoints: { index: 'src/index.ts' },
@@ -19,3 +22,8 @@ await build({
   },
   logLevel: 'info',
 });
+
+// Versioned SQL migrations are read at startup from dist/migrations.
+if (existsSync('src/db/migrations')) {
+  cpSync('src/db/migrations', 'dist/migrations', { recursive: true });
+}

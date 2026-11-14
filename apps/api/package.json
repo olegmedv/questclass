@@ -7,16 +7,21 @@
     "dev": "tsx watch src/index.ts",
     "build": "node build.mjs",
     "start": "node dist/index.js",
-    "typecheck": "tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.8",
     "@questclass/shared": "workspace:*",
+    "better-sqlite3": "~13.1.1",
+    "drizzle-orm": "^0.45.4",
     "hono": "^4.13.18",
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^22.20.5",
+    "drizzle-kit": "^0.31.11",
     "esbuild": "^0.28.2",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3",
