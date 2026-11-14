@@ -4,7 +4,7 @@ Generated: 2026-11-14. Description: "MVP (Этап 1) КвестКласс 2 п�
 
 ## Summary
 - Total items: 56
-- Pending: 15 | Done: 40 (FEAT-001–FEAT-031, FEAT-035, FEAT-038, FEAT-048–FEAT-054; FEAT-050 условно) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
+- Pending: 12 | Done: 43 (FEAT-001–FEAT-031, FEAT-035, FEAT-038, FEAT-044–FEAT-046, FEAT-048–FEAT-054; FEAT-046 с оговоркой про GHCR-токен; FEAT-050 условно) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
 - Items requiring user decision: 3 — FEAT-050 и FEAT-046: SSH разрешён пользователем 14.11.2026; FEAT-047 отложен до после MVP
 - Critic iterations: 3 (+ патч после вердикта)
 - Critic verdict: halted at max iterations; HIGH и MED третьего круга закрыты патчем после вердикта (повторно не критиковались), 11 LOW — известные риски
@@ -1277,7 +1277,18 @@ Discovery выполнен вручную, без Explore-агента: в ре�
 ### Фаза E — деплой
 
 ### FEAT-044 — Production-режим, Dockerfile, CLI
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `static.ts`: `mountStaticSite(app, root)` — один `GET *` после маршрутов API (HEAD тоже, без открытия файла). Существующий файл отдаётся как есть: `/_app/*` (хэшированные бандлы Vite) — `public, max-age=31536000, immutable`; `index.html` — `no-cache` + `X-Frame-Options: DENY`; остальное (`/assets/**` — игровая графика из `apps/web/public/assets`, шрифты) — `public, max-age=86400`. Range (через `parseRange` медиа-модуля), `If-Modified-Since` → 304, `nosniff`. Путь без расширения → `index.html` (deep links), отсутствующий файл с расширением (`/assets/x.webp`, старый бандл) → JSON 404, а не документ. `/api` и `/api/*` статика не трогает (JSON 404 API). Обход каталога (`..`, `%2e%2e`, `%2f`, `%5c`, NUL) и dot-файлы — 404 (тест на реальном HTTP с сырыми путями). Чтение только файлов, БД не трогается. MIME — таблица Hono + `audio/ogg` (в ней нет `.ogg`).
+  - `WEB_ROOT` = `apps/web/dist` относительно модуля (`src/` и `dist/` лежат в `apps/api` на одном уровне, как `MIGRATIONS_DIR`); образ сохраняет эту раскладку. `createApp(ctx, {webRoot?})`: по умолчанию статика только при `NODE_ENV=production`; dev — Vite, тесты передают `webRoot`; e2e по-прежнему через `vite preview`.
+  - CLI `backup <путь>`: `db.backup()` (online backup API, можно при работающем сервере, включает WAL) во временный `<путь>.partial` → `journal_mode=DELETE` (один самодостаточный файл без `-wal/-shm`) → `PRAGMA quick_check` → `chmod 600` → rename. Каталог или путь со слэшем на конце → `questclass-<UTC>.db` в нём. Существующий файл не перезаписывается (1), нет БД в `DATA_DIR` → 1 без создания пустой, без аргумента → 2. Миграции не запускаются; `master.key` и медиа не входят (FEAT-047). `reset-password` был с FEAT-004, не дублировался.
+  - Образ `deploy/Dockerfile` (контекст — корень репо, `docker build -f deploy/Dockerfile .`): сборка на `node:22-alpine3.24`, рантайм — чистый `alpine:3.24` + бинарник Node из того же образа (+ `libstdc++`, `libgcc`, `tini`): на `bookworm-slim` образ ~290 МБ (база 232 МБ + 73 МБ ассетов), а удаление npm/yarn из node-образа в верхнем слое объём не уменьшает (исправлено отдельным коммитом после замера в CI: так было 250,7 МБ). better-sqlite3 13 несёт N-API prebuilds (в т.ч. `linuxmusl-x64`), компилятор не нужен. В builder ставятся только `@questclass/api...` и `@questclass/web...` (`pnpm install --frozen-lockfile --filter`) — sharp, Playwright, lesson-prep и корневые dev-зависимости в образ не попадают, ffmpeg тоже. Рантайм: `/app/apps/api/dist` (без `.map`), `/app/apps/web/dist`, `/app/node_modules/better-sqlite3` (только `lib/` и бинарник платформы, 2,4 МБ); npm/corepack/yarn в образе нет; tini (PID 1), `USER node` (uid 1000, создаётся как в официальных образах), `/data` принадлежит 1000, `ENV NODE_ENV=production PORT=8080 DATA_DIR=/data NODE_OPTIONS=--max-old-space-size=96`, `HEALTHCHECK` → `deploy/healthcheck.mjs` (`GET /api/health`, таймаут 4 с), `WORKDIR /app/apps/api` (`docker exec … node dist/cli.js …`). Смоук при сборке: `node dist/cli.js` (все импорты бандла разрешаются) + открытие `:memory:` БД (нативный биндинг) + наличие `index.html`.
+  - Размер: сумма слоёв 225,6 МБ (`docker history`: alpine 9,1 + библиотеки 3,1 + node 130 + приложение 83,4), файловая система 215 МиБ (`du -sx /`), сжатый 129 МБ (`docker image inspect .Size` на containerd-снапшоттере Docker Desktop; там же «DISK USAGE» = распакованное + сжатые блобы).
+  - Проверено локально (Docker Desktop 29, Linux-контейнер): пустой том → master.key, «Applied 19 migration(s)», setup-токен в `docker logs`, health `healthy`; `/`, `/admin/users` → документ, бандл immutable, ассет `max-age=86400`, `.ogg` с Range → 206; SPA открывается в браузере (deep link → вход); `docker stop` → «Shutting down», выход 0 за 0,5 с; `backup /data/backups/` и `reset-password` через `docker exec`.
+  - RSS (`scripts/load.mjs`, VmRSS/VmHWM процесса Node из `/proc/<pid>/status` в контейнере): сразу после старта 98 МиБ; после прогрева (все URL смеси ×3 + проход по обеим дорожкам видео) и 10 с простоя — **103,7 МиБ** (< 150); под нагрузкой 2 мин (10 потоков HLS подряд без пауз ~108 МиБ/с + 50 запросов/с: экраны ученика, списки админа, файлы SPA, игровая графика; 0 ошибок, p95 39/54 мс) — пик **157,0 МиБ** VmHWM (< 200), включая загрузку урока чанками через lesson-prep (пик на загрузке 100 МиБ); простой после нагрузки 129,8 МиБ. `docker stats` (cgroup) в пике 82 МиБ. Повтор на образе alpine + node: 103,0 / 157,8 МиБ. `load.mjs` сам готовит свежую установку через API (setup-токен из `docker logs`, ученик + доверенное устройство, токен импорта, урок 60 с из `ffmpeg testsrc2`, публикация); нужен ffmpeg и `pnpm build`.
+  - Вне перечня Scope: `apps/api/src/app.ts` и `apps/api/src/cli/index.ts` (точки регистрации), `apps/api/test/cli-backup.test.ts` (тесты CLI backup). `.dockerignore` назван `deploy/Dockerfile.dockerignore`: BuildKit берёт `<Dockerfile>.dockerignore` рядом с Dockerfile, а `deploy/.dockerignore` при контексте = корень репо игнорировался бы.
+  - Для FEAT-046: бандл `/_app/index-*.js` 440 КБ без сжатия — в блок Caddy нужен `encode zstd gzip` (Node не сжимает ради CPU и RAM). Если `/data` — bind-mount, владелец uid 1000. Тестов 746 (+2 пропущено), было 727.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: Clarification «Node раздаёт API, SPA, медиа»; CLAUDE.md 13; Critique 1 MED#19, LOW (tini, backup CLI).
@@ -1292,7 +1303,18 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Локальный `docker run` с томом: RSS после прогрева < 150 МБ. Под нагрузкой (`scripts/load.mjs`: 10 параллельных потоков видео + 50 запросов/с к API в течение 2 минут) — < 200 МБ (`measure-rss`).
 
 ### FEAT-045 — CI и публикация в GHCR
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `ci.yml` — на push в любую ветку и на PR (PR из ветки этого репо не дублирует прогон push; `docs/**` и `*.md` CI не запускают; новый push в ту же ветку отменяет текущий прогон). Две параллельные задачи на `ubuntu-24.04`:
+    - `check`: Node 22 (`setup-node`), pnpm через corepack, кэш pnpm store по `pnpm-lock.yaml`, ffmpeg из apt (иначе тесты lesson-prep с настоящим ffmpeg пропускаются), затем `lint`, `typecheck`, `test`.
+    - `e2e`: контейнер `mcr.microsoft.com/playwright:v1.64.1-noble` (`--ipc=host --init`) с теми же добавками, что `e2e/Dockerfile` (ffmpeg `--no-install-recommends`, corepack 0.36.0). Так окружение совпадает с тем, где сделаны скриншот-базы; шаг проверяет, что версия `@playwright/test` в `e2e/package.json` равна тегу образа. Затем `pnpm build` и `playwright test` (оба проекта — Chromium, 390×844 и 1440×900). При падении отчёт и трейсы `e2e/.output` — артефакт на 7 дней.
+  - `QuestClass-Source` CI не нужен: `apps/web/test/assets.test.ts` без него пропускает сверку с оригиналом (это единственный пропущенный тест на Linux).
+  - `release.yml` — на push в `main` и `workflow_dispatch`: buildx + `docker/build-push-action` (`deploy/Dockerfile`, linux/amd64, кэш слоёв `type=gha`, `provenance: false` — один манифест на тег, без «untagged» версий-аттестаций), вход в GHCR через `GITHUB_TOKEN` (`packages: write`). Теги: `ghcr.io/olegmedv/questclass:<sha>` всегда, `:latest` только из `main` (ручной запуск с другой ветки `latest` не перезаписывает). После публикации образ скачивается обратно и проверяется бюджет FEAT-044: распакованный < 250 МБ, иначе задача падает. Пакет приватный: анонимный запрос манифеста → 403. Release не ждёт CI: в `main` попадают только слияния веток, уже прошедших CI.
+  - Проверка: `workflow_dispatch` работает, только когда файл есть в ветке по умолчанию, поэтому release проверялся на временной ветке `feat/deploy-ci-trial` с временным триггером push (в этом коммите его нет).
+    - Первый прогон CI зелёный: https://github.com/olegmedv/questclass/actions/runs/43623418987 — check 5 мин (747 passed, 1 skipped), e2e 2 мин (52 passed).
+    - Release: https://github.com/olegmedv/questclass/actions/runs/43623419040 (образ 250,7 МБ — отсюда фикс FEAT-044), https://github.com/olegmedv/questclass/actions/runs/43624639238 — `ghcr.io/olegmedv/questclass:b333b20b4af1bf390e8645871b605e1096da2e81`, распакованный 223 МБ, сжатый 129 МБ.
+  - Для FEAT-046: на сервере нужен `docker login ghcr.io` классическим PAT только со scope `read:packages`. У `gh` на ПК scope `read:packages` нет, поэтому список версий пакета через API не читается — смотреть в логе release или на вкладке Packages. Тег для деплоя — `<sha>` коммита из `main` (или `latest`).
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: Clarification «GitHub Actions → GHCR».
@@ -1304,7 +1326,19 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - PR и push: lint, typecheck, test, e2e (Chromium). CI не использует `QuestClass-Source`. Push в `main`: образ `ghcr.io/olegmedv/questclass:{sha,latest}` (приватный). Первый прогон зелёный.
 
 ### FEAT-046 — Деплой на VPS
-- **Status**: pending
+- **Status**: done (14.11.2026) — с оговоркой: вход в GHCR на сервере ждёт токена владельца, первый образ доставлен по SSH
+- **Notes**:
+  - Сервер: `/opt/questclass/{docker-compose.yml,deploy.sh,current-tag,previous-tag,data/}`; `data/` — uid 1000, права 700. Проверочный контейнер FEAT-050 остановлен (`spike/` можно удалить), имя `questclass` и блок Caddy те же.
+  - Образ `ghcr.io/olegmedv/questclass:6e8d3c3` (коммит 6e8d3c3, 225 МБ) собран локально и доставлен `docker save | gzip | ssh docker load`: у `gh` на ПК нет `read:packages`, а classic PAT только с `read:packages` для `docker login ghcr.io` на сервере владелец ещё не создал. Как только токен будет — обновления через `deploy.sh up <sha>` из GHCR (README).
+  - `shared_web` = 172.21.0.0/16 входит в `http.trustedProxies` по умолчанию — ключ не менялся.
+  - Проверено: `deploy.sh up 6e8d3c3` → healthy за ~10 с; `up rbtest` (временный второй тег того же образа) → `rollback` → снова 6e8d3c3, теги в `current-tag`/`previous-tag` переключаются; временный тег удалён, `previous-tag` очищен. `restore-snapshot` проверен только на защите (нет файла / нет `--yes`): снимков ещё нет, они появятся при первой миграции на данных. При неудачном `up` скрипт сам возвращает предыдущий тег.
+  - После старта: 19 миграций, `master.key` создан, setup-токен взят из `docker logs` (в файле `setup-token` только хэш), первый админ создан; добавлен ученик и токен импорта lesson-prep. Учётные данные — у владельца в `D:\QuestClassMedia\prod-credentials.txt`.
+  - Контент: 5 сид-уроков загружены `lesson-prep import` (~1,38 ГБ HLS + картинки вопросов) и опубликованы.
+  - Память: 92 МиБ сразу после старта (`docker stats`, лимит 256m).
+  - Caddy: в блок `questclass.duckdns.org` добавлен `encode zstd gzip` (рекомендация FEAT-044: Node не сжимает). Бэкап `/opt/caddy/Caddyfile.bak-2026-11-14-questclass-encode`, запись через `cat > Caddyfile` (inode тот же), `caddy validate` → `reload`. Главный JS 440 КБ уходит zstd ~190 КБ, `immutable` сохраняется.
+  - Домены сервера до/после: site-a 200/200, landing 200/200, mcp.site-a 400/400, site-b 200/200, site-c 502/502 (контейнера нет и до деплоя).
+  - Проверка в браузере на https://questclass.duckdns.org: вход родителя → «Сделать устройство детским» → выход → «Кто учится?» → PIN → главная с уроком → видео HLS 360p играет (сегменты по ~0,2 с), «Место остановки сохранено». Проверочное устройство отозвано.
+  - Не сделано: замер скачивания из Калининграда (FEAT-050) — теперь проверяется просто просмотром урока на сайте.
 - **Risk**: HIGH
 - **Requires decision**: Y — разрешение на SSH в момент выполнения
 - **Spec reference**: SPEC §1 «новый блок в общем Caddyfile»; Critique 1 MED#19.
