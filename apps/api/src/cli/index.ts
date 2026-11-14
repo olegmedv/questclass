@@ -1,5 +1,6 @@
 import { realpathSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
+import { BACKUP_USAGE, backupCommand } from './backup';
 import { RESET_PASSWORD_USAGE, resetPasswordCommand } from './resetPassword';
 
 /** Process boundary of the CLI, injectable for tests. */
@@ -16,6 +17,7 @@ type Command = (args: readonly string[], io: CliIo) => Promise<number>;
 /** Server-side maintenance commands. Each module adds its line here. */
 const COMMANDS: Readonly<Record<string, { run: Command; usage: string }>> = {
   'reset-password': { run: resetPasswordCommand, usage: RESET_PASSWORD_USAGE },
+  backup: { run: backupCommand, usage: BACKUP_USAGE },
 };
 
 function usage(): string {

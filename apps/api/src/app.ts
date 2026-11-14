@@ -44,6 +44,7 @@ import type { UploadsService } from './modules/uploads/service';
 import { usersRoutes } from './modules/users/routes';
 import type { UsersService } from './modules/users/service';
 import { healthRoutes } from './modules/health/routes';
+import { mountStaticSite, WEB_ROOT } from './static';
 import { wishesRoutes } from './modules/wishes/routes';
 import type { WishesService } from './modules/wishes/service';
 import { choreRoutes } from './task-types/chore/routes';
@@ -106,6 +107,8 @@ export interface BuiltApp {
 export interface BuildOptions {
   /** Request middlewares that run after the common guards and before routes (e.g. auth). */
   readonly middlewares?: readonly MiddlewareHandler<AppEnv>[];
+  /** Built SPA served for every GET outside `/api` (static.ts); without it only the API answers. */
+  readonly webRoot?: string;
 }
 
 /** All API routes. Each module adds its line here. */
@@ -163,10 +166,20 @@ export function buildApp(
     app.use('/api/*', middleware);
   }
   mountRoutes(app, routes);
+  if (options.webRoot !== undefined) {
+    mountStaticSite(app, options.webRoot);
+  }
   return { app, routes: Object.freeze([...routes]) };
 }
 
-/** The production app: every module's routes and middlewares. */
-export function createApp(ctx: AppContext): BuiltApp {
-  return buildApp(ctx, collectRoutes(ctx), { middlewares: collectMiddlewares(ctx) });
+/**
+ * The production app: every module's routes and middlewares. In production the same process
+ * also serves the built SPA (`WEB_ROOT`); in development Vite does, and tests pass `webRoot`.
+ */
+export function createApp(ctx: AppContext, options: Pick<BuildOptions, 'webRoot'> = {}): BuiltApp {
+  const webRoot = options.webRoot ?? (ctx.config.isProduction ? WEB_ROOT : undefined);
+  return buildApp(ctx, collectRoutes(ctx), {
+    middlewares: collectMiddlewares(ctx),
+    ...(webRoot !== undefined && { webRoot }),
+  });
 }

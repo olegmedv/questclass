@@ -1,0 +1,32 @@
+# Build context of deploy/Dockerfile (context = repository root). BuildKit reads this file
+# because it sits next to the Dockerfile and is named after it; a plain `.dockerignore` here
+# would be ignored. The Dockerfile copies only what it names; this keeps the context small and
+# makes sure local data, secrets and build outputs never reach the image.
+
+# Dependencies and build outputs (rebuilt inside the image)
+**/node_modules
+**/dist
+**/*.tsbuildinfo
+coverage
+
+# Local data, secrets, originals (never in git, never in the image)
+.git
+.env*
+.data
+**/.data
+data
+ddatabase
+QuestClass-Source
+QuestClass-Source.zip
+.claude
+.playwright-mcp
+
+# Not needed to build the server image
+docs
+e2e/**
+!e2e/package.json
+tools/lesson-prep/**
+!tools/lesson-prep/package.json
+scripts
+**/*.mp4
+**/*.m4s
