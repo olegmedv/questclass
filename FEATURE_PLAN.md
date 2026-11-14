@@ -4,7 +4,7 @@ Generated: 2026-11-14. Description: "MVP (Этап 1) КвестКласс 2 п�
 
 ## Summary
 - Total items: 54
-- Pending: 52 | Done: 0 | Blocked: 2 (FEAT-050 ждёт замера из РФ, FEAT-047 отложен до после MVP) | Superseded: 0
+- Pending: 52 | Done: 1 (FEAT-050, условно) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
 - Items requiring user decision: 3 — FEAT-050 и FEAT-046: SSH разрешён пользователем 14.11.2026; FEAT-047 отложен до после MVP
 - Critic iterations: 3 (+ патч после вердикта)
 - Critic verdict: halted at max iterations; HIGH и MED третьего круга закрыты патчем после вердикта (повторно не критиковались), 11 LOW — известные риски
@@ -118,7 +118,7 @@ Discovery выполнен вручную, без Explore-агента: в ре�
     - разминка и обучение ребёнка → Этап 2.
 
 ### FEAT-050 — Проверка доступа из РФ (спайк на сервере)
-- **Status**: blocked — развёрнуто 14.11.2026 (deploy/spike/README.md), ждёт замера пользователя из РФ (Wi-Fi и мобильный)
+- **Status**: done — развёрнуто 14.11.2026 (deploy/spike/README.md). Со слов пользователя, другие его сайты на этом IP открываются из РФ. **Открытый риск:** замер скачивания 100 МБ из КГД не сделан, повторить перед FEAT-046.
 - **Risk**: HIGH
 - **Requires decision**: Y — разрешение на SSH и правку общего Caddyfile в момент выполнения
 - **Spec reference**: SPEC §2 «Проверка до запуска видео: тестовый файл 50–100 МБ без VPN»; Critique 1 HIGH#9.
