@@ -19,6 +19,7 @@ import { seedSubjectsOnFirstStart } from './modules/subjects/seed';
 import { createSubjectsService } from './modules/subjects/service';
 import { createTasksService } from './modules/tasks/service';
 import { createTaskTypeRegistry } from './task-types/registry';
+import { createWatchService } from './task-types/video_lesson/watch';
 import { createUsersService } from './modules/users/service';
 
 /** Releases a resource on shutdown (closed in reverse order of registration). */
@@ -89,6 +90,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       taskTypes,
     });
     const media = createMediaService(db, { dataDir: config.dataDir, tasks });
+    const watch = createWatchService(db, { audit, settings, users, tasks, progress, media });
     const ctx: AppContext = {
       config,
       db,
@@ -106,6 +108,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       streak,
       attempts,
       media,
+      watch,
       trustedProxies: trustedProxiesFromSettings(settings),
     };
     return { ctx, closers };

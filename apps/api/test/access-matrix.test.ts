@@ -44,6 +44,14 @@ interface MatrixData {
   };
   /** A ready media of `taskA` (one playlist file on disk). */
   readonly mediaA: number;
+  /** Published video lessons assigned to learner A only. */
+  readonly video: {
+    /** Not opened yet. */
+    readonly fresh: number;
+    /** Opened by learner A: the session accepts batches. */
+    readonly watched: number;
+    readonly session: number;
+  };
 }
 
 const prepared = new WeakMap<TwoLearners, MatrixData>();
@@ -105,6 +113,36 @@ function prepareQuizzes(f: TwoLearners): MatrixData['quiz'] {
   };
 }
 
+/** Video lessons assigned to learner A, with a ready video and a bank. */
+function prepareVideos(f: TwoLearners): MatrixData['video'] {
+  const { ctx } = f.runtime;
+  const admin = f.ids.admin;
+  const video = (title: string): number => {
+    const id = ctx.tasks.create({ type: 'video_lesson', title }, admin).id;
+    const media = ctx.media.create({ taskId: id, role: 'video', kind: 'hls' });
+    writeFileSync(path.join(ctx.media.dirOf(media), 'master.m3u8'), '#EXTM3U');
+    ctx.media.markReady(media.id, { sizeBytes: 7, durationSec: 60 });
+    const config = {
+      mediaId: media.id,
+      watchMode: 'percent',
+      shutter: { enabled: true, heightPct: 9 },
+    };
+    ctx.tasks.update(id, { config }, admin);
+    for (const key of ['v1', 'v2', 'v3']) {
+      ctx.questions.create(id, { key, ...SAMPLE_QUESTION }, admin);
+    }
+    ctx.tasks.update(id, { status: 'published' }, admin);
+    ctx.tasks.assign(id, f.ids.learnerA, admin);
+    return id;
+  };
+  const watched = video('Видео: открытая сессия');
+  return {
+    fresh: video('Видео: не открыто'),
+    watched,
+    session: ctx.watch.startSession(f.ids.learnerA, watched).sessionId,
+  };
+}
+
 /** Adds the domain data rows need (task types beyond the built-ins come from fixtures). */
 function prepare(f: TwoLearners): TwoLearners {
   const { ctx } = f.runtime;
@@ -135,6 +173,7 @@ function prepare(f: TwoLearners): TwoLearners {
     assignedToB,
     quiz: prepareQuizzes(f),
     mediaA: mediaA.id,
+    video: prepareVideos(f),
   });
   return f;
 }
@@ -494,6 +533,26 @@ const MATRIX: readonly MatrixRow[] = [
     url: (f) => `/api/media/${data(f).mediaA}/master.m3u8`,
     learnerOwned: true,
     expect: { anon: 401, import: 401, learnerA: 200, learnerB: 404, admin: 200 },
+  },
+
+  // video lessons: watching
+  {
+    route: 'POST /api/watch/:taskId/sessions',
+    url: (f) => `/api/watch/${data(f).video.fresh}/sessions`,
+    learnerOwned: true,
+    expect: ownedByA(201),
+  },
+  {
+    route: 'POST /api/watch/:taskId/sessions/:id/intervals',
+    url: (f) => `/api/watch/${data(f).video.watched}/sessions/${data(f).video.session}/intervals`,
+    body: () => ({ intervals: [], position: 1 }),
+    learnerOwned: true,
+    expect: ownedByA(200),
+  },
+  {
+    route: 'POST /api/admin/learners/:id/watch/:taskId/confirmation',
+    url: (f) => `/api/admin/learners/${f.ids.learnerA}/watch/${data(f).video.fresh}/confirmation`,
+    expect: adminOnly(201),
   },
 ];
 

@@ -4,6 +4,7 @@ import { economySettings } from './keys/economy';
 import { progressSettings } from './keys/progress';
 import { quizSettings } from './keys/quiz';
 import { streakSettings } from './keys/streak';
+import { watchSettings } from './keys/watch';
 
 export { defineSetting, type SecretDef, type SettingDef } from './define';
 
@@ -14,6 +15,7 @@ export const SETTINGS = combineKeys(
   progressSettings,
   quizSettings,
   streakSettings,
+  watchSettings,
   // add module settings here
 );
 

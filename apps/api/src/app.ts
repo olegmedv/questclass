@@ -32,6 +32,8 @@ import { usersRoutes } from './modules/users/routes';
 import type { UsersService } from './modules/users/service';
 import { healthRoutes } from './modules/health/routes';
 import type { TaskTypeRegistry } from './task-types/registry';
+import { videoLessonRoutes } from './task-types/video_lesson/routes';
+import type { WatchService } from './task-types/video_lesson/watch';
 
 /** Dependencies shared by all modules; built once at startup (see startup.ts). */
 export interface AppContext {
@@ -54,6 +56,8 @@ export interface AppContext {
   readonly attempts: AttemptsService;
   /** Media files under DATA_DIR/media. */
   readonly media: MediaService;
+  /** Watching of lesson videos (video_lesson). */
+  readonly watch: WatchService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -85,6 +89,7 @@ function collectRoutes(ctx: AppContext): RouteDef[] {
     ...streakRoutes(ctx),
     ...attemptsRoutes(ctx),
     ...mediaRoutes(ctx),
+    ...videoLessonRoutes(ctx),
   ];
 }
 

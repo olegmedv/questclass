@@ -486,7 +486,16 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - `safePath()`: только `[a-z0-9_-]` сегменты и белый список расширений (`.m3u8 .ts .m4s .mp4 .webp .png .jpg .vtt .json`); `..`, абсолютные пути и симлинки отклоняются (тесты). Отдача потоком.
 
 ### FEAT-013 — Тип `video_lesson`: честный учёт просмотра
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Маршруты: `POST /api/watch/:taskId/sessions` (learner, 201 `{sessionId, media {id, kind, durationSec, src}, progress}`), `POST /api/watch/:taskId/sessions/:id/intervals` (learner, тело `{intervals[{start,end,kind main|help}] ≤100, position?}` → `WatchProgressDto`), `POST /api/admin/learners/:id/watch/:taskId/confirmation` (admin, 201 / 200 повтор). Отклонения от DoD: путь `/confirmation` вместо `/confirm` (правило 3, как `/closure`, `/completion`), подтверждение работает в любом режиме, не только `manual` (как в оригинале, PARITY 01-016: «просмотр вне приложения»); пишется audit `watch.confirmed`.
+  - Config: `mediaId` nullable (у нового черновика видео ещё нет; `canPublish` → «Нужно видео урока»). `publishChecks`: медиа существует, принадлежит этому заданию, не картинка и `ready`, вопросов ≥ `quiz.questionsPerAttempt`. `publicConfig` = `{mediaId, watchMode, shutter}`; итоговый порог ученик получает в `progress.requiredPercent`. Ответы оцениваются движком попыток FEAT-010, как у `quiz`. Ключи `watch.minPercent` = 70 (SPEC §8 «правило просмотра (70%)»; в оригинале по умолчанию было 95%) и `watch.maxRate` = 1,25.
+  - Сессия: старт требует видимого (иначе 404) и открытого (409 `task_locked`) задания, готового видео с длительностью (409 `video_not_ready`; удалённое → 410), закрывает прежнюю открытую сессию (частичный UNIQUE `(learner, task) WHERE closed_at IS NULL`) и отмечает задание начатым (`progress.markStarted`). Пачка: чужая сессия → 404, закрытая → 409 `session_closed`, видео задания заменено → 409 `session_outdated`. Зачитывается ≤ (время с прошлой пачки или старта сессии) × `watch.maxRate`, интервалы обрезаются по длительности, `help` не зачитывается, повтор не добавляет секунд; больше 2000 отдельных фрагментов → 422.
+  - `watch_progress`: объединённые интервалы (JSON по правилу 1b), `watched_sec`, `percent`, `last_position`, `completed_at` (порог достигнут один раз — повышение порога не отзывает), `confirmed_by/at`. Сброс прогресса (FEAT-009) пересмотра видео **не требует**: у строки нет epoch, UNIQUE `(learner, task, media)` по DoD; если нужно иначе — решить при FEAT-041.
+  - `fromImport(input)`: FEAT-012 передаёт манифест вместе с `mediaId` созданного медиа и (при переимпорте) `current` — текущим config; настройки просмотра админа сохраняются, меняется только видео. Входной файл видео по виду медиа — `MEDIA_ENTRY`: HLS → `master.m3u8`, MP4 → `video.mp4` (FEAT-023 выпускает эти имена).
+  - Вне Scope: `packages/shared/src/task-types/video_lesson/dto.ts` (в маске Scope), регистрация в `app.ts`, `startup.ts` (`ctx.watch`), реестрах типов и настроек, `schema/index.ts`. Перед пунктом отдельным коммитом `test(api)` (598b1ed) — `apps/api/vitest.config.ts` с таймаутами 20/30 с: при параллельном прогоне таймаут 5 с периодически срабатывал в `auth.test.ts` и `db.test.ts`, проверки не менялись.
+  - Строки FEAT-049 добавлены (3 маршрута, learnerB → 404). Тестов 401 (+1 пропущен), было 368. RSS в простое 77,2 МиБ.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: SPEC §4 «трекинг интервалов»; spec/01 «режимы просмотра, ручное подтверждение просмотра родителем»; Critique 1 MED#4, MED#5.

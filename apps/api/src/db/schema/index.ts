@@ -22,3 +22,5 @@ export * from './tasks';
 export * from './transcripts';
 export * from './trustedDevices';
 export * from './users';
+export * from './watchProgress';
+export * from './watchSessions';

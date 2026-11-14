@@ -3,6 +3,7 @@ import type { TaskStatus } from '@questclass/shared/tasks/dto';
 import type { Db } from '../db/client';
 import type { SettingsService } from '../modules/settings/service';
 import { quizTaskType } from './quiz';
+import { videoLessonTaskType } from './video_lesson';
 
 /** A task as type plugins see it: the row with its config already parsed by the type. */
 export interface TaskRecord<C = unknown> {
@@ -68,6 +69,7 @@ export interface TaskTypePlugin<C = unknown, S = unknown> {
 /** Built-in task types. Each type adds its line here. */
 const BUILT_IN_TYPES: readonly TaskTypePlugin[] = [
   quizTaskType,
+  videoLessonTaskType,
   // add task type plugins here
 ];
 
