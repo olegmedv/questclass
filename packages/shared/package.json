@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./assets/manifest.json": "./src/assets/manifest.json",
     "./*": "./src/*.ts"
   },
   "scripts": {

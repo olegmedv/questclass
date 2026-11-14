@@ -1,0 +1,158 @@
+.qc-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--q-space-2);
+  width: 100%;
+  margin: 0;
+}
+
+.qc-hero-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.qc-hero-poster,
+.qc-hero-motion {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.qc-hero-pixelated :is(.qc-hero-poster, .qc-hero-motion) {
+  image-rendering: pixelated;
+}
+
+.qc-hero-sprite {
+  display: block;
+  background-repeat: no-repeat;
+}
+
+/* The still picture stays until the animated one has loaded: no blank frame. */
+.qc-hero-motion {
+  opacity: 0;
+}
+
+.qc-hero[data-loaded] .qc-hero-motion {
+  opacity: 1;
+}
+
+.qc-hero[data-loaded] .qc-hero-poster {
+  visibility: hidden;
+}
+
+.qc-hero[data-motion] .qc-hero-poster {
+  transform-origin: 50% 85%;
+}
+
+.qc-hero[data-motion='bounce'] .qc-hero-poster {
+  animation: qc-hero-bounce 2.8s ease-in-out infinite;
+}
+
+.qc-hero[data-motion='float'] .qc-hero-poster {
+  transform-origin: 50% 80%;
+  animation: qc-hero-float 3.4s ease-in-out infinite;
+}
+
+.qc-hero[data-motion='pendulum'] .qc-hero-poster {
+  transform-origin: 50% 48%;
+  animation: qc-hero-pendulum 3.2s ease-in-out infinite;
+}
+
+.qc-hero[data-motion='sway'] .qc-hero-poster {
+  transform-origin: 50% 92%;
+  animation: qc-hero-sway 3s ease-in-out infinite;
+}
+
+.qc-hero-toggle {
+  position: absolute;
+  right: var(--q-space-1);
+  bottom: var(--q-space-1);
+  display: grid;
+  place-items: center;
+  width: var(--q-touch);
+  height: var(--q-touch);
+  border: 1px solid var(--q-live-border);
+  border-radius: var(--q-radius-round);
+  background: var(--q-live-bg);
+  color: var(--q-live);
+}
+
+.qc-hero-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.qc-hero-toggle[aria-pressed='true'] {
+  border-color: var(--q-live);
+}
+
+.qc-hero-toggle:disabled {
+  opacity: 0.5;
+}
+
+.qc-hero-error {
+  color: var(--q-muted);
+  font-size: var(--q-text-xs);
+  text-align: center;
+}
+
+@keyframes qc-hero-bounce {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  15% {
+    transform: translateY(0) scale(1.035, 0.97);
+  }
+
+  37% {
+    transform: translateY(-4%) rotate(-2deg) scale(0.985, 1.015);
+  }
+
+  57% {
+    transform: translateY(0) scale(1.035, 0.97);
+  }
+
+  76% {
+    transform: translateY(-1%) rotate(2deg) scale(1);
+  }
+}
+
+@keyframes qc-hero-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+
+  50% {
+    transform: translateY(-5%) rotate(2deg);
+  }
+}
+
+@keyframes qc-hero-pendulum {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-4deg);
+  }
+
+  50% {
+    transform: translateY(-3%) rotate(4deg);
+  }
+}
+
+@keyframes qc-hero-sway {
+  0%,
+  100% {
+    transform: rotate(-3deg) scaleY(1);
+  }
+
+  50% {
+    transform: rotate(3deg) scaleY(0.97);
+  }
+}

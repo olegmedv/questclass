@@ -1,0 +1,41 @@
+.qc-avatar {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: var(--qc-avatar-size);
+  height: var(--qc-avatar-size);
+  overflow: hidden;
+  border: 2px solid var(--q-border);
+  border-radius: var(--q-radius-md);
+  background: var(--q-selected);
+  color: var(--q-text);
+
+  --qc-avatar-size: 44px;
+}
+
+.qc-avatar[data-size='sm'] {
+  --qc-avatar-size: 32px;
+}
+
+.qc-avatar[data-size='lg'] {
+  --qc-avatar-size: 64px;
+}
+
+.qc-avatar[data-size='xl'] {
+  border-radius: var(--q-radius-xl);
+
+  --qc-avatar-size: 96px;
+}
+
+.qc-avatar > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+.qc-avatar-initial {
+  font-size: calc(var(--qc-avatar-size) * 0.45);
+  font-weight: var(--q-weight-black);
+  line-height: 1;
+}

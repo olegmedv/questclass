@@ -753,7 +753,16 @@ Discovery выполнен вручную, без Explore-агента: в ре�
 ### Фаза C — web ученика
 
 ### FEAT-024 — Каркас web: роутинг, клиент API, реестр типов
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Зависимости web: `react-router` 8 (data router: `createBrowserRouter`, `RouterProvider` из `react-router/dom`), `@tanstack/react-query` 5; dev — testing-library (`react`, `dom`, `user-event`, `jest-dom`) и `jsdom` 30.
+  - Маршруты в `routes` (`router.tsx`): `/setup` и `/login` публичные; `/`, `/tasks/:id`, `/hero`, `/shop`, `/rewards` — роль learner; `/admin` + `/admin/*` — роль admin; `/dev/ui` — в dev всем, в production только админу. Пока экраны не готовы, на маршрутах стоят заглушки `ScreenStub` (их заменят FEAT-025/027/028/029…). Пока админа нет, любая страница ведёт на `/setup` (`SetupGate` по `GET /api/setup`).
+  - Гварды: нет сессии → `/login` (в `state.from` — откуда пришли); ученик в админке → «Нет доступа» (со ссылкой «Войти как родитель» → `/login?as=admin`); админ на странице ученика → `/admin`. `QueryErrorView`: 401 → вход, 403 → «Нет доступа», остальное — сообщение и «Повторить». 401 на любом запросе (не мутации: там это «неверный пароль/PIN») сбрасывает кэш пользователя, и гварды показывают вход.
+  - Клиент `api()`: тело ошибки сервера → `ApiError {status, code, message, details, retryAfterSec}`, сбой сети → status 0. Запросы auth/setup/profiles/devices и мутации входа, выхода, setup и доверенных устройств — в `api/queries/auth.ts` (их используют FEAT-028/039). 4xx не повторяются.
+  - Реестр типов web: `createTaskTypeRegistry([...])` → `renderPlayer/renderEditor`; неизвестный тип — `role=alert` «Неизвестный тип задания «…»». Типы пропсов Player/Editor пока свои (контракты shared появятся в FEAT-008).
+  - Vite `build.assetsDir: '_app'`: хэшированные бандлы в `/_app/*`, игровые ассеты остаются нехэшированными в `/assets/*` (замечание FEAT-026 для FEAT-044).
+  - Вне перечня Scope (необходимо): `apps/web/package.json`, `pnpm-lock.yaml`, `apps/web/vite.config.ts`, `apps/web/src/app/App.tsx` (провайдеры + роутер), `apps/web/vitest.config.ts`, `apps/web/test/{setup.ts,helpers.tsx}`. Среда тестов web по умолчанию node (тесту ассетов FEAT-026 нужны `file:` URL), компонентные тесты включают jsdom докблоком `// @vitest-environment jsdom`.
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: SPEC §7; Critique 1 MED#14.
@@ -767,7 +776,17 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Реестр типов web: `type → {Player, Editor}`. Неизвестный тип рендерит понятную ошибку (тест).
 
 ### FEAT-053 — e2e-стенд Playwright
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - e2e — пакет воркспейса `@questclass/e2e` (`e2e` в `pnpm-workspace.yaml`), `@playwright/test` закреплён точно (1.64.1): тег образа `mcr.microsoft.com/playwright:v<версия>-noble` берётся из него.
+  - Команды: `pnpm e2e` — сборка + прогон на своей ОС (на Windows и macOS сравнение скриншотов пропускается с пометкой в отчёте, базы не пишутся); `pnpm e2e:docker` — прогон в Linux-контейнере как в CI (`CI=1`: недостающая база = падение); `pnpm e2e:update` — то же с `--update-snapshots`, базы копируются обратно в `e2e/__screenshots__`. Репозиторий копируется в контейнер без `node_modules`, pnpm-store — в docker-томе `questclass-pnpm-store`.
+  - Образ-обёртка `e2e/Dockerfile` (FROM официального образа Playwright): в нём нет ffmpeg и corepack (Node 26), они доустанавливаются; corepack ставится с `--force` поверх yarn образа.
+  - Global setup поднимает собранный API (`apps/api/dist/index.js`, `NODE_ENV=test`, временный `DATA_DIR`, setup-токен читается из лога) и SPA через `vite preview` с прокси `/api` (один origin, как в production); создаёт админа, ученика «Саша» с PIN и доверенное устройство через HTTP API; сессии персон `admin | learner | device | anon` — storage state, выбор `test.use({ persona })`. Фикстура `freshStack` поднимает отдельную чистую установку (для пути «setup → …» в FEAT-028).
+  - Видеофикстуры: MP4 (H.264 + AAC, 5 с, `testsrc` + `sine`) и HLS (VOD, сегменты fMP4 по 2 с) в `e2e/.output/fixtures/video` (в `.gitignore`), создаются заново, если их нет. Сегменты fMP4, а не `.ts`, чтобы их не подхватывали eslint/tsc.
+  - Скриншоты: `__screenshots__/<spec>/<имя>-<mobile|desktop>.png`, порог `maxDiffPixelRatio 0.01`, анимации и каретка отключены. Первая база (`smoke.spec.ts/login-*`) создана в контейнере, повторный прогон `pnpm e2e:docker` — 20 passed.
+  - Шаг CI — в FEAT-045 (тот же `e2e/Dockerfile` или `pnpm e2e:docker`).
+  - Вне перечня Scope (необходимо): `e2e/{package.json,tsconfig.json,Dockerfile,docker.mjs}`, корневой `package.json` (скрипты `e2e`, `e2e:docker`, `e2e:update`), `pnpm-workspace.yaml`, `pnpm-lock.yaml`, `.gitignore` (`/e2e/.output/`), `eslint.config.mjs` (игнор `e2e/.output/**`).
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: Critique 1 MED#20.
@@ -781,7 +800,16 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Видеофикстуры (HLS и MP4, 5 с) генерируются в `global-setup` через `ffmpeg -f lavfi -i testsrc`; в git их нет.
 
 ### FEAT-025 — Дизайн-система: токены и компоненты
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `tokens.css`: палитра тёмной темы оригинала (`--q-page/surface/raised/input/border/text/muted/blue/selected/focus`), тёплый акцент `--q-accent #f4c65f` (+ hover/shadow/ink), жёлтая «Начать» (`--q-cta-*`), игровые цвета (монеты, XP, «живой»), статусы, шрифты (Arial; заголовки — Arial Black), шкала размеров, отступы 4 px, радиусы, тени, длительности, слои. Глобальная база — `base.css`, вход — `@questclass/ui/styles.css` (подключён в `main.tsx`).
+  - Компоненты (`packages/ui/src/components`, по файлу на компонент или группу): Button/IconButton (+`buttonClassName` для ссылок), Card, ItemCard, Modal/Sheet/Drawer (портал, фокус-ловушка, Escape, возврат фокуса, блок прокрутки), Tabs, SegmentedControl, ProgressBar, ProgressRing, StatChip, Badge, Avatar, StepList, EmptyState, Toast (+`ToastProvider`/`useToast`), Tooltip, Placeholder, Field (+TextInput, Textarea, Select, DateTimeInput), Switch, Checkbox, NumberInput, Slider, FileInput, Accordion, DataTable, PinPad (экранные кнопки + физическая клавиатура), Spinner, QuestionCard, OptionTile. Дополнительно (чтобы экранам и галерее не нужен был свой CSS): Stack/Inline/Grid/Container, Heading/Text/VisuallyHidden, Skeleton; набор иконок lucide-react (`icons.ts`, версия 1.63.0 закреплена) — экраны берут иконки только из дизайн-системы.
+  - Классы — kebab-case (`qc-btn-primary`): `selector-class-pattern` из stylelint-config-standard не пропускает BEM-разделители; варианты — через `data-*`.
+  - Галерея `/dev/ui` (`UiGallery`, ленивый чанк ~65 КБ): каждый компонент в состояниях «обычное», «недоступно», «загрузка», «пусто», «ошибка»; где состояние неприменимо, вместо него строка «Не применимо: причина». `docs/PLACEHOLDERS.md`: описание компонента и типов `kind`.
+  - Тесты: 54 testing-library теста в `packages/ui/test` (роли, имена, описания, фокус, клавиатура); e2e `ui-gallery.spec.ts` — все секции и 5 состояний, нет горизонтальной прокрутки на 390 и 1440, скриншоты каждой секции и открытого окна (76 баз из Linux-контейнера, повторный прогон в контейнере — 26 passed). База `smoke/login-*` перегенерирована (тёмная тема).
+  - Исправление FEAT-053: ffmpeg писал init-сегмент HLS (`init.mp4`) в текущую папку, а не рядом с плейлистом; шаг HLS теперь запускается в папке фикстуры с относительными именами, смоук проверяет `init.mp4` и сегменты, в `.gitignore` добавлены `*.mp4` и `*.m4s`.
+  - Вне перечня Scope (необходимо): `packages/ui/{package.json,tsconfig.json,vitest.config.ts,test/setup.ts}`, `packages/ui/src/{index.ts,icons.ts,styles.css,base.css,env.d.ts,internal/*}`, `apps/web/src/main.tsx` (глобальные стили), `apps/web/src/app/router.tsx` (ленивый маршрут галереи), `e2e/ui-gallery.spec.ts`, `e2e/fixtures/test.ts` (скриншот элемента), `e2e/fixtures/video.ts`, `e2e/smoke.spec.ts`, `.gitignore`, `e2e/__screenshots__/**`, `pnpm-lock.yaml`.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: SPEC §3 пп. 1–5; Critique 1 MED#10.
@@ -796,7 +824,14 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Тесты testing-library: роли, подписи, фокус. e2e-скриншоты галереи на 390 и 1440 без горизонтальной прокрутки (FEAT-053).
 
 ### FEAT-035 — Анимации героев: менеджер и AnimatedHero
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `AnimatedHero` (ui) — только отображение: постер (картинка или ячейка спрайта), анимированный WebP поверх него появляется лишь после `load` (до этого виден постер, на кнопке индикатор), CSS-движения `bounce | float | pendulum | sway` для героев без WebP (Март, Фея, Cadence, Сик — как в оригинале), кнопка «Оживить героя / Остановить героя» (`aria-pressed`), «Движение выключено» (disabled), сообщение при ошибке загрузки. Остановленный герой — без анимированного `<img>` в DOM.
+  - `AnimationManager` (web): одна активная анимация на всё приложение; режимы `autoplay` (на экране — двигается, при возврате на экран/вкладку продолжает), `autoplay-3s` (сам один раз, 3 с считаются от загрузки анимации), `on-demand` (только по кнопке); скрытая вкладка и уход с экрана (IntersectionObserver) останавливают; `prefers-reduced-motion` отключает автозапуск и останавливает автозапущенное, нажатие работает всегда. Часы внедряются (тесты на фейковых таймерах). `AnimationProvider` подключён в `Providers` приложения; хук `useHeroAnimation(ref, mode)` и обёртка `LiveHero` для экранов (FEAT-029/033/034).
+  - Галерея: секция AnimatedHero в 5 состояниях и «Живые герои и экшен-анимации» — 11 живых героев и 9 экшенов (`screens/dev/liveHeroes.ts`: список как `builtinAnimations`/`actionAnimations` оригинала, пути, кадры и длительность берутся из манифеста; неизвестный ключ — ошибка). Реальный каталог с ценами — FEAT-017.
+  - Тесты: 15 в `apps/web/test/animation.test.tsx` (менеджер на фейковых таймерах + LiveHero с замоканным IntersectionObserver), 5 в `packages/ui/test/animated-hero.test.tsx`; e2e — каждый из 20 героев запускается по кнопке и двигается, одновременно двигается один; базы двух новых секций из Linux-контейнера (повторный прогон — 28 passed).
+  - Вне перечня Scope (необходимо): `apps/web/src/features/animation/LiveHero.tsx`, `apps/web/src/app/providers.tsx`, `apps/web/src/screens/dev/{UiGallery.tsx,liveHeroes.ts}`, `packages/ui/src/index.ts`, `packages/ui/test/animated-hero.test.tsx`, `packages/shared/package.json` (экспорт `./assets/manifest.json`), `e2e/ui-gallery.spec.ts`, `e2e/__screenshots__/**`.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: spec/02 §2.8 «одна анимация одновременно; надетый живой — на «Герое» и 3 с на главной; в магазине по кнопке; вне экрана стоит; reduced-motion отключает автозапуск; 9 экшен-анимаций»; Critique 1 MED#13, LOW.
@@ -816,7 +851,15 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - В галерее проигрываются все живые герои и 9 экшен-анимаций из манифеста.
 
 ### FEAT-038 — Празднования и звуки интерфейса
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `Celebration` (ui) — оверлей-диалог (фокус внутри, Escape, возврат фокуса), варианты `pass` (кубок, «+XP», «+монет», полёт жетонов), `purchase` («Куплено!», «Потрачено N монет, осталось M»), `streak` (ролик — анимированный WebP серии длиной из манифеста, саундтрек с «Включить/Выключить звук» на случай блокировки автозвука, «К наградам», затем счётчики идут от «итог − награда» до подтверждённых итогов с полётом монет и XP, «Отлично!»; если ролик не загрузился — сразу награды и пометка). Компонент только показывает то, что уже начислил сервер; `onReward` — момент для звука «complete».
+  - Один раз на бонус и устройство: маркер `quest-streak-celebration-v1:<ученик>:<бонус>` в localStorage (`streakCelebrationKey`, `wasStreakCelebrated`, `markStreakCelebrated`), пишется при показе. `preview` ничего не пишет и говорит об этом («ПРЕДПРОСМОТР», «Предпросмотр: ничего не начислено», «Закрыть предпросмотр»). `prefers-reduced-motion` (или проп `reducedMotion`) — статичная версия: без ролика, звука и полёта, сразу итоговые числа и постер.
+  - `SoundManager` (web): 4 звука с приоритетами packet 1 / element 2 / level 3 / complete 4; играет один, менее важный не прерывает более важный (в том числе пока тот грузится); загрузка дольше 900 мс — звук пропускается; громкость 55% и «включено» по умолчанию; на скрытой вкладке тишина; формат OGG, на iOS/iPadOS (и где нет OGG) — MP3. Web Audio внедряется (в тестах — фейк). `SoundProvider`/`useSound`: настройки на устройстве (`quest-interface-sounds`, как в оригинале), прайм по первому касанию или клавише; подключён в `Providers`.
+  - Галерея: секции Celebration (все варианты в предпросмотре, статичная серия, сломанный ролик) и «Звуки интерфейса» (переключатель, громкость, проигрывание всех 4 звуков).
+  - Тесты: 9 в `sound.test.tsx`, 12 в `celebration.test.tsx`; e2e — диалоги праздников открываются, серия проходит от ролика к наградам, скриншоты зачёта и статичной серии (Linux-контейнер, повторный прогон — 30 passed).
+  - Вне перечня Scope (необходимо): `packages/ui/src/{index.ts,internal/useReducedMotion.ts}`, `apps/web/src/app/providers.tsx`, `apps/web/src/screens/dev/UiGallery.tsx`, `e2e/ui-gallery.spec.ts`, `e2e/__screenshots__/**`.
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: spec/02 §2.15; spec/01 «празднование серии: ролик, полёт монет и XP, один раз на бонус и устройство, reduced-motion, предпросмотр»; Critique 1 MED#13, LOW.
@@ -829,7 +872,17 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Звуки: 4 приоритета, по одному. Отмена, если загрузка дольше 900 мс. Громкость 55% по умолчанию. OGG, на iOS — MP3 (тест менеджера).
 
 ### FEAT-027 — Шаблоны экранов
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Шаблоны (`apps/web/src/templates`) — только данные и слоты, весь вид в `packages/ui`. Для этого в дизайн-систему добавлены: `AppFrame`, `TopBar`, `Brand`, `BottomNav`, `SideNav` (+`NavItem`), `Menu` (меню профиля: стрелки, Home/End, Escape, клик мимо, возврат фокуса), `PlayerFrame`, `ButtonLink`, `UiLink`/`UiLinkProvider` (компоненты дизайн-системы ссылаются через роутер приложения), `StatChip href`. Значок lucide `Menu` переэкспортирован как `MenuIcon` (имя `Menu` — у компонента).
+  - `LearnerShell`: бренд, меню профиля («Сменить ученика», «Родителям»), «Награды» (`/rewards`), строка чисел — уровень, XP, монеты, «Мои желания» (`/wishes`); нижнее меню «Учёба · Герой · Магазин» с `aria-current`. На телефоне кнопки шапки только со значком (подпись остаётся для экранного диктора), как в эталоне 01. Числа приходят пропсом: API кошелька (FEAT-007) ещё нет, поэтому в приложении строка чисел пока скрыта — её подключит FEAT-029.
+  - `TaskPlayer` (назад, предмет, заголовок, шаги, прогресс, медиа, панель действий снизу), `Catalog` (фильтр-вкладки, сетка ItemCard, диалог подробностей, пусто/загрузка/ошибка с «Повторить»), `ProgressView` (итоги, слот серии, доп. секции, история DataTable), `AdminShell` + `AdminPage` (разделы сбоку/сверху, меню «Выйти», заголовок страницы, действия).
+  - Подключение в приложении (`app/layouts.tsx`): страницы ученика живут в `LearnerShell` («Сменить ученика» → выход и `/login`; «Родителям» → `/login?as=admin` без выхода ученика), админка — в `AdminShell` с реестром разделов `ADMIN_SECTIONS` (каждый админ-экран добавляет строку). `/tasks/:id` — заглушка в `TaskPlayer`. Добавлен маршрут-заглушка `/wishes`. Экраны состояний (загрузка, «Нет доступа», ошибки, 404) переведены на компоненты дизайн-системы.
+  - Демо-данные: `/dev/templates/:name` (`learner`, `task`, `catalog`, `progress`, `admin`); в галерее — секции Menu, «Навигация», ссылки на шаблоны.
+  - Тесты: 15 в `templates.test.tsx` (шапка, меню профиля с клавиатурой, нижнее меню, раскладки в приложении, «Сменить ученика»/«Родителям», TaskPlayer, Catalog, ProgressView, AdminShell). e2e `templates.spec.ts`: 5 шаблонов на 390 и 1440 без горизонтальной прокрутки и со скриншотами, меню профиля, диалог каталога. Базы из Linux-контейнера, повторный прогон — 44 passed.
+  - `pnpm e2e:update` теперь `--update-snapshots=all` (раньше устаревшая, но укладывающаяся в порог база `smoke/login` не обновлялась), `e2e/docker.mjs` распознаёт любой `--update-snapshots…`. Все базы перегенерированы.
+  - Вне перечня Scope (необходимо): `packages/ui/src/components/{AppFrame,Link,Menu,PlayerFrame}.*`, `packages/ui/src/components/{Button,StatChip}.*`, `packages/ui/src/{index.ts,icons.ts}`, `apps/web/src/app/{layouts.tsx,router.tsx,providers.tsx,guards.tsx,ErrorBoundary.tsx}`, `apps/web/src/screens/dev/{TemplateDemos.tsx,UiGallery.tsx}`, `e2e/{templates.spec.ts,ui-gallery.spec.ts,docker.mjs}`, `e2e/__screenshots__/**`, корневой `package.json`.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: SPEC §3 п. 3; Critique 1 LOW («Сменить ученика», «Родителям»).
@@ -846,7 +899,18 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - e2e-скриншоты шаблонов на демо-данных (FEAT-053).
 
 ### FEAT-028 — Экраны входа и доверенные устройства
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `/setup` (`Setup`): код установки, имя, логин, пароль; проверка полей до отправки (те же правила, что в shared), неверный код — у поля, «первый админ уже создан» — со ссылкой на вход, ошибки 400 раскладываются по полям из `details`. После успеха — `/admin/device` с приветствием. Уход с `/setup`, когда установка уже сделана, теперь решает сам экран (раньше гард `SetupGate` перенаправлял на `/login` и гонялся с переходом после успешной установки).
+  - `/login` (`Login` → `LearnerPicker` или `AdminLogin` по `?as=admin`): на недоверенном устройстве — «Попросите родителя включить это устройство» и «Я родитель»; на доверенном — «Кто учится?» (карточки профилей) → `PinEntry` (PinPad, физическая клавиатура, «Неверный PIN», «Другой ученик»); «Учеников пока нет». Вход родителя: «Неверный логин или пароль», после входа — возврат на страницу, с которой отправили на вход, если она этой роли.
+  - Троттлинг (429): обратный отсчёт до следующей попытки из `retryAfterSec` («Попробуйте через 3 с», «Подожди 1:15»), кнопка и PinPad заблокированы до конца отсчёта.
+  - `/admin/device` (`TrustDevice`, раздел «Устройства» в `ADMIN_SECTIONS`): «Сделать устройство детским» с названием; список детских устройств (это/детское/отозвано) и «Отозвать» с подтверждением.
+  - Выход из шапок теперь сначала уводит на `/login`, потом завершает сессию (раньше редирект гарда и переход после выхода гонялись); после выхода родителя на детском устройстве сразу открывается выбор ученика.
+  - **Найдена и исправлена ошибка dev-стенда:** прокси Vite в короткой записи (`'/api': url`) ставит `changeOrigin: true`, `Host` переставал совпадать с `Origin`, и проверка «тот же сайт» API (FEAT-002) отклоняла любой POST из браузера («Запрос с другого сайта отклонён»). В `vite.config.ts` и в e2e-стенде прокси теперь с `changeOrigin: false` — как за Caddy.
+  - В дизайн-систему добавлены `AuthFrame` (карточка по центру для экранов до входа, режим `embedded` для превью) и `Notice` (сообщение в форме: info/success/warning/danger), оба в галерее; иконки `LogIn`, `TabletSmartphone`.
+  - Тесты: 15 в `auth-screens.test.tsx` (setup и проверки, вход родителя с возвратом, неверный пароль, отсчёт 429 на фейковых таймерах, недоверенное устройство, нет учеников, выбор профиля + PIN, неверный PIN, блокировка PinPad, «Сделать устройство детским», отзыв). e2e `auth.spec.ts`: полный путь «setup → сделать устройство детским → вход ученика» на чистой установке (ученик создаётся через API: экран пользователей — FEAT-039), экраны выбора и PIN на доверенном устройстве, неверный пароль; скриншоты setup, входа родителя, выбора и PIN из Linux-контейнера (повторный прогон — 52 passed).
+  - Вне перечня Scope (необходимо): `apps/web/src/screens/auth/{Login.tsx,common.tsx}`, `apps/web/src/app/{router.tsx,layouts.tsx,guards.tsx}`, `apps/web/vite.config.ts`, `apps/web/src/screens/dev/UiGallery.tsx`, `packages/ui/src/components/{AuthFrame,Notice}.*`, `packages/ui/src/{index.ts,icons.ts}`, `e2e/{auth.spec.ts,ui-gallery.spec.ts,fixtures/stack.ts}`, `e2e/__screenshots__/**`.
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: SPEC §7 «Auth»; FEAT-004.

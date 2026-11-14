@@ -1,0 +1,28 @@
+.qc-tooltip {
+  position: relative;
+  display: inline-flex;
+}
+
+.qc-tooltip-bubble {
+  position: absolute;
+  bottom: calc(100% + var(--q-space-2));
+  left: 50%;
+  z-index: var(--q-layer-tooltip);
+  width: max-content;
+  max-width: min(260px, 80vw);
+  padding: var(--q-space-2) var(--q-space-3);
+  border: 1px solid var(--q-border);
+  border-radius: var(--q-radius-sm);
+  background: var(--q-raised);
+  color: var(--q-text);
+  font-size: var(--q-text-sm);
+  line-height: var(--q-leading-tight);
+  box-shadow: var(--q-shadow-overlay);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.qc-tooltip-bubble[data-placement='bottom'] {
+  top: calc(100% + var(--q-space-2));
+  bottom: auto;
+}
