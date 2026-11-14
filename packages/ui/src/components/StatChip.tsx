@@ -1,6 +1,7 @@
 import { Coins, Shield, Ticket, Zap } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { cx } from '../internal/cx';
+import { UiLink } from './Link';
 import './StatChip.css';
 
 export type StatKind = 'level' | 'xp' | 'coins' | 'wishes' | 'neutral';
@@ -22,6 +23,8 @@ export interface StatChipProps {
   readonly loading?: boolean;
   /** Turns the chip into a button (e.g. opens «Мои желания»). */
   readonly onClick?: () => void;
+  /** Turns the chip into a link (e.g. to «Мои желания»). */
+  readonly href?: string;
   readonly disabled?: boolean;
 }
 
@@ -34,6 +37,7 @@ export function StatChip({
   icon,
   loading = false,
   onClick,
+  href,
   disabled,
 }: StatChipProps) {
   const content = (
@@ -51,6 +55,15 @@ export function StatChip({
       )}
     </>
   );
+  if (href && !loading) {
+    return (
+      <UiLink href={href} className="qc-stat-link" aria-label={`${label}: ${value}`}>
+        <span className="qc-stat" data-kind={kind}>
+          {content}
+        </span>
+      </UiLink>
+    );
+  }
   if (onClick) {
     return (
       <button

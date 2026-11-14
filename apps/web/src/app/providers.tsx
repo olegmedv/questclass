@@ -1,5 +1,7 @@
+import { UiLinkProvider, type UiLinkProps } from '@questclass/ui';
 import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
+import { Link } from 'react-router';
 import { isApiError, isUnauthorized } from '../api/client';
 import { authKeys } from '../api/queries/auth';
 import { AnimationProvider } from '../features/animation/AnimationManager';
@@ -36,12 +38,19 @@ export function createQueryClient(): QueryClient {
   return client;
 }
 
+/** Design-system links navigate inside the SPA. */
+function RouterLink({ href, ...rest }: UiLinkProps) {
+  return <Link to={href} {...rest} />;
+}
+
 export function Providers({ client, children }: { client: QueryClient; children: ReactNode }) {
   return (
     <QueryClientProvider client={client}>
-      <AnimationProvider>
-        <SoundProvider>{children}</SoundProvider>
-      </AnimationProvider>
+      <UiLinkProvider component={RouterLink}>
+        <AnimationProvider>
+          <SoundProvider>{children}</SoundProvider>
+        </AnimationProvider>
+      </UiLinkProvider>
     </QueryClientProvider>
   );
 }

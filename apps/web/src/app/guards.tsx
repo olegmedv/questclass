@@ -1,7 +1,8 @@
 import type { MeDto } from '@questclass/shared/auth/dto';
 import type { UserRole } from '@questclass/shared/auth/schemas';
+import { Button, ButtonLink, Container, Inline, Spinner } from '@questclass/ui';
 import type { ReactNode } from 'react';
-import { Link, Navigate, Outlet, useLocation } from 'react-router';
+import { Navigate, Outlet, useLocation } from 'react-router';
 import { isApiError } from '../api/client';
 import { useMe, useSetupStatus } from '../api/queries/auth';
 import { StatusScreen } from './ErrorBoundary';
@@ -19,8 +20,12 @@ export interface LoginRedirectState {
 
 export function LoadingScreen() {
   return (
-    <main className="qc-status-screen" aria-busy="true">
-      <p role="status">Загрузка…</p>
+    <main aria-busy="true">
+      <Container padded>
+        <Inline justify="center">
+          <Spinner size="lg" label="Загрузка" />
+        </Inline>
+      </Container>
     </main>
   );
 }
@@ -32,8 +37,10 @@ export function ForbiddenScreen() {
       message="Этот раздел открыт только взрослым."
       actions={
         <>
-          <Link to="/">На главную</Link>
-          <Link to="/login?as=admin">Войти как родитель</Link>
+          <ButtonLink href="/">На главную</ButtonLink>
+          <ButtonLink href="/login?as=admin" variant="primary">
+            Войти как родитель
+          </ButtonLink>
         </>
       }
     />
@@ -64,9 +71,9 @@ export function QueryErrorView({ error, onRetry }: { error: unknown; onRetry?: (
       message={message}
       actions={
         onRetry && (
-          <button type="button" onClick={onRetry}>
+          <Button variant="primary" onClick={onRetry}>
             Повторить
-          </button>
+          </Button>
         )
       }
     />

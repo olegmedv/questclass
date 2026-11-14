@@ -1,3 +1,4 @@
+import { Button, ButtonLink, Container, EmptyState } from '@questclass/ui';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { isRouteErrorResponse, useRouteError } from 'react-router';
 
@@ -7,13 +8,13 @@ export interface StatusScreenProps {
   readonly actions?: ReactNode;
 }
 
-/** A full-screen message (error, no access, nothing here). */
+/** A full-screen message (error, no access, nothing here) outside the shells. */
 export function StatusScreen({ title, message, actions }: StatusScreenProps) {
   return (
-    <main className="qc-status-screen">
-      <h1>{title}</h1>
-      {message && <p>{message}</p>}
-      {actions && <div className="qc-status-screen__actions">{actions}</div>}
+    <main>
+      <Container padded>
+        <EmptyState headingLevel={1} plain title={title} description={message} actions={actions} />
+      </Container>
     </main>
   );
 }
@@ -26,9 +27,9 @@ export function CrashScreen() {
       title="Что-то пошло не так"
       message="Обновите страницу. Если ошибка повторится, расскажите родителю."
       actions={
-        <button type="button" onClick={reload}>
+        <Button variant="primary" onClick={reload}>
           Обновить страницу
-        </button>
+        </Button>
       }
     />
   );
@@ -67,7 +68,12 @@ export class ErrorBoundary extends Component<BoundaryProps, BoundaryState> {
 export function RouteErrorScreen() {
   const error = useRouteError();
   if (isRouteErrorResponse(error) && error.status === 404) {
-    return <StatusScreen title="Такой страницы нет" actions={<a href="/">На главную</a>} />;
+    return (
+      <StatusScreen
+        title="Такой страницы нет"
+        actions={<ButtonLink href="/">На главную</ButtonLink>}
+      />
+    );
   }
   console.error('Route error', error);
   return <CrashScreen />;

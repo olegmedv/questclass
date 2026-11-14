@@ -3,6 +3,19 @@
 export * from './icons';
 export { Accordion, type AccordionItem, type AccordionProps } from './components/Accordion';
 export {
+  AppFrame,
+  BottomNav,
+  Brand,
+  SideNav,
+  TopBar,
+  type AppFrameProps,
+  type BottomNavProps,
+  type BrandProps,
+  type NavItem,
+  type SideNavProps,
+  type TopBarProps,
+} from './components/AppFrame';
+export {
   AnimatedHero,
   type AnimatedHeroProps,
   type HeroMotion,
@@ -13,7 +26,9 @@ export { Badge, type BadgeProps, type BadgeTone } from './components/Badge';
 export {
   Button,
   buttonClassName,
+  ButtonLink,
   IconButton,
+  type ButtonLinkProps,
   type ButtonProps,
   type ButtonSize,
   type ButtonVariant,
@@ -54,9 +69,12 @@ export {
 export { FileInput, type FileInputProps } from './components/FileInput';
 export { ItemCard, type ItemCardProps } from './components/ItemCard';
 export { Container, Grid, Inline, Stack, type Gap } from './components/Layout';
+export { UiLink, UiLinkProvider, type UiLinkProps } from './components/Link';
+export { Menu, type MenuAction, type MenuProps } from './components/Menu';
 export { NumberInput, type NumberInputProps } from './components/NumberInput';
 export { Drawer, Modal, Sheet, type OverlayProps } from './components/Overlay';
 export { PinPad, type PinPadProps } from './components/PinPad';
+export { PlayerFrame, type PlayerFrameProps } from './components/PlayerFrame';
 export { Placeholder, type PlaceholderKind, type PlaceholderProps } from './components/Placeholder';
 export {
   ProgressBar,

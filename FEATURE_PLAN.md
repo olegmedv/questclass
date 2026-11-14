@@ -779,7 +779,17 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Звуки: 4 приоритета, по одному. Отмена, если загрузка дольше 900 мс. Громкость 55% по умолчанию. OGG, на iOS — MP3 (тест менеджера).
 
 ### FEAT-027 — Шаблоны экранов
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Шаблоны (`apps/web/src/templates`) — только данные и слоты, весь вид в `packages/ui`. Для этого в дизайн-систему добавлены: `AppFrame`, `TopBar`, `Brand`, `BottomNav`, `SideNav` (+`NavItem`), `Menu` (меню профиля: стрелки, Home/End, Escape, клик мимо, возврат фокуса), `PlayerFrame`, `ButtonLink`, `UiLink`/`UiLinkProvider` (компоненты дизайн-системы ссылаются через роутер приложения), `StatChip href`. Значок lucide `Menu` переэкспортирован как `MenuIcon` (имя `Menu` — у компонента).
+  - `LearnerShell`: бренд, меню профиля («Сменить ученика», «Родителям»), «Награды» (`/rewards`), строка чисел — уровень, XP, монеты, «Мои желания» (`/wishes`); нижнее меню «Учёба · Герой · Магазин» с `aria-current`. На телефоне кнопки шапки только со значком (подпись остаётся для экранного диктора), как в эталоне 01. Числа приходят пропсом: API кошелька (FEAT-007) ещё нет, поэтому в приложении строка чисел пока скрыта — её подключит FEAT-029.
+  - `TaskPlayer` (назад, предмет, заголовок, шаги, прогресс, медиа, панель действий снизу), `Catalog` (фильтр-вкладки, сетка ItemCard, диалог подробностей, пусто/загрузка/ошибка с «Повторить»), `ProgressView` (итоги, слот серии, доп. секции, история DataTable), `AdminShell` + `AdminPage` (разделы сбоку/сверху, меню «Выйти», заголовок страницы, действия).
+  - Подключение в приложении (`app/layouts.tsx`): страницы ученика живут в `LearnerShell` («Сменить ученика» → выход и `/login`; «Родителям» → `/login?as=admin` без выхода ученика), админка — в `AdminShell` с реестром разделов `ADMIN_SECTIONS` (каждый админ-экран добавляет строку). `/tasks/:id` — заглушка в `TaskPlayer`. Добавлен маршрут-заглушка `/wishes`. Экраны состояний (загрузка, «Нет доступа», ошибки, 404) переведены на компоненты дизайн-системы.
+  - Демо-данные: `/dev/templates/:name` (`learner`, `task`, `catalog`, `progress`, `admin`); в галерее — секции Menu, «Навигация», ссылки на шаблоны.
+  - Тесты: 15 в `templates.test.tsx` (шапка, меню профиля с клавиатурой, нижнее меню, раскладки в приложении, «Сменить ученика»/«Родителям», TaskPlayer, Catalog, ProgressView, AdminShell). e2e `templates.spec.ts`: 5 шаблонов на 390 и 1440 без горизонтальной прокрутки и со скриншотами, меню профиля, диалог каталога. Базы из Linux-контейнера, повторный прогон — 44 passed.
+  - `pnpm e2e:update` теперь `--update-snapshots=all` (раньше устаревшая, но укладывающаяся в порог база `smoke/login` не обновлялась), `e2e/docker.mjs` распознаёт любой `--update-snapshots…`. Все базы перегенерированы.
+  - Вне перечня Scope (необходимо): `packages/ui/src/components/{AppFrame,Link,Menu,PlayerFrame}.*`, `packages/ui/src/components/{Button,StatChip}.*`, `packages/ui/src/{index.ts,icons.ts}`, `apps/web/src/app/{layouts.tsx,router.tsx,providers.tsx,guards.tsx,ErrorBoundary.tsx}`, `apps/web/src/screens/dev/{TemplateDemos.tsx,UiGallery.tsx}`, `e2e/{templates.spec.ts,ui-gallery.spec.ts,docker.mjs}`, `e2e/__screenshots__/**`, корневой `package.json`.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: SPEC §3 п. 3; Critique 1 LOW («Сменить ученика», «Родителям»).

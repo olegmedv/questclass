@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Runs the e2e suite in the Linux Playwright container, exactly like CI.
 //   pnpm e2e:docker [playwright args]   — check against the committed baselines
-//   pnpm e2e:update [playwright args]   — same with --update-snapshots: refreshes e2e/__screenshots__
+//   pnpm e2e:update [playwright args]   — same with --update-snapshots=all: rewrites e2e/__screenshots__
 // The repository is copied into the container (host node_modules are never used there); only
 // the screenshot baselines and the run output are copied back.
 import { spawnSync } from 'node:child_process';
@@ -17,7 +17,7 @@ if (!/^\d+\.\d+\.\d+$/.test(version)) {
 }
 const image = `questclass-e2e:${version}`;
 const args = process.argv.slice(2);
-const update = args.includes('--update-snapshots') || args.some((a) => a.startsWith('-u'));
+const update = args.some((a) => a === '-u' || a.startsWith('--update-snapshots'));
 
 function run(command, commandArgs) {
   const result = spawnSync(command, commandArgs, { stdio: 'inherit' });

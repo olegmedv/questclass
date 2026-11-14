@@ -1,5 +1,6 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 import { cx } from '../internal/cx';
+import { UiLink } from './Link';
 import { Spinner } from './Spinner';
 import './Button.css';
 
@@ -101,5 +102,28 @@ export function IconButton({
         </span>
       )}
     </button>
+  );
+}
+
+export interface ButtonLinkProps extends ButtonStyle {
+  readonly href: string;
+  readonly icon?: ReactNode;
+  readonly children: ReactNode;
+}
+
+/** A navigation link that looks like a button (uses the app's router link). */
+export function ButtonLink({
+  href,
+  icon,
+  children,
+  variant = 'secondary',
+  size,
+  block,
+}: ButtonLinkProps) {
+  return (
+    <UiLink href={href} className={buttonClassName({ variant, size, block })}>
+      {icon}
+      <span className="qc-btn-label">{children}</span>
+    </UiLink>
   );
 }

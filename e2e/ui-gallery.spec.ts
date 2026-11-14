@@ -45,6 +45,9 @@ const SECTIONS = [
   'animated-hero',
   'celebration',
   'sounds',
+  'menu',
+  'navigation',
+  'frames',
 ];
 
 test('gallery shows every component in five states and fits the screen', async ({ page }) => {

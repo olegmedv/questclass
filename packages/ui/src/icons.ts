@@ -15,7 +15,7 @@ export {
   House,
   KeyRound,
   LogOut,
-  Menu,
+  Menu as MenuIcon,
   Play,
   Search,
   Settings,

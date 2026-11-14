@@ -4,6 +4,16 @@ import {
   Accordion,
   AnimatedHero,
   Avatar,
+  BottomNav,
+  Brand,
+  ButtonLink,
+  House,
+  KeyRound,
+  Menu,
+  Shirt,
+  ShoppingBag,
+  SideNav,
+  Users,
   Badge,
   BookOpen,
   Button,
@@ -26,7 +36,7 @@ import {
   IconButton,
   Inline,
   ItemCard,
-  Menu,
+  MenuIcon,
   Modal,
   NumberInput,
   OptionTile,
@@ -246,6 +256,14 @@ function PinPadDemo() {
     />
   );
 }
+
+const TEMPLATE_LINKS: readonly (readonly [string, string])[] = [
+  ['learner', 'LearnerShell'],
+  ['task', 'TaskPlayer'],
+  ['catalog', 'Catalog'],
+  ['progress', 'ProgressView'],
+  ['admin', 'AdminShell'],
+];
 
 const STREAK_MOVIE = {
   src: '/assets/celebrations/streak-five-v1.webp',
@@ -473,6 +491,9 @@ export function UiGallery() {
     ['live-heroes', 'Живые герои'],
     ['celebration', 'Celebration'],
     ['sounds', 'Звуки интерфейса'],
+    ['menu', 'Menu'],
+    ['navigation', 'Навигация'],
+    ['frames', 'Шаблоны экранов'],
   ];
 
   return (
@@ -550,7 +571,7 @@ export function UiGallery() {
             states={{
               default: (
                 <Inline>
-                  <IconButton label="Меню" icon={<Menu />} />
+                  <IconButton label="Меню" icon={<MenuIcon />} />
                   <IconButton label="Награды" icon={<Trophy />} variant="secondary" badge={2} />
                   <IconButton label="Звук" icon={<Play />} pressed />
                 </Inline>
@@ -1543,6 +1564,111 @@ export function UiGallery() {
 
           <CelebrationSection />
           <SoundsSection />
+
+          <Demo
+            id="menu"
+            title="Menu"
+            description="Меню профиля: стрелки, Escape, клик мимо закрывает."
+            states={{
+              default: (
+                <Menu
+                  label="Профиль"
+                  align="start"
+                  trigger={<Users />}
+                  heading="Саша"
+                  items={[
+                    { id: 'switch', label: 'Сменить ученика', icon: <Users />, onSelect: () => {} },
+                    { id: 'parents', label: 'Родителям', icon: <KeyRound />, onSelect: () => {} },
+                  ]}
+                />
+              ),
+              disabled: <Menu label="Профиль" trigger={<Users />} items={[]} disabled />,
+              loading: { na: 'пункты меню известны заранее' },
+              empty: { na: 'меню без пунктов не показывается' },
+              error: { na: 'ошибку действия показывает экран' },
+            }}
+          />
+
+          <Demo
+            id="navigation"
+            title="Навигация"
+            description="Brand, ButtonLink, нижнее меню ученика и разделы кабинета."
+            states={{
+              default: (
+                <Stack>
+                  <Inline justify="between">
+                    <Brand logo="/assets/icons/star-v1-192.png" href="/dev/ui" />
+                    <ButtonLink href="/dev/ui" size="sm" icon={<Trophy />}>
+                      Награды
+                    </ButtonLink>
+                  </Inline>
+                  <BottomNav
+                    label="Разделы (пример)"
+                    placement="static"
+                    items={[
+                      {
+                        id: 'study',
+                        label: 'Учёба',
+                        href: '/dev/ui',
+                        icon: <BookOpen />,
+                        active: true,
+                      },
+                      { id: 'hero', label: 'Герой', href: '/dev/ui', icon: <Shirt /> },
+                      { id: 'shop', label: 'Магазин', href: '/dev/ui', icon: <ShoppingBag /> },
+                    ]}
+                  />
+                  <SideNav
+                    label="Разделы кабинета (пример)"
+                    items={[
+                      {
+                        id: 'home',
+                        label: 'Главная',
+                        href: '/dev/ui',
+                        icon: <House />,
+                        active: true,
+                      },
+                      { id: 'users', label: 'Пользователи', href: '/dev/ui', icon: <Users /> },
+                    ]}
+                  />
+                </Stack>
+              ),
+              disabled: { na: 'недоступные разделы не показываются' },
+              loading: { na: 'разделы известны заранее' },
+              empty: (
+                <BottomNav
+                  label="Разделы без выбранного (пример)"
+                  placement="static"
+                  items={[
+                    { id: 'study', label: 'Учёба', href: '/dev/ui', icon: <BookOpen /> },
+                    { id: 'hero', label: 'Герой', href: '/dev/ui', icon: <Shirt /> },
+                    { id: 'shop', label: 'Магазин', href: '/dev/ui', icon: <ShoppingBag /> },
+                  ]}
+                />
+              ),
+              error: { na: 'навигация не бывает ошибочной' },
+            }}
+          />
+
+          <Demo
+            id="frames"
+            title="Шаблоны экранов"
+            description="AppFrame, TopBar и PlayerFrame работают внутри шаблонов: LearnerShell, TaskPlayer, Catalog, ProgressView, AdminShell."
+            states={{
+              default: (
+                <Inline>
+                  {TEMPLATE_LINKS.map(([id, name]) => (
+                    <ButtonLink key={id} href={`/dev/templates/${id}`} size="sm">
+                      {name}
+                    </ButtonLink>
+                  ))}
+                </Inline>
+              ),
+              disabled: { na: 'см. состояния компонентов внутри шаблонов' },
+              loading: { na: 'см. Catalog и ProgressView с loading' },
+              empty: { na: 'см. EmptyState внутри шаблонов' },
+              error: { na: 'см. EmptyState tone="error" внутри шаблонов' },
+            }}
+          />
         </Stack>
       </Container>
     </ToastProvider>
