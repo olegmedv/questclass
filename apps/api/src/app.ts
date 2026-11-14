@@ -41,6 +41,8 @@ import type { UploadsService } from './modules/uploads/service';
 import { usersRoutes } from './modules/users/routes';
 import type { UsersService } from './modules/users/service';
 import { healthRoutes } from './modules/health/routes';
+import { wishesRoutes } from './modules/wishes/routes';
+import type { WishesService } from './modules/wishes/service';
 import { choreRoutes } from './task-types/chore/routes';
 import type { ChoresService } from './task-types/chore/service';
 import type { TaskTypeRegistry } from './task-types/registry';
@@ -82,6 +84,8 @@ export interface AppContext {
   readonly uploads: UploadsService;
   /** The learner's shop, purchases and what they own. */
   readonly shop: ShopService;
+  /** Ticket requests and handing out wishes and Robux. */
+  readonly wishes: WishesService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -120,6 +124,7 @@ function collectRoutes(ctx: AppContext): RouteDef[] {
     ...catalogRoutes(ctx),
     ...uploadsRoutes(ctx),
     ...shopRoutes(ctx),
+    ...wishesRoutes(ctx),
   ];
 }
 

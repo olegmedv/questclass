@@ -86,6 +86,8 @@ interface MatrixData {
   readonly upload: number;
   /** A ticket both learners can afford (each of them got coins). */
   readonly shopItem: { readonly id: number; readonly version: number };
+  /** Learner A's group of two bought wish tickets. */
+  readonly wishGroup: string;
 }
 
 const prepared = new WeakMap<TwoLearners, MatrixData>();
@@ -291,6 +293,26 @@ function prepareShop(f: TwoLearners): MatrixData['shopItem'] {
   return { id: item?.id ?? 0, version: item?.version ?? 0 };
 }
 
+/** A wish ticket of its own, bought twice by learner A (the shop rows buy another one). */
+function prepareWishes(f: TwoLearners): string {
+  const { ctx } = f.runtime;
+  const wish = ctx.catalog.create(
+    {
+      kind: 'ticket',
+      title: 'Матрица: желание',
+      price: 1,
+      imageKey: 'game/wishes.webp',
+      rewardType: 'wish',
+    },
+    f.ids.admin,
+  );
+  for (const requestId of ['matrix-wish-0001', 'matrix-wish-0002']) {
+    ctx.shop.purchase(f.ids.learnerA, { itemId: wish.id, version: wish.version, requestId });
+  }
+  const group = ctx.wishes.view(f.ids.learnerA).groups.find((g) => g.rewardType === 'wish');
+  return group?.groupKey ?? '';
+}
+
 /** Adds the domain data rows need (task types beyond the built-ins come from fixtures). */
 function prepare(f: TwoLearners): TwoLearners {
   const { ctx } = f.runtime;
@@ -328,6 +350,7 @@ function prepare(f: TwoLearners): TwoLearners {
     catalogItem: ctx.catalog.items({ kind: 'outfit', activeOnly: true })[0]?.id ?? 0,
     upload: ctx.uploads.create(readFileSync(SMALL_PICTURE), admin).id,
     shopItem: prepareShop(f),
+    wishGroup: prepareWishes(f),
   });
   return f;
 }
@@ -876,6 +899,27 @@ const MATRIX: readonly MatrixRow[] = [
       requestId: 'matrix-purchase-1',
     }),
     expect: learnerOnly(201),
+  },
+
+  // wishes and Robux
+  { route: 'GET /api/me/wishes', expect: learnerOnly(200) },
+  {
+    route: 'POST /api/me/wish-requests',
+    body: (f) => ({ groupKey: data(f).wishGroup }),
+    learnerOwned: true,
+    expect: ownedByA(201),
+  },
+  { route: 'GET /api/admin/wishes', expect: adminOnly(200) },
+  {
+    route: 'POST /api/admin/learners/:id/fulfillments',
+    url: (f) => `/api/admin/learners/${f.ids.learnerA}/fulfillments`,
+    body: (f) => ({
+      groupKey: data(f).wishGroup,
+      amount: 1,
+      expectedRemaining: 2,
+      requestId: 'matrix-fulfil-0001',
+    }),
+    expect: adminOnly(201),
   },
 ];
 

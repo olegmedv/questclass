@@ -30,6 +30,7 @@ import { createTaskTypeRegistry } from './task-types/registry';
 import { createWatchService } from './task-types/video_lesson/watch';
 import { createUploadsService } from './modules/uploads/service';
 import { createUsersService } from './modules/users/service';
+import { createWishesService } from './modules/wishes/service';
 
 /** Releases a resource on shutdown (closed in reverse order of registration). */
 export type Closer = () => void | Promise<void>;
@@ -124,6 +125,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       hasPurchases: (id) => itemHasPurchases(db, id),
     });
     const shop = createShopService(db, { catalog, ledger });
+    const wishes = createWishesService(db, { audit, users });
     const ctx: AppContext = {
       config,
       db,
@@ -148,6 +150,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       catalog,
       uploads,
       shop,
+      wishes,
       trustedProxies: trustedProxiesFromSettings(settings),
     };
     return { ctx, closers };

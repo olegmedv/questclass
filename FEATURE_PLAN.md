@@ -686,7 +686,7 @@ Discovery выполнен вручную, без Explore-агента: в ре�
 - **Status**: done
 - **Completed**: 2026-11-14
 - **Notes**:
-  - Маршруты (learner): `GET /api/shop` → `{coins, items[]}` — активные несид-стартовые товары (`CatalogItemDto` + `affordable`, `missingCoins`), без купленного и уже имеющегося, билеты всегда; живые первыми, дальше порядок каталога. `POST /api/shop/purchases {itemId, version, requestId}` → 201 `{purchase, coins}` (повтор `requestId` — 200 с той же покупкой).
+  - Маршруты (learner): `GET /api/shop` → `{coins, items[]}` — активные нестартовые товары (`CatalogItemDto` + `affordable`, `missingCoins`), без купленного и уже имеющегося, билеты всегда; живые первыми, дальше порядок каталога. `POST /api/shop/purchases {itemId, version, requestId}` → 201 `{purchase, coins}` (повтор `requestId` — 200 с той же покупкой).
   - `purchases` — одна вставка на покупку, не меняется: снимок `kind, title, description, price, item_version, reward_type/amount` + `snapshot` (JSON-объект-значение: `hero/room/roomCategory/animation/ticket/animated` из DTO каталога на момент покупки — правило 1b, как снимок вопроса) + `visual_key`. Списание — `ledger.spend` с ключом `purchase:<learner>:<requestId>`, `source_id` = id покупки, `note` = название; покупка и списание в одной транзакции (нехватка монет откатывает вставку). UNIQUE `(learner, request_id)`.
   - Отказы (409): тот же `requestId` для другого товара — `request_conflict`; выключенный, стартовый или несуществующий — `item_unavailable`; версия ≠ текущей — `item_changed {version}`; уже есть (купленный товар, стартовый или такой же по картинке+анимации) — `already_owned` с текстом оригинала для героя/комнаты; монет меньше цены или баланс < 0 — `insufficient_coins` (FEAT-007). Билеты — сколько угодно раз.
   - `ownership.ts`: `visualKey` (вид + картинка из библиотеки или загрузка + анимация или `still`) и `owned(learner)` — стартовые (по флагу `starter`, текущий вид из каталога) + купленное (снимок), дубли по `visual_key` схлопнуты; для FEAT-021. `itemHasPurchases` подключён к каталогу FEAT-017 (`hasPurchases` → 409 `kind_locked`). Отдельного списка покупок по HTTP нет (сервис `purchases(learner)` для FEAT-020/021); в «Истории» покупка видна строкой ledger.
@@ -704,7 +704,14 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - `GET /api/shop`: купленное скрыто, есть флаги `affordable` и `missingCoins`. Строки FEAT-049.
 
 ### FEAT-020 — Билетики: просьбы и выдача (вставками)
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Маршруты. Learner: `GET /api/me/wishes?cursor&limit` → `{groups[], history {items, nextCursor}}` (история по 20, новые первыми), `POST /api/me/wish-requests {groupKey}` (201 — вставка, 200 — группа уже запрошена, чужая/пустая → 404). Admin: `GET /api/admin/wishes?status=open|remaining` (по умолчанию `open` — запрошенные; `remaining` — всё с остатком; по ученикам), `POST /api/admin/learners/:id/fulfillments {groupKey, amount, expectedRemaining, requestId}` (201 / 200 повтор).
+  - Группа: все Robux-билеты ученика — `robux`; желание — `wish:<itemId>:<12 hex sha256(название, описание)>` (как в оригинале по [товар, название, описание]: переименованный товар начинает новую группу для новых покупок). Ключ группы вычисляется из снимка покупки, в `purchases` не хранится.
+  - Ничего не обновляется: остаток покупки = `reward_amount − SUM(allocations)` (SQL-агрегат), остаток группы — сумма. Выдача — вставка `fulfillments` (квитанция: тип, название «Robux» или желания, количество) + вставки `fulfillment_allocations` по FIFO (по id покупки, частично). UNIQUE `(learner, request_id)`: повтор → та же квитанция, тот же `requestId` для другой группы → 409 `request_conflict`; `expectedRemaining` ≠ остатку → 409 `remaining_changed {remaining}`; больше остатка → 409 `amount_exceeds_remaining`; нет группы → 404. Монеты не возвращаются. Audit `wish.fulfilled` (с `learnerId`).
+  - Статус группы выводится, не хранится: `requested`, пока самая новая просьба новее самой новой квитанции группы; после частичной выдачи остаток снова `ready` (ученик может попросить ещё раз). Уведомление родителю в MVP — очередь `status=open` (push — этап 2).
+  - Вне Scope: `packages/shared/src/wishes/dto.ts`, регистрация в `app.ts`, `startup.ts` (`ctx.wishes`), `schema/index.ts`. Строки FEAT-049 добавлены (4 маршрута, просьба learnerB → 404). Тестов 708 (+2 пропущено), было 699.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: spec/02 §2.6; Critique 1 MED#22.
