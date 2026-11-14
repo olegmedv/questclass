@@ -48,6 +48,8 @@ const SECTIONS = [
   'menu',
   'navigation',
   'frames',
+  'notice',
+  'auth-frame',
 ];
 
 test('gallery shows every component in five states and fits the screen', async ({ page }) => {

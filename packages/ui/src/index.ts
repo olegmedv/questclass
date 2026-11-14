@@ -21,6 +21,7 @@ export {
   type HeroMotion,
   type HeroSprite,
 } from './components/AnimatedHero/AnimatedHero';
+export { AuthFrame, type AuthFrameProps } from './components/AuthFrame';
 export { Avatar, type AvatarProps } from './components/Avatar';
 export { Badge, type BadgeProps, type BadgeTone } from './components/Badge';
 export {
@@ -71,6 +72,7 @@ export { ItemCard, type ItemCardProps } from './components/ItemCard';
 export { Container, Grid, Inline, Stack, type Gap } from './components/Layout';
 export { UiLink, UiLinkProvider, type UiLinkProps } from './components/Link';
 export { Menu, type MenuAction, type MenuProps } from './components/Menu';
+export { Notice, type NoticeProps, type NoticeTone } from './components/Notice';
 export { NumberInput, type NumberInputProps } from './components/NumberInput';
 export { Drawer, Modal, Sheet, type OverlayProps } from './components/Overlay';
 export { PinPad, type PinPadProps } from './components/PinPad';

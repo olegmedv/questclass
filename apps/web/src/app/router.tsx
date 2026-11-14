@@ -1,5 +1,8 @@
 import { EmptyState } from '@questclass/ui';
 import { createBrowserRouter, type RouteObject } from 'react-router';
+import { Login } from '../screens/auth/Login';
+import { Setup } from '../screens/auth/Setup';
+import { TrustDevice } from '../screens/auth/TrustDevice';
 import { AdminPage } from '../templates/AdminShell';
 import { TaskPlayer } from '../templates/TaskPlayer';
 import { RouteErrorScreen, StatusScreen } from './ErrorBoundary';
@@ -8,12 +11,7 @@ import { AdminLayout, LearnerLayout } from './layouts';
 
 const LATER = 'Этот экран появится в следующих версиях.';
 
-/** Temporary content of a route whose screen arrives in a later plan item. */
-function ScreenStub({ title }: { title: string }) {
-  return <StatusScreen title={title} message={LATER} />;
-}
-
-/** The same inside the learner shell. */
+/** Temporary content of a learner route whose screen arrives in a later plan item. */
 function LearnerStub({ title }: { title: string }) {
   return <EmptyState headingLevel={1} plain title={title} description={LATER} />;
 }
@@ -40,8 +38,8 @@ export const routes: RouteObject[] = [
       {
         element: <SetupGate />,
         children: [
-          { path: '/setup', element: <ScreenStub title="Первый запуск" /> },
-          { path: '/login', element: <ScreenStub title="Вход" /> },
+          { path: '/setup', element: <Setup /> },
+          { path: '/login', element: <Login /> },
           {
             element: <RequireRole role="learner" />,
             children: [
@@ -73,6 +71,7 @@ export const routes: RouteObject[] = [
                 element: <AdminLayout />,
                 children: [
                   { index: true, element: <AdminStub title="Кабинет родителя" /> },
+                  { path: 'device', element: <TrustDevice /> },
                   { path: '*', element: <AdminStub title="Такой страницы нет" /> },
                 ],
               },

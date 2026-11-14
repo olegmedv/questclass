@@ -9,7 +9,9 @@ export default defineConfig({
     assetsDir: '_app',
   },
   server: {
-    // During development the SPA talks to the API through the Vite proxy.
-    proxy: { '/api': 'http://localhost:8080' },
+    // During development the SPA talks to the API through the Vite proxy. The Host header is
+    // kept (the string shorthand would rewrite it), otherwise the API's same-origin check
+    // rejects every POST from the browser.
+    proxy: { '/api': { target: 'http://localhost:8080', changeOrigin: false } },
   },
 });

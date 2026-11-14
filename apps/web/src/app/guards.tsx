@@ -80,7 +80,10 @@ export function QueryErrorView({ error, onRetry }: { error: unknown; onRetry?: (
   );
 }
 
-/** Root gate: until the first admin exists every page leads to `/setup`, and back. */
+/**
+ * Root gate: until the first admin exists every page leads to `/setup`. (Leaving `/setup` once
+ * it is done is up to the setup screen, which knows whether it has just completed it.)
+ */
 export function SetupGate() {
   const setup = useSetupStatus();
   const { pathname } = useLocation();
@@ -90,12 +93,8 @@ export function SetupGate() {
   if (setup.isError) {
     return <QueryErrorView error={setup.error} onRetry={() => void setup.refetch()} />;
   }
-  const onSetup = pathname === '/setup';
-  if (setup.data.needed && !onSetup) {
+  if (setup.data.needed && pathname !== '/setup') {
     return <Navigate to="/setup" replace />;
-  }
-  if (!setup.data.needed && onSetup) {
-    return <Navigate to="/login" replace />;
   }
   return <Outlet />;
 }

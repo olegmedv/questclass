@@ -99,7 +99,8 @@ export async function startStack(): Promise<Stack> {
         host: HOST,
         port: webPort,
         strictPort: true,
-        proxy: { '/api': apiURL },
+        // Keep the browser's Host so the API's same-origin check sees one origin (as behind Caddy).
+        proxy: { '/api': { target: apiURL, changeOrigin: false } },
       },
     });
     return {

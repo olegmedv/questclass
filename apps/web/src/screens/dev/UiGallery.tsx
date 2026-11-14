@@ -3,6 +3,8 @@
 import {
   Accordion,
   AnimatedHero,
+  AuthFrame,
+  Notice,
   Avatar,
   BottomNav,
   Brand,
@@ -494,6 +496,8 @@ export function UiGallery() {
     ['menu', 'Menu'],
     ['navigation', 'Навигация'],
     ['frames', 'Шаблоны экранов'],
+    ['notice', 'Notice'],
+    ['auth-frame', 'AuthFrame'],
   ];
 
   return (
@@ -1667,6 +1671,65 @@ export function UiGallery() {
               loading: { na: 'см. Catalog и ProgressView с loading' },
               empty: { na: 'см. EmptyState внутри шаблонов' },
               error: { na: 'см. EmptyState tone="error" внутри шаблонов' },
+            }}
+          />
+
+          <Demo
+            id="notice"
+            title="Notice"
+            description="Сообщение в форме или на странице; предупреждения и ошибки читаются сразу."
+            states={{
+              default: <Notice>Настройки сохраняются на этом устройстве.</Notice>,
+              disabled: { na: 'сообщение не нажимается' },
+              loading: <Notice>Сохраняем…</Notice>,
+              empty: { na: 'пустое сообщение не показывается' },
+              error: (
+                <Stack gap="sm">
+                  <Notice tone="warning">Слишком много попыток. Попробуйте через 15 с.</Notice>
+                  <Notice tone="danger">Неверный логин или пароль</Notice>
+                  <Notice tone="success">Это устройство — детское.</Notice>
+                </Stack>
+              ),
+            }}
+          />
+
+          <Demo
+            id="auth-frame"
+            title="AuthFrame"
+            description="Экраны до входа: первый запуск, вход родителя, выбор ученика, PIN."
+            states={{
+              default: (
+                <AuthFrame
+                  embedded
+                  title="Вход для родителя"
+                  description="Кабинет: задания, награды, магазин и настройки."
+                >
+                  <Field label="Логин">
+                    <TextInput />
+                  </Field>
+                </AuthFrame>
+              ),
+              disabled: { na: 'см. поля и кнопки внутри' },
+              loading: (
+                <AuthFrame embedded title="Вход">
+                  <Inline justify="center">
+                    <Spinner size="lg" label="Загружаем учеников" />
+                  </Inline>
+                </AuthFrame>
+              ),
+              empty: (
+                <AuthFrame embedded title="Вход">
+                  <EmptyState
+                    title="Учеников пока нет"
+                    description="Родитель добавляет учеников в кабинете."
+                  />
+                </AuthFrame>
+              ),
+              error: (
+                <AuthFrame embedded title="Вход">
+                  <Notice tone="danger">Не получилось загрузить</Notice>
+                </AuthFrame>
+              ),
             }}
           />
         </Stack>

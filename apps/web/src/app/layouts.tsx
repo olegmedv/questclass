@@ -1,5 +1,5 @@
 // Route layouts: the learner pages live inside LearnerShell, the admin pages inside AdminShell.
-import { House } from '@questclass/ui';
+import { House, TabletSmartphone } from '@questclass/ui';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { useLogout, useMe } from '../api/queries/auth';
 import { AdminShell, type AdminSection } from '../templates/AdminShell';
@@ -8,6 +8,12 @@ import { LearnerShell, learnerSectionOf } from '../templates/LearnerShell';
 /** Sections of the admin area. Each admin screen adds its line here. */
 export const ADMIN_SECTIONS: readonly AdminSection[] = [
   { id: 'home', label: 'Главная', href: '/admin', icon: <House aria-hidden="true" /> },
+  {
+    id: 'device',
+    label: 'Устройства',
+    href: '/admin/device',
+    icon: <TabletSmartphone aria-hidden="true" />,
+  },
 ];
 
 /** The section whose link is the longest prefix of the path. */
@@ -31,7 +37,9 @@ export function LearnerLayout() {
       learner={me.data}
       active={learnerSectionOf(pathname)}
       onSwitchLearner={() => {
-        logout.mutate(undefined, { onSettled: () => void navigate('/login') });
+        // Leave the guarded pages first, so the end of the session cannot race the redirect.
+        void navigate('/login', { replace: true });
+        logout.mutate();
       }}
       onParents={() => void navigate('/login?as=admin')}
     >
@@ -52,7 +60,9 @@ export function AdminLayout() {
       active={adminSectionOf(pathname)}
       adminName={me.data.name}
       onLogout={() => {
-        logout.mutate(undefined, { onSettled: () => void navigate('/login?as=admin') });
+        // On a children's device the profile picker opens; elsewhere «Я родитель» is one tap away.
+        void navigate('/login', { replace: true });
+        logout.mutate();
       }}
     >
       <Outlet />
