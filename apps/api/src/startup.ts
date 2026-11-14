@@ -26,6 +26,7 @@ import { createTasksService } from './modules/tasks/service';
 import { createChoresService } from './task-types/chore/service';
 import { createTaskTypeRegistry } from './task-types/registry';
 import { createWatchService } from './task-types/video_lesson/watch';
+import { createUploadsService } from './modules/uploads/service';
 import { createUsersService } from './modules/users/service';
 
 /** Releases a resource on shutdown (closed in reverse order of registration). */
@@ -114,7 +115,11 @@ export async function openRuntime(config: Config): Promise<Runtime> {
     });
     const rewards = createRewardsService(db, { audit, ledger, users, subjects, tasks });
     const chores = createChoresService(db, { audit, settings, ledger, tasks, progress });
-    const catalog = createCatalogService(db, { audit });
+    const uploads = createUploadsService(db, { audit, media });
+    const catalog = createCatalogService(db, {
+      audit,
+      describeUpload: (id) => uploads.describe(id),
+    });
     const ctx: AppContext = {
       config,
       db,
@@ -137,6 +142,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       rewards,
       chores,
       catalog,
+      uploads,
       trustedProxies: trustedProxiesFromSettings(settings),
     };
     return { ctx, closers };

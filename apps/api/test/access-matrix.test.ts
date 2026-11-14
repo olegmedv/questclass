@@ -5,7 +5,7 @@
  * at learner A's resource and set `learnerOwned: true`; learner B must then get 404.
  */
 import { createHash } from 'node:crypto';
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { QuestionContent } from '@questclass/shared/questions/schema';
@@ -81,9 +81,17 @@ interface MatrixData {
   };
   /** A seeded shop item. */
   readonly catalogItem: number;
+  /** A picture uploaded by the admin. */
+  readonly upload: number;
 }
 
 const prepared = new WeakMap<TwoLearners, MatrixData>();
+
+/** A small still picture of the bundled assets (for the upload rows). */
+const SMALL_PICTURE = new URL(
+  '../../web/public/assets/game/characters/rebound-boy-flight-poster.webp',
+  import.meta.url,
+);
 
 const SAMPLE_QUESTION = {
   text: 'Сколько будет 2 + 2?',
@@ -299,6 +307,7 @@ function prepare(f: TwoLearners): TwoLearners {
     rewards: prepareRewards(f),
     chores: prepareChores(f),
     catalogItem: ctx.catalog.items({ kind: 'outfit', activeOnly: true })[0]?.id ?? 0,
+    upload: ctx.uploads.create(readFileSync(SMALL_PICTURE), admin).id,
   });
   return f;
 }
@@ -826,6 +835,15 @@ const MATRIX: readonly MatrixRow[] = [
     url: (f) => `/api/admin/catalog/items/${data(f).catalogItem}`,
     body: () => ({ price: 45 }),
     expect: adminOnly(200),
+  },
+
+  // uploads: a JSON body is no picture, so even the admin gets 415 here
+  { route: 'POST /api/admin/uploads', body: () => 'not a picture', expect: adminOnly(415) },
+  { route: 'GET /api/admin/uploads', expect: adminOnly(200) },
+  {
+    route: 'GET /api/uploads/:id',
+    url: (f) => `/api/uploads/${data(f).upload}`,
+    expect: signedIn(200),
   },
 ];
 

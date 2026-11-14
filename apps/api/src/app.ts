@@ -34,6 +34,8 @@ import { subjectsRoutes } from './modules/subjects/routes';
 import type { SubjectsService } from './modules/subjects/service';
 import { tasksRoutes } from './modules/tasks/routes';
 import type { TasksService } from './modules/tasks/service';
+import { uploadsRoutes } from './modules/uploads/routes';
+import type { UploadsService } from './modules/uploads/service';
 import { usersRoutes } from './modules/users/routes';
 import type { UsersService } from './modules/users/service';
 import { healthRoutes } from './modules/health/routes';
@@ -74,6 +76,8 @@ export interface AppContext {
   readonly chores: ChoresService;
   /** Shared catalog: shop items, heroes, rooms, animations. */
   readonly catalog: CatalogService;
+  /** Pictures uploaded by the admin (media `role = upload`). */
+  readonly uploads: UploadsService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -110,6 +114,7 @@ function collectRoutes(ctx: AppContext): RouteDef[] {
     ...rewardsRoutes(ctx),
     ...choreRoutes(ctx),
     ...catalogRoutes(ctx),
+    ...uploadsRoutes(ctx),
   ];
 }
 
