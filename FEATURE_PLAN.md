@@ -683,7 +683,17 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Реестр типов web: `type → {Player, Editor}`. Неизвестный тип рендерит понятную ошибку (тест).
 
 ### FEAT-053 — e2e-стенд Playwright
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - e2e — пакет воркспейса `@questclass/e2e` (`e2e` в `pnpm-workspace.yaml`), `@playwright/test` закреплён точно (1.64.1): тег образа `mcr.microsoft.com/playwright:v<версия>-noble` берётся из него.
+  - Команды: `pnpm e2e` — сборка + прогон на своей ОС (на Windows и macOS сравнение скриншотов пропускается с пометкой в отчёте, базы не пишутся); `pnpm e2e:docker` — прогон в Linux-контейнере как в CI (`CI=1`: недостающая база = падение); `pnpm e2e:update` — то же с `--update-snapshots`, базы копируются обратно в `e2e/__screenshots__`. Репозиторий копируется в контейнер без `node_modules`, pnpm-store — в docker-томе `questclass-pnpm-store`.
+  - Образ-обёртка `e2e/Dockerfile` (FROM официального образа Playwright): в нём нет ffmpeg и corepack (Node 26), они доустанавливаются; corepack ставится с `--force` поверх yarn образа.
+  - Global setup поднимает собранный API (`apps/api/dist/index.js`, `NODE_ENV=test`, временный `DATA_DIR`, setup-токен читается из лога) и SPA через `vite preview` с прокси `/api` (один origin, как в production); создаёт админа, ученика «Саша» с PIN и доверенное устройство через HTTP API; сессии персон `admin | learner | device | anon` — storage state, выбор `test.use({ persona })`. Фикстура `freshStack` поднимает отдельную чистую установку (для пути «setup → …» в FEAT-028).
+  - Видеофикстуры: MP4 (H.264 + AAC, 5 с, `testsrc` + `sine`) и HLS (VOD, сегменты fMP4 по 2 с) в `e2e/.output/fixtures/video` (в `.gitignore`), создаются заново, если их нет. Сегменты fMP4, а не `.ts`, чтобы их не подхватывали eslint/tsc.
+  - Скриншоты: `__screenshots__/<spec>/<имя>-<mobile|desktop>.png`, порог `maxDiffPixelRatio 0.01`, анимации и каретка отключены. Первая база (`smoke.spec.ts/login-*`) создана в контейнере, повторный прогон `pnpm e2e:docker` — 20 passed.
+  - Шаг CI — в FEAT-045 (тот же `e2e/Dockerfile` или `pnpm e2e:docker`).
+  - Вне перечня Scope (необходимо): `e2e/{package.json,tsconfig.json,Dockerfile,docker.mjs}`, корневой `package.json` (скрипты `e2e`, `e2e:docker`, `e2e:update`), `pnpm-workspace.yaml`, `pnpm-lock.yaml`, `.gitignore` (`/e2e/.output/`), `eslint.config.mjs` (игнор `e2e/.output/**`).
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: Critique 1 MED#20.

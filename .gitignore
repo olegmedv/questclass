@@ -17,3 +17,6 @@ coverage/
 *.tsbuildinfo
 /data/
 .data/
+
+# e2e: generated fixtures, sessions, results
+/e2e/.output/

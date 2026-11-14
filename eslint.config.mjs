@@ -14,6 +14,7 @@ export default defineConfig(
     'deploy/spike/**',
     '.claude/**',
     '.playwright-mcp/**',
+    'e2e/.output/**',
   ]),
   js.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
