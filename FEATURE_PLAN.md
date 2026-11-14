@@ -660,7 +660,16 @@ Discovery выполнен вручную, без Explore-агента: в ре�
 ### Фаза C — web ученика
 
 ### FEAT-024 — Каркас web: роутинг, клиент API, реестр типов
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Зависимости web: `react-router` 8 (data router: `createBrowserRouter`, `RouterProvider` из `react-router/dom`), `@tanstack/react-query` 5; dev — testing-library (`react`, `dom`, `user-event`, `jest-dom`) и `jsdom` 30.
+  - Маршруты в `routes` (`router.tsx`): `/setup` и `/login` публичные; `/`, `/tasks/:id`, `/hero`, `/shop`, `/rewards` — роль learner; `/admin` + `/admin/*` — роль admin; `/dev/ui` — в dev всем, в production только админу. Пока экраны не готовы, на маршрутах стоят заглушки `ScreenStub` (их заменят FEAT-025/027/028/029…). Пока админа нет, любая страница ведёт на `/setup` (`SetupGate` по `GET /api/setup`).
+  - Гварды: нет сессии → `/login` (в `state.from` — откуда пришли); ученик в админке → «Нет доступа» (со ссылкой «Войти как родитель» → `/login?as=admin`); админ на странице ученика → `/admin`. `QueryErrorView`: 401 → вход, 403 → «Нет доступа», остальное — сообщение и «Повторить». 401 на любом запросе (не мутации: там это «неверный пароль/PIN») сбрасывает кэш пользователя, и гварды показывают вход.
+  - Клиент `api()`: тело ошибки сервера → `ApiError {status, code, message, details, retryAfterSec}`, сбой сети → status 0. Запросы auth/setup/profiles/devices и мутации входа, выхода, setup и доверенных устройств — в `api/queries/auth.ts` (их используют FEAT-028/039). 4xx не повторяются.
+  - Реестр типов web: `createTaskTypeRegistry([...])` → `renderPlayer/renderEditor`; неизвестный тип — `role=alert` «Неизвестный тип задания «…»». Типы пропсов Player/Editor пока свои (контракты shared появятся в FEAT-008).
+  - Vite `build.assetsDir: '_app'`: хэшированные бандлы в `/_app/*`, игровые ассеты остаются нехэшированными в `/assets/*` (замечание FEAT-026 для FEAT-044).
+  - Вне перечня Scope (необходимо): `apps/web/package.json`, `pnpm-lock.yaml`, `apps/web/vite.config.ts`, `apps/web/src/app/App.tsx` (провайдеры + роутер), `apps/web/vitest.config.ts`, `apps/web/test/{setup.ts,helpers.tsx}`. Среда тестов web по умолчанию node (тесту ассетов FEAT-026 нужны `file:` URL), компонентные тесты включают jsdom докблоком `// @vitest-environment jsdom`.
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: SPEC §7; Critique 1 MED#14.
