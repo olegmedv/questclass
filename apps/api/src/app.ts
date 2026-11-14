@@ -7,8 +7,12 @@ import { sameOriginOnly } from './http/origin';
 import { mountRoutes, type AppEnv, type RouteDef } from './http/route';
 import { auditRoutes } from './modules/audit/routes';
 import type { AuditService } from './modules/audit/service';
+import { authMiddleware, authRoutes } from './modules/auth/routes';
+import type { AuthService } from './modules/auth/service';
 import type { Keyring } from './modules/settings/crypto';
 import type { SettingsService } from './modules/settings/service';
+import { usersRoutes } from './modules/users/routes';
+import type { UsersService } from './modules/users/service';
 import { healthRoutes } from './modules/health/routes';
 
 /** Dependencies shared by all modules; built once at startup (see startup.ts). */
@@ -19,6 +23,8 @@ export interface AppContext {
   /** Keys derived from DATA_DIR/master.key. */
   readonly keyring: Keyring;
   readonly settings: SettingsService;
+  readonly users: UsersService;
+  readonly auth: AuthService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -36,12 +42,12 @@ export interface BuildOptions {
 
 /** All API routes. Each module adds its line here. */
 function collectRoutes(ctx: AppContext): RouteDef[] {
-  return [...healthRoutes(), ...auditRoutes(ctx)];
+  return [...healthRoutes(), ...auditRoutes(ctx), ...authRoutes(ctx), ...usersRoutes(ctx)];
 }
 
 /** Request middlewares contributed by modules (session → actor, etc.). */
-function collectMiddlewares(_ctx: AppContext): MiddlewareHandler<AppEnv>[] {
-  return [];
+function collectMiddlewares(ctx: AppContext): MiddlewareHandler<AppEnv>[] {
+  return [authMiddleware(ctx)];
 }
 
 /** What the HTTP layer itself needs (routes and middlewares bring their own dependencies). */

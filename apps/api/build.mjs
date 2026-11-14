@@ -8,7 +8,7 @@ const external = ['better-sqlite3'];
 rmSync('dist', { recursive: true, force: true });
 
 await build({
-  entryPoints: { index: 'src/index.ts' },
+  entryPoints: { index: 'src/index.ts', cli: 'src/cli/index.ts' },
   outdir: 'dist',
   bundle: true,
   platform: 'node',

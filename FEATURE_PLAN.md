@@ -226,7 +226,17 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - `DATA_DIR/master.key` (0600) создаётся при первом старте; AES-256-GCM для `secrets` (тест roundtrip). Секрет наружу никогда не отдаётся, есть только `isSet/updatedAt` (тест сервиса).
 
 ### FEAT-004 — Auth: первый админ, сессии, доверенные устройства, роли
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Маршруты: `GET/POST /api/setup`, `POST /api/auth/{login,learner-login,logout}`, `GET /api/auth/me`, `GET /api/auth/profiles` (public + cookie устройства), `GET/POST /api/auth/devices`, `DELETE /api/auth/devices/:id` (отзыв, строка остаётся), `GET/POST /api/admin/users`, `GET/PATCH /api/admin/users/:id` (деактивация — `PATCH {active:false}`, DELETE нет).
+  - Cookies: `qc_session` (токен; в БД sha256), `qc_act` (`<ms>.<HMAC>` для idle админа, ключ `keyring.derive('session-activity/v1')`, перевыпускается на каждом запросе без записи в БД), `qc_device` (400 дней, обновляется при показе профилей). HttpOnly, SameSite=Lax, Secure в production.
+  - scrypt N=2^14, r=8, p=5 (OWASP-эквивалент, 16 МиБ на хэш) и не более одного хэша одновременно — ради бюджета RAM. Для несуществующего логина считается фиктивный хэш (одинаковое время ответа).
+  - Throttle: пара (аккаунт, IP) — 3 попытки без задержки, затем 1 с, 2 с, 4 с… до 15 мин; IP — 20 без задержки, затем 5 с с удвоением; ответ 429 + `Retry-After` и `details.retryAfterSec`; счётчики забываются через сутки без ошибок.
+  - Setup-токен выпускается заново при каждом старте, пока админов нет (в файле только хэш, сам токен — только в логе); файл удаляется после создания первого админа.
+  - `startup.ts` разделён: `openRuntime()` (ресурсы, контекст, миграции) — для сервера и CLI; `startup()` добавляет серверные хуки (выпуск setup-токена). CLI: `apps/api/src/cli/index.ts` (+ entry `cli` в `apps/api/build.mjs` → `dist/cli.js`); пароль берётся из stdin, а при запуске в терминале генерируется и печатается.
+  - Вне перечня Scope: `apps/api/test/helpers/client.ts` (cookie-jar клиент и фикстуры для тестов), `apps/api/build.mjs`.
+  - RSS в простое 72,3 МиБ.
 - **Risk**: HIGH
 - **Requires decision**: N
 - **Spec reference**: SPEC §1 «Роли», §7 «Auth»; Critique 1 HIGH#3, HIGH#4, MED#16, MED#21.

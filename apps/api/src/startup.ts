@@ -1,24 +1,30 @@
 import type { AppContext } from './app';
 import type { Config } from './config';
 import { openDatabase } from './db/client';
-import { trustedProxiesFromSettings } from './http/clientIp';
 import { runMigrations } from './db/migrate';
 import { snapshotsDir } from './db/snapshot';
+import { trustedProxiesFromSettings } from './http/clientIp';
 import { createAuditService } from './modules/audit/service';
+import { createAuthService } from './modules/auth/service';
 import { createKeyring } from './modules/settings/crypto';
 import { loadOrCreateMasterKey } from './modules/settings/masterKey';
 import { createSettingsService } from './modules/settings/service';
+import { createUsersService } from './modules/users/service';
 
 /** Releases a resource on shutdown (closed in reverse order of registration). */
 export type Closer = () => void | Promise<void>;
 
-/** A step that must complete before the server accepts requests. */
+/** A server-only step that must complete before the server accepts requests. */
 export type StartupHook = (ctx: AppContext) => void | Promise<void>;
 
-/** Ordered startup hooks: migrations, seeds, scheduler. Each module adds its line here. */
+/** Ordered server startup hooks (seeds, scheduler…). Each module adds its line here. */
 const STARTUP_HOOKS: readonly StartupHook[] = [
-  async (ctx) => {
-    await runMigrations(ctx.db, { snapshotDir: snapshotsDir(ctx.config.dataDir) });
+  (ctx) => {
+    const token = ctx.auth.ensureSetupToken();
+    if (token) {
+      console.info(`No admin yet. One-time setup token: ${token}`);
+      console.info('Open /setup and enter this token to create the first admin.');
+    }
   },
 ];
 
@@ -28,10 +34,10 @@ export interface Runtime {
 }
 
 /**
- * Prepares everything the server needs before it accepts requests: opens resources and
- * runs the startup hooks in order. On failure, whatever was already opened is closed again.
+ * Opens resources, builds the shared context and applies migrations. Used by the server and
+ * by CLI commands (which must not run the server hooks).
  */
-export async function startup(config: Config): Promise<Runtime> {
+export async function openRuntime(config: Config): Promise<Runtime> {
   const closers: Closer[] = [];
   try {
     const keyring = createKeyring(loadOrCreateMasterKey(config.dataDir));
@@ -39,22 +45,42 @@ export async function startup(config: Config): Promise<Runtime> {
     closers.push(() => {
       db.$client.close();
     });
+    await runMigrations(db, { snapshotDir: snapshotsDir(config.dataDir) });
     const audit = createAuditService(db);
     const settings = createSettingsService(db, { audit, keyring });
+    const users = createUsersService(db, { audit });
+    const auth = createAuthService(db, { config, audit, settings, keyring, users });
     const ctx: AppContext = {
       config,
       db,
       audit,
       keyring,
       settings,
+      users,
+      auth,
       trustedProxies: trustedProxiesFromSettings(settings),
     };
-    for (const hook of STARTUP_HOOKS) {
-      await hook(ctx);
-    }
     return { ctx, closers };
   } catch (err) {
     await closeAll(closers);
+    throw err;
+  }
+}
+
+/**
+ * Prepares everything the server needs before it accepts requests: the runtime (with
+ * migrations applied) and then the startup hooks in order. On failure, whatever was already
+ * opened is closed again.
+ */
+export async function startup(config: Config): Promise<Runtime> {
+  const runtime = await openRuntime(config);
+  try {
+    for (const hook of STARTUP_HOOKS) {
+      await hook(runtime.ctx);
+    }
+    return runtime;
+  } catch (err) {
+    await closeAll(runtime.closers);
     throw err;
   }
 }
