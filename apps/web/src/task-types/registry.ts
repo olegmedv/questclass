@@ -1,15 +1,19 @@
 // Web side of the task-type plugins (CLAUDE.md rule 10): each type contributes a Player for the
 // learner and an Editor for the admin. Shared code only ever renders through this registry.
+import type { TaskProgressDto } from '@questclass/shared/progress/dto';
+import type { LearnerTaskDto, SubjectDto } from '@questclass/shared/tasks/dto';
 import { createElement, type ComponentType, type ReactElement } from 'react';
+import { quizTaskType } from './quiz/Player';
 
-/** What a Player gets: the task as the learner sees it (config already passed `publicConfig`). */
+/**
+ * What a Player gets: the task as the learner sees it (`GET /api/tasks/:id`, config already
+ * passed the type's `publicConfig`), its subject and the learner's progress of it.
+ */
 export interface TaskPlayerProps {
-  readonly task: {
-    readonly id: number;
-    readonly type: string;
-    readonly title: string;
-    readonly config: unknown;
-  };
+  readonly task: LearnerTaskDto;
+  readonly subject: SubjectDto | null;
+  /** Null while the progress picture has no row for the task. */
+  readonly progress: TaskProgressDto | null;
 }
 
 /** What an Editor gets: the type-specific config of a task and a way to change it. */
@@ -25,11 +29,12 @@ export interface WebTaskType {
   /** Label for admin lists and pickers. */
   readonly label: string;
   readonly Player: ComponentType<TaskPlayerProps>;
-  readonly Editor: ComponentType<TaskEditorProps>;
+  /** The admin's editor of the type's config (arrives with the admin screens, FEAT-040). */
+  readonly Editor?: ComponentType<TaskEditorProps>;
 }
 
 /** Registered task types. Each type adds its line here (quiz, video_lesson, chore…). */
-const TASK_TYPES: readonly WebTaskType[] = [];
+const TASK_TYPES: readonly WebTaskType[] = [quizTaskType];
 
 export interface TaskTypeRegistry {
   readonly types: readonly WebTaskType[];
@@ -37,6 +42,15 @@ export interface TaskTypeRegistry {
   /** Renders the type's Player, or a clear error when the type is unknown to this build. */
   renderPlayer(props: TaskPlayerProps): ReactElement;
   renderEditor(type: string, props: TaskEditorProps): ReactElement;
+}
+
+/** A type without an editor in this build: its config is set by import or later versions. */
+export function NoEditor(): ReactElement {
+  return createElement(
+    'p',
+    { role: 'status', className: 'qc-unknown-task-type' },
+    'Настройки этого типа задания пока меняются только импортом.',
+  );
 }
 
 export function UnknownTaskType({ type }: { type: string }): ReactElement {
@@ -71,7 +85,8 @@ export function createTaskTypeRegistry(types: readonly WebTaskType[]): TaskTypeR
     },
     renderEditor(type, props) {
       const entry = byType.get(type);
-      return entry ? createElement(entry.Editor, props) : createElement(UnknownTaskType, { type });
+      if (!entry) return createElement(UnknownTaskType, { type });
+      return entry.Editor ? createElement(entry.Editor, props) : createElement(NoEditor);
     },
   };
 }

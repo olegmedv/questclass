@@ -25,6 +25,8 @@ const SECTIONS = [
   'streak-card',
   'choice-tile',
   'action-list',
+  'result',
+  'review',
   'empty',
   'toast',
   'tooltip',

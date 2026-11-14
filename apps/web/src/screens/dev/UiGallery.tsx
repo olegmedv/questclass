@@ -3,6 +3,9 @@
 import {
   Accordion,
   ActionList,
+  AnswerReview,
+  ResultSummary,
+  RewardLine,
   AnimatedHero,
   ChoiceTile,
   LessonCard,
@@ -466,6 +469,93 @@ function HomeSections() {
           loading: { na: 'список показывается, когда уроки загружены' },
           empty: <ActionList label="Уроки" items={[]} empty="Здесь пока нет открытых уроков." />,
           error: { na: 'ошибку загрузки показывает экран' },
+        }}
+      />
+    </>
+  );
+}
+
+/** The result of a task: summary with the reward, and the review of the answers. */
+function ResultSections() {
+  const review = [
+    {
+      id: '1',
+      question: 'Сколько будет 2 + 3?',
+      answer: { text: '5' },
+      correct: { text: '5' },
+      isCorrect: true,
+    },
+    {
+      id: '2',
+      question: 'Какое число больше: 47 или 74?',
+      answer: { text: '47' },
+      correct: { text: '74' },
+      isCorrect: false,
+      action: (
+        <Button size="sm" icon={<Play />}>
+          Посмотреть объяснение
+        </Button>
+      ),
+    },
+  ];
+  return (
+    <>
+      <Demo
+        id="result"
+        title="ResultSummary и RewardLine"
+        description="Итог задания: заголовок по результату, верные ответы, награда и что дальше."
+        states={{
+          default: (
+            <Stack gap="md">
+              <RewardLine label="Награда за пройденный тест" xp={100} coins={350} />
+              <ResultSummary
+                tone="success"
+                title="Миссия выполнена!"
+                reward={<RewardLine label="Награда" xp={100} coins={350} />}
+                actions={<Button>К урокам</Button>}
+              >
+                <p>Верных ответов: 3 из 3.</p>
+              </ResultSummary>
+            </Stack>
+          ),
+          disabled: (
+            <ResultSummary
+              tone="partial"
+              title="Тест пройден!"
+              reward={<RewardLine label="Награда за этот тест уже получена." />}
+            >
+              <p>Верных ответов: 2 из 3.</p>
+            </ResultSummary>
+          ),
+          loading: { na: 'итог показывается, когда попытка проверена' },
+          empty: <RewardLine label="Награда — за пройденный тест." />,
+          error: (
+            <ResultSummary
+              tone="retry"
+              title="Попробуем ещё раз"
+              actions={
+                <>
+                  <Button variant="primary">Попросить пересдачу</Button>
+                  <Button>К урокам</Button>
+                </>
+              }
+            >
+              <p>Верных ответов: 0 из 3.</p>
+              <p>Новую попытку откроет родитель.</p>
+            </ResultSummary>
+          ),
+        }}
+      />
+      <Demo
+        id="review"
+        title="AnswerReview"
+        description="«Давай разберём»: ответ ученика и верный ответ по каждому вопросу."
+        states={{
+          default: <AnswerReview items={review} />,
+          disabled: { na: 'разбор только показывает ответы' },
+          loading: { na: 'разбор приходит вместе с результатом' },
+          empty: <AnswerReview title="Твои ответы" items={review.slice(0, 1)} />,
+          error: <AnswerReview items={review.slice(1)} />,
         }}
       />
     </>
@@ -1933,6 +2023,9 @@ export function UiGallery() {
               ),
             }}
           />
+
+          {/* New sections go last: inserting above shifts every section below on the page. */}
+          <ResultSections />
         </Stack>
       </Container>
     </ToastProvider>

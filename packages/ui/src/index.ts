@@ -102,6 +102,17 @@ export {
   type OptionTileProps,
   type QuestionCardProps,
 } from './components/QuestionCard';
+export {
+  AnswerReview,
+  ResultSummary,
+  RewardLine,
+  type AnswerReviewProps,
+  type ResultSummaryProps,
+  type ResultTone,
+  type ReviewAnswer,
+  type ReviewItem,
+  type RewardLineProps,
+} from './components/Result';
 export { Skeleton, type SkeletonProps } from './components/Skeleton';
 export { Slider, type SliderProps } from './components/Slider';
 export { Spinner, type SpinnerProps } from './components/Spinner';

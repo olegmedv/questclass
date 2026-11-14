@@ -1,0 +1,235 @@
+.qc-reward-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--q-space-1);
+  color: var(--q-muted);
+  font-size: var(--q-text-sm);
+  text-align: center;
+}
+
+.qc-reward-line-items {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--q-space-4);
+  color: var(--q-text);
+  font-size: var(--q-text-lg);
+  font-weight: var(--q-weight-black);
+}
+
+.qc-reward-line-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--q-space-1);
+}
+
+.qc-reward-line-item svg {
+  width: 20px;
+  height: 20px;
+}
+
+.qc-reward-line-xp {
+  color: var(--q-blue);
+}
+
+.qc-reward-line-coins {
+  color: var(--q-coin);
+}
+
+.qc-reward-line-item small {
+  color: var(--q-muted);
+  font-size: var(--q-text-sm);
+  font-weight: var(--q-weight-medium);
+}
+
+.qc-reward-line-note {
+  color: var(--q-subtle);
+}
+
+.qc-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--q-space-3);
+  padding: var(--q-space-6) var(--q-space-5);
+  border: 1px solid var(--q-border-strong);
+  border-radius: var(--q-radius-xl);
+  background: var(--q-card);
+  text-align: center;
+}
+
+.qc-result-icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--q-radius-md);
+  background: var(--q-gold-bg);
+  color: var(--q-coin);
+  box-shadow: inset 0 0 0 1px var(--q-gold-border);
+}
+
+.qc-result-icon svg {
+  width: 34px;
+  height: 34px;
+}
+
+.qc-result[data-tone='partial'] .qc-result-icon {
+  background: var(--q-info-bg);
+  color: var(--q-blue);
+  box-shadow: inset 0 0 0 1px var(--q-border-selected);
+}
+
+.qc-result[data-tone='retry'] .qc-result-icon {
+  background: var(--q-raised);
+  color: var(--q-muted);
+  box-shadow: inset 0 0 0 1px var(--q-border);
+}
+
+.qc-result-title {
+  font-family: var(--q-font-display);
+  font-size: var(--q-text-xl);
+  font-weight: var(--q-weight-black);
+}
+
+.qc-result-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--q-space-1);
+  color: var(--q-muted);
+}
+
+.qc-result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--q-space-2);
+  margin-top: var(--q-space-2);
+}
+
+.qc-review {
+  display: flex;
+  flex-direction: column;
+  gap: var(--q-space-3);
+}
+
+.qc-review-title {
+  font-size: var(--q-text-lg);
+  font-weight: var(--q-weight-bold);
+}
+
+.qc-review-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--q-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.qc-review-item {
+  display: flex;
+  gap: var(--q-space-3);
+  padding: var(--q-space-4);
+  border: 1px solid var(--q-danger-border);
+  border-radius: var(--q-radius-md);
+  background: var(--q-surface);
+}
+
+.qc-review-item[data-correct] {
+  border-color: var(--q-success-border);
+}
+
+.qc-review-mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: var(--q-radius-round);
+  background: var(--q-danger-bg);
+  color: var(--q-danger);
+}
+
+.qc-review-item[data-correct] .qc-review-mark {
+  background: var(--q-success-bg);
+  color: var(--q-success);
+}
+
+.qc-review-mark svg {
+  width: 16px;
+  height: 16px;
+}
+
+.qc-review-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--q-space-2);
+  min-width: 0;
+}
+
+.qc-review-question {
+  font-weight: var(--q-weight-bold);
+  overflow-wrap: anywhere;
+}
+
+.qc-review-image {
+  max-width: min(100%, 320px);
+  max-height: 150px;
+  border-radius: var(--q-radius-sm);
+  background: var(--q-on-primary);
+  object-fit: contain;
+}
+
+.qc-review-answers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--q-space-1);
+  margin: 0;
+  font-size: var(--q-text-md);
+}
+
+.qc-review-answers > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--q-space-1) var(--q-space-2);
+}
+
+.qc-review-answers dt {
+  color: var(--q-muted);
+}
+
+.qc-review-answers dt::after {
+  content: ':';
+}
+
+.qc-review-answers dd {
+  margin: 0;
+}
+
+.qc-review-answers [data-kind='correct'] dd {
+  color: var(--q-success);
+  font-weight: var(--q-weight-bold);
+}
+
+.qc-review-answer {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--q-space-2);
+}
+
+.qc-review-answer img {
+  width: 54px;
+  height: 40px;
+  border-radius: var(--q-radius-sm);
+  background: var(--q-on-primary);
+  object-fit: contain;
+}
+
+.qc-review-action {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--q-space-2);
+}

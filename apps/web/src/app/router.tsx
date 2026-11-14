@@ -3,9 +3,9 @@ import { createBrowserRouter, type RouteObject } from 'react-router';
 import { Login } from '../screens/auth/Login';
 import { Setup } from '../screens/auth/Setup';
 import { Home } from '../screens/learner/Home';
+import { TaskScreen } from '../screens/learner/TaskScreen';
 import { TrustDevice } from '../screens/auth/TrustDevice';
 import { AdminPage } from '../templates/AdminShell';
-import { TaskPlayer } from '../templates/TaskPlayer';
 import { RouteErrorScreen, StatusScreen } from './ErrorBoundary';
 import { DevToolsGate, RequireRole, SetupGate } from './guards';
 import { AdminLayout, LearnerLayout } from './layouts';
@@ -54,14 +54,7 @@ export const routes: RouteObject[] = [
                   { path: '/wishes', element: <LearnerStub title="Мои желания" /> },
                 ],
               },
-              {
-                path: '/tasks/:id',
-                element: (
-                  <TaskPlayer title="Задание" backHref="/">
-                    <EmptyState title="Задание скоро откроется" description={LATER} />
-                  </TaskPlayer>
-                ),
-              },
+              { path: '/tasks/:id', element: <TaskScreen /> },
             ],
           },
           {
