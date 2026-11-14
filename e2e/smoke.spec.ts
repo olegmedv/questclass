@@ -17,6 +17,14 @@ test('built bundles and game assets are served separately', async ({ page, reque
   const asset = await request.get('/assets/game/heroes.webp');
   expect(asset.status()).toBe(200);
   expect(asset.headers()['content-type']).toContain('image/webp');
+  // The favicon is a real file (not a 404).
+  const icons = await page
+    .locator('link[rel="icon"]')
+    .evaluateAll((nodes) => nodes.map((node) => node.getAttribute('href')));
+  expect(icons.length).toBeGreaterThan(0);
+  for (const href of icons) {
+    expect((await request.get(href ?? '')).headers()['content-type']).toContain('image/png');
+  }
 });
 
 test('video fixtures are generated for the run', ({ env }) => {
@@ -43,7 +51,7 @@ test.describe('learner on the trusted device', () => {
 
   test('opens the learner home', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Учёба');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Саша, начнём?');
     await expectNoHorizontalScroll(page);
   });
 

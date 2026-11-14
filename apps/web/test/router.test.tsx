@@ -23,8 +23,8 @@ const heading = (name: string) => screen.findByRole('heading', { level: 1, name 
 
 describe('routes', () => {
   it.each([
-    ['/', 'Учёба'],
-    ['/tasks/7', 'Задание'],
+    ['/', 'Саша, начнём?'],
+    ['/tasks/7', 'Задание не найдено'],
     ['/hero', 'Герой'],
     ['/shop', 'Магазин'],
     ['/rewards', 'Мои награды'],

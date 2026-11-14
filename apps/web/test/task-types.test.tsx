@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 // FEAT-024: the web registry of task types renders Players/Editors, unknown types fail clearly.
+import type { LearnerTaskDto } from '@questclass/shared/tasks/dto';
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import {
@@ -17,12 +18,26 @@ const demo: WebTaskType = {
   Editor: ({ disabled }: TaskEditorProps) => <p>Редактор{disabled ? ' (только чтение)' : ''}</p>,
 };
 
-const task = { id: 1, type: 'demo', title: 'Сложение', config: {} };
+const task: LearnerTaskDto = {
+  id: 1,
+  type: 'demo',
+  subjectId: null,
+  title: 'Сложение',
+  description: '',
+  config: {},
+  xp: 100,
+  coins: 350,
+  releaseAt: null,
+  lessonDate: null,
+  sort: 0,
+  assigned: false,
+};
+const player = (t: LearnerTaskDto): TaskPlayerProps => ({ task: t, subject: null, progress: null });
 
 describe('task-type registry', () => {
   it('renders the Player of a registered type', () => {
     const registry = createTaskTypeRegistry([demo]);
-    render(registry.renderPlayer({ task }));
+    render(registry.renderPlayer(player(task)));
     expect(screen.getByText('Игрок: Сложение')).toBeInTheDocument();
   });
 
@@ -33,7 +48,7 @@ describe('task-type registry', () => {
   });
 
   it('an unknown type renders an understandable error instead of crashing', () => {
-    render(taskTypes.renderPlayer({ task: { ...task, type: 'hologram' } }));
+    render(taskTypes.renderPlayer(player({ ...task, type: 'hologram' })));
     expect(screen.getByRole('alert')).toHaveTextContent('Неизвестный тип задания «hologram»');
   });
 
@@ -41,6 +56,12 @@ describe('task-type registry', () => {
     const registry = createTaskTypeRegistry([demo]);
     render(registry.renderEditor('hologram', { config: {}, onChange: () => {} }));
     expect(screen.getByRole('alert')).toHaveTextContent('«hologram»');
+  });
+
+  it('the app registers the quiz; a type without an editor says so', () => {
+    expect(taskTypes.get('quiz')?.label).toBe('Тест');
+    render(taskTypes.renderEditor('quiz', { config: {}, onChange: () => {} }));
+    expect(screen.getByRole('status')).toHaveTextContent('пока меняются только импортом');
   });
 
   it('a type cannot be registered twice', () => {

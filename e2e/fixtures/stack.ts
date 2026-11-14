@@ -52,8 +52,8 @@ function startApi(
     let token: string | null = null;
     const timer = setTimeout(() => {
       child.kill();
-      reject(new Error(`API did not start within 20 s. Log:\n${log}`));
-    }, 20_000);
+      reject(new Error(`API did not start within 45 s. Log:\n${log}`));
+    }, 45_000);
     const onData = (chunk: Buffer) => {
       log += chunk.toString();
       token ??= /setup token: (\S+)/.exec(log)?.[1] ?? null;

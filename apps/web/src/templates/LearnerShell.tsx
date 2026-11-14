@@ -47,8 +47,8 @@ export interface LearnerStats {
   readonly level: number;
   readonly xp: number;
   readonly coins: number;
-  /** Bought tickets waiting to be used («Мои желания»). */
-  readonly wishes: number;
+  /** Bought tickets waiting to be used («Мои желания»); hidden while unknown (no wishes API yet). */
+  readonly wishes?: number | null;
 }
 
 export interface LearnerShellProps {
@@ -121,13 +121,15 @@ export function LearnerShell({
             value={stats ? number(stats.coins) : 0}
             loading={!stats}
           />
-          <StatChip
-            kind="wishes"
-            label="Мои желания"
-            value={stats ? stats.wishes : 0}
-            loading={!stats}
-            href={LEARNER_PATHS.wishes}
-          />
+          {(!stats || (stats.wishes !== undefined && stats.wishes !== null)) && (
+            <StatChip
+              kind="wishes"
+              label="Мои желания"
+              value={stats?.wishes ?? 0}
+              loading={!stats}
+              href={LEARNER_PATHS.wishes}
+            />
+          )}
         </Inline>
       )}
     </TopBar>
