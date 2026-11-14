@@ -1,12 +1,17 @@
 // Drizzle schema: one file per domain, re-exported here (each module adds its line).
 // Columns are camelCase in TS and snake_case in SQLite (`casing: 'snake_case'`).
 export * from './assignments';
+export * from './attemptAnswers';
+export * from './attemptQuestions';
+export * from './attempts';
 export * from './audit';
 export * from './ledger';
 export * from './loginThrottle';
 export * from './progress';
 export * from './progressResets';
 export * from './questions';
+export * from './retryGrants';
+export * from './retryRequests';
 export * from './secrets';
 export * from './sessions';
 export * from './settings';

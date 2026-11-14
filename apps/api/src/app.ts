@@ -5,6 +5,8 @@ import { clientIpMiddleware, type TrustedProxiesSource } from './http/clientIp';
 import { handleError, handleNotFound } from './http/errors';
 import { sameOriginOnly } from './http/origin';
 import { mountRoutes, type AppEnv, type RouteDef } from './http/route';
+import { attemptsRoutes } from './modules/attempts/routes';
+import type { AttemptsService } from './modules/attempts/service';
 import { auditRoutes } from './modules/audit/routes';
 import type { AuditService } from './modules/audit/service';
 import { authMiddleware, authRoutes } from './modules/auth/routes';
@@ -47,6 +49,7 @@ export interface AppContext {
   readonly questions: QuestionsService;
   readonly progress: ProgressService;
   readonly streak: StreakService;
+  readonly attempts: AttemptsService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -76,6 +79,7 @@ function collectRoutes(ctx: AppContext): RouteDef[] {
     ...questionsRoutes(ctx),
     ...progressRoutes(ctx),
     ...streakRoutes(ctx),
+    ...attemptsRoutes(ctx),
   ];
 }
 

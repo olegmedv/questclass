@@ -434,7 +434,16 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Награда за `streak.days` (5) дней: `idem_key = streak:<learner>:<day_key первого дня цикла>`, после неё новый цикл (тест). Ключи: days=5, rewardXp=200, rewardCoins=200.
 
 ### FEAT-010 — Тип `quiz`: попытки со снимком вопросов, зачёт, пересдачи
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Маршруты ученика: `POST /api/tasks/:taskId/attempts` (201 — новая, 200 — продолжение открытой), `GET /api/attempts/:id`, `PUT /api/attempts/:id/answers/:questionId {optionId}`, `POST /api/attempts/:id/completion` (finish; повтор возвращает результат), `POST /api/tasks/:taskId/retry-requests`. Админа: `GET /api/admin/attempts/:id`, `GET /api/admin/retry-requests?status=open|granted`, `POST /api/admin/retry-grants {learnerId, taskId}`; сверх DoD — `GET /api/admin/learners/:id/attempts?taskId` (список для деталей попыток в FEAT-041).
+  - Движок попыток общий: тип участвует, если реализует `grade()` (у `chore` его нет → 409 `no_questions`). N = `quiz.questionsPerAttempt` для всех таких типов; `quiz.minCorrect` больше N означает «все верно». Конфиг `quiz` пуст (`{}`), размер банка проверяет серверный `publishChecks` («Нужно не меньше N вопросов в банке (сейчас K)»).
+  - «Закрытое» (уже пройдено или закрыто) → 409 `already_passed`, «ещё не открытое» (по порядку/ротации) → 409 `task_locked`; задание с будущей датой или чужое ученику не видно вовсе → 404, как в FEAT-008.
+  - Одна открытая попытка на (ученик, задание) — частичный UNIQUE. Вопросы и варианты тасуются криптослучайно; если порядок вариантов совпал с прошлой попыткой этого ученика — циклический сдвиг (как в оригинале).
+  - Пересдачи: бесплатных попыток в epoch = 1 + `quiz.autoRetries`; дальше `retry_grant`, который тратится ровно одной попыткой (`attempts.retry_grant_id` UNIQUE, сама строка разрешения не меняется). Открытая просьба одна (частичный UNIQUE); выдача разрешения переводит её в `granted`; просьба при доступной бесплатной пересдаче → 409 `retry_available`. Сброс и «Пройти с мамой» — новый epoch, бесплатные попытки снова есть; открытая попытка старого epoch при старте новой становится `abandoned` (новый статус).
+  - `finish` в одной транзакции (оценка, прогресс, награда, серия; откат проверен). Если epoch сменился или админ уже закрыл задание, попытка завершается без прогресса и награды; день серии засчитывается за любую завершённую попытку. Попытка хранит выплаченные награду и бонус серии.
+  - Вне Scope: `packages/shared/src/attempts/dto.ts` (общие DTO попыток для quiz и video_lesson). Строки FEAT-049 добавлены (9 маршрутов; `prepare()` готовит тесты, назначенные ученику A, в нужных состояниях). RSS в простое 74,5 МиБ.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: Clarification «порог в настройках: 2 из 3, 1 автопересдача, дальше по разрешению; награда пропорциональна»; Critique 1 HIGH#6, MED#3, LOW (minCorrect, повтор ответа, малый банк).

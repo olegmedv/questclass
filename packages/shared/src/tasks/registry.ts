@@ -1,3 +1,4 @@
+import { quizContract } from '../task-types/quiz/contract';
 import type { TaskTypeContract } from './contract';
 
 /**
@@ -5,6 +6,7 @@ import type { TaskTypeContract } from './contract';
  * (quiz — FEAT-010, video_lesson — FEAT-013, chore — FEAT-014).
  */
 export const TASK_TYPE_CONTRACTS: readonly TaskTypeContract[] = [
+  quizContract,
   // add task types here
 ];
 

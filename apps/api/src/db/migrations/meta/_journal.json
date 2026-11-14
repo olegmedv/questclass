@@ -57,6 +57,13 @@
       "when": 1794667192216,
       "tag": "0007_streak_days",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1794667821532,
+      "tag": "0008_attempts",
+      "breakpoints": true
     }
   ]
 }

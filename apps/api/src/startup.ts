@@ -4,6 +4,7 @@ import { openDatabase } from './db/client';
 import { runMigrations } from './db/migrate';
 import { snapshotsDir } from './db/snapshot';
 import { trustedProxiesFromSettings } from './http/clientIp';
+import { createAttemptsService } from './modules/attempts/service';
 import { createAuditService } from './modules/audit/service';
 import { createAuthService } from './modules/auth/service';
 import { createLedgerService } from './modules/ledger/service';
@@ -76,6 +77,16 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       subjects,
       streak,
     });
+    const attempts = createAttemptsService(db, {
+      audit,
+      settings,
+      users,
+      tasks,
+      questions,
+      progress,
+      streak,
+      taskTypes,
+    });
     const ctx: AppContext = {
       config,
       db,
@@ -91,6 +102,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       questions,
       progress,
       streak,
+      attempts,
       trustedProxies: trustedProxiesFromSettings(settings),
     };
     return { ctx, closers };

@@ -28,6 +28,18 @@ interface MatrixData {
   readonly spareTask: number;
   /** A draft assigned to learner B (the assignment is removed by its row). */
   readonly assignedToB: number;
+  /** Quizzes assigned to learner A only. */
+  readonly quiz: {
+    /** Not started yet. */
+    readonly fresh: number;
+    /** An open attempt without answers, and one of its questions. */
+    readonly openAttempt: number;
+    readonly openQuestion: number;
+    /** An open attempt with every question answered. */
+    readonly answeredAttempt: number;
+    /** Failed twice: the free retry is used up. */
+    readonly failedTask: number;
+  };
 }
 
 const prepared = new WeakMap<TwoLearners, MatrixData>();
@@ -51,6 +63,44 @@ function data(f: TwoLearners): MatrixData {
   return found;
 }
 
+/** Quizzes assigned to learner A, in the states the attempt rows need. */
+function prepareQuizzes(f: TwoLearners): MatrixData['quiz'] {
+  const { ctx } = f.runtime;
+  const learner = f.ids.learnerA;
+  const quiz = (title: string): number => {
+    const id = ctx.tasks.create({ type: 'quiz', title }, f.ids.admin).id;
+    for (const key of ['m1', 'm2', 'm3']) {
+      ctx.questions.create(id, { key, ...SAMPLE_QUESTION }, f.ids.admin);
+    }
+    ctx.tasks.update(id, { status: 'published' }, f.ids.admin);
+    ctx.tasks.assign(id, learner, f.ids.admin);
+    return id;
+  };
+  const answerAll = (attemptId: number, right: boolean): void => {
+    for (const q of ctx.attempts.adminGet(attemptId).questions) {
+      const optionId = right ? q.correct : q.correct === 'a' ? 'b' : 'a';
+      ctx.attempts.answer(learner, attemptId, q.id, { optionId });
+    }
+  };
+
+  const open = ctx.attempts.start(learner, quiz('Тест: открытая попытка')).attempt;
+  const answered = ctx.attempts.start(learner, quiz('Тест: все ответы')).attempt;
+  answerAll(answered.id, true);
+  const failedTask = quiz('Тест: провален дважды');
+  for (let i = 0; i < 2; i += 1) {
+    const attempt = ctx.attempts.start(learner, failedTask).attempt;
+    answerAll(attempt.id, false);
+    ctx.attempts.finish(learner, attempt.id);
+  }
+  return {
+    fresh: quiz('Тест: не начат'),
+    openAttempt: open.id,
+    openQuestion: open.questions[0]?.id ?? 0,
+    answeredAttempt: answered.id,
+    failedTask,
+  };
+}
+
 /** Adds the domain data rows need (task types beyond the built-ins come from fixtures). */
 function prepare(f: TwoLearners): TwoLearners {
   const { ctx } = f.runtime;
@@ -70,7 +120,14 @@ function prepare(f: TwoLearners): TwoLearners {
   for (const key of ['q1', 'q-spare']) {
     ctx.questions.create(taskA, { key, ...SAMPLE_QUESTION }, admin);
   }
-  prepared.set(f, { subjectId, spareSubjectId, taskA, spareTask: task('Лишнее'), assignedToB });
+  prepared.set(f, {
+    subjectId,
+    spareSubjectId,
+    taskA,
+    spareTask: task('Лишнее'),
+    assignedToB,
+    quiz: prepareQuizzes(f),
+  });
   return f;
 }
 
@@ -372,6 +429,55 @@ const MATRIX: readonly MatrixRow[] = [
     route: 'GET /api/admin/learners/:id/streak',
     url: (f) => `/api/admin/learners/${f.ids.learnerA}/streak`,
     expect: adminOnly(200),
+  },
+
+  // attempts and retries
+  {
+    route: 'POST /api/tasks/:taskId/attempts',
+    url: (f) => `/api/tasks/${data(f).quiz.fresh}/attempts`,
+    learnerOwned: true,
+    expect: ownedByA(201),
+  },
+  {
+    route: 'GET /api/attempts/:id',
+    url: (f) => `/api/attempts/${data(f).quiz.openAttempt}`,
+    learnerOwned: true,
+    expect: ownedByA(200),
+  },
+  {
+    route: 'PUT /api/attempts/:id/answers/:questionId',
+    url: (f) => `/api/attempts/${data(f).quiz.openAttempt}/answers/${data(f).quiz.openQuestion}`,
+    body: () => ({ optionId: 'a' }),
+    learnerOwned: true,
+    expect: ownedByA(200),
+  },
+  {
+    route: 'POST /api/attempts/:id/completion',
+    url: (f) => `/api/attempts/${data(f).quiz.answeredAttempt}/completion`,
+    learnerOwned: true,
+    expect: ownedByA(200),
+  },
+  {
+    route: 'POST /api/tasks/:taskId/retry-requests',
+    url: (f) => `/api/tasks/${data(f).quiz.failedTask}/retry-requests`,
+    learnerOwned: true,
+    expect: ownedByA(201),
+  },
+  {
+    route: 'GET /api/admin/attempts/:id',
+    url: (f) => `/api/admin/attempts/${data(f).quiz.openAttempt}`,
+    expect: adminOnly(200),
+  },
+  {
+    route: 'GET /api/admin/learners/:id/attempts',
+    url: (f) => `/api/admin/learners/${f.ids.learnerA}/attempts`,
+    expect: adminOnly(200),
+  },
+  { route: 'GET /api/admin/retry-requests', expect: adminOnly(200) },
+  {
+    route: 'POST /api/admin/retry-grants',
+    body: (f) => ({ learnerId: f.ids.learnerA, taskId: data(f).quiz.failedTask }),
+    expect: adminOnly(201),
   },
 ];
 
