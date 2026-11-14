@@ -3,6 +3,7 @@
 import type { TaskProgressDto } from '@questclass/shared/progress/dto';
 import type { LearnerTaskDto, SubjectDto } from '@questclass/shared/tasks/dto';
 import { createElement, type ComponentType, type ReactElement } from 'react';
+import { choreTaskType } from './chore/Player';
 import { quizTaskType } from './quiz/Player';
 import { videoLessonTaskType } from './video_lesson/Player';
 
@@ -35,7 +36,7 @@ export interface WebTaskType {
 }
 
 /** Registered task types. Each type adds its line here (quiz, video_lesson, chore…). */
-const TASK_TYPES: readonly WebTaskType[] = [quizTaskType, videoLessonTaskType];
+const TASK_TYPES: readonly WebTaskType[] = [quizTaskType, videoLessonTaskType, choreTaskType];
 
 export interface TaskTypeRegistry {
   readonly types: readonly WebTaskType[];
