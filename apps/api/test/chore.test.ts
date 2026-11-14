@@ -1,3 +1,4 @@
+import type { LearnerProgressDto } from '@questclass/shared/progress/dto';
 import type { ChoreCompletionDto, ChoreStatusDto } from '@questclass/shared/task-types/chore/dto';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { createApp } from '../src/app';
@@ -154,6 +155,41 @@ describe('reports and reviews', () => {
     const audit = runtime.ctx.audit.list({ action: 'chore.approved' }).items;
     expect(audit).toHaveLength(1);
     expect(audit[0]).toMatchObject({ actorId: adminId, learnerId: anya });
+  });
+
+  it('an approved one-time chore counts as done; a repeating one stays open', async () => {
+    const once = chore('once', anya, 'Собрать портфель');
+    const daily = chore('daily', anya, 'Полить цветы');
+    const progressOf = async () =>
+      (await (await anyaClient.get('/api/me/progress')).json()) as LearnerProgressDto;
+    const stateOf = (p: LearnerProgressDto, taskId: number) =>
+      p.tasks.find((t) => t.taskId === taskId)?.state;
+
+    const onceReport = (await (await report(once)).json()) as ChoreCompletionDto;
+    const dailyReport = (await (await report(daily)).json()) as ChoreCompletionDto;
+    let p = await progressOf();
+    expect([stateOf(p, once), stateOf(p, daily), p.assignedDone]).toEqual([
+      'started',
+      'started',
+      0,
+    ]);
+
+    // A rejection leaves the chore started.
+    await reject(onceReport.id, 'Не всё убрано');
+    expect(stateOf(await progressOf(), once)).toBe('started');
+
+    const retry = (await (await report(once)).json()) as ChoreCompletionDto;
+    expect((await approve(retry.id)).status).toBe(201);
+    expect((await approve(dailyReport.id)).status).toBe(201);
+    p = await progressOf();
+    expect(stateOf(p, once)).toBe('passed');
+    expect(stateOf(p, daily)).toBe('started');
+    expect(p.assignedTotal).toBe(2);
+    expect(p.assignedDone).toBe(1);
+
+    // Progress pays nothing on top: only the two chore:<id> rows exist, no task pass row.
+    expect(runtime.ctx.ledger.balance(anya)).toEqual({ xp: 40, coins: 60 });
+    expect(rows('ledger')).toBe(2);
   });
 
   it('the database keeps one live report per learner, chore and period', () => {

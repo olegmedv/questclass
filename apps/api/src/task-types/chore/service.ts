@@ -249,6 +249,11 @@ export function createChoresService(db: Db, deps: ChoresDeps): ChoresService {
           .where(eq(choreCompletions.id, id))
           .returning()
           .get();
+        // A one-time chore is done for good once approved; repeating ones stay open for the next
+        // period. The reward was paid above (`chore:<id>`), so progress pays nothing.
+        if ((task as TaskRecord<ChoreConfig> | undefined)?.config.repeat === 'once') {
+          progress.markPassed(row.learnerId, row.taskId, now);
+        }
         const payload = auditPayload(choreApproved, {
           taskId: row.taskId,
           periodKey: row.periodKey,
