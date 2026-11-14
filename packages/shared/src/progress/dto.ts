@@ -67,3 +67,20 @@ export interface RewardDto {
   readonly xp: number;
   readonly coins: number;
 }
+
+/** Study streak (`GET /api/me/streak`). */
+export interface StreakDto {
+  /** Days in a row up to today, or up to yesterday while today is not done yet. */
+  readonly current: number;
+  readonly best: number;
+  /** Day keys (`YYYY-MM-DD`) of the current run, oldest first. */
+  readonly days: string[];
+  readonly todayDone: boolean;
+  /** Length of a bonus cycle (`streak.days`). */
+  readonly cycleDays: number;
+  /** Position inside the cycle, 1…cycleDays (0 without a streak): «3/5». */
+  readonly cycleProgress: number;
+  /** Streak length at which the next bonus is paid. */
+  readonly nextRewardAt: number;
+  readonly reward: RewardDto;
+}

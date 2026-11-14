@@ -10,6 +10,7 @@ export * from './questions';
 export * from './secrets';
 export * from './sessions';
 export * from './settings';
+export * from './streakDays';
 export * from './subjects';
 export * from './tasks';
 export * from './transcripts';

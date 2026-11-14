@@ -12,6 +12,7 @@ import { createQuestionsService } from './modules/questions/service';
 import { createKeyring } from './modules/settings/crypto';
 import { loadOrCreateMasterKey } from './modules/settings/masterKey';
 import { createSettingsService } from './modules/settings/service';
+import { createStreakService } from './modules/streak/service';
 import { seedSubjectsOnFirstStart } from './modules/subjects/seed';
 import { createSubjectsService } from './modules/subjects/service';
 import { createTasksService } from './modules/tasks/service';
@@ -65,6 +66,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
     const subjects = createSubjectsService(db, { audit });
     const tasks = createTasksService(db, { audit, settings, ledger, users, subjects, taskTypes });
     const questions = createQuestionsService(db, { audit });
+    const streak = createStreakService(db, { settings, ledger });
     const progress = createProgressService(db, {
       audit,
       settings,
@@ -72,6 +74,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       users,
       tasks,
       subjects,
+      streak,
     });
     const ctx: AppContext = {
       config,
@@ -87,6 +90,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       tasks,
       questions,
       progress,
+      streak,
       trustedProxies: trustedProxiesFromSettings(settings),
     };
     return { ctx, closers };

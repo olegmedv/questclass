@@ -17,6 +17,7 @@ import { conflict, notFound } from '../../http/errors';
 import { auditPayload, defineAuditAction, type AuditService } from '../audit/service';
 import { idemKey, requestKey, type LedgerService } from '../ledger/service';
 import type { SettingsService } from '../settings/service';
+import type { StreakService } from '../streak/service';
 import type { SubjectsService } from '../subjects/service';
 import type { TasksService } from '../tasks/service';
 import type { UsersService } from '../users/service';
@@ -116,6 +117,8 @@ export interface ProgressDeps {
   readonly users: UsersService;
   readonly tasks: TasksService;
   readonly subjects: SubjectsService;
+  /** An admin closure counts as a study day. */
+  readonly streak: StreakService;
   readonly clock?: () => number;
 }
 
@@ -171,7 +174,7 @@ const iso = (ms: number | null): string | null => (ms === null ? null : new Date
 const ZERO: RewardDto = { xp: 0, coins: 0 };
 
 export function createProgressService(db: Db, deps: ProgressDeps): ProgressService {
-  const { audit, settings, ledger, users, tasks, subjects, clock = Date.now } = deps;
+  const { audit, settings, ledger, users, tasks, subjects, streak, clock = Date.now } = deps;
 
   const requireLearner = (learnerId: number): void => {
     if (users.findRow(learnerId)?.role !== 'learner') {
@@ -461,6 +464,7 @@ export function createProgressService(db: Db, deps: ProgressDeps): ProgressServi
           closedBy: actorId,
           closedReason: input.reason ?? null,
         });
+        streak.recordDay(learnerId);
         let reward = ZERO;
         if (input.withReward) {
           const paid = ledger.post({

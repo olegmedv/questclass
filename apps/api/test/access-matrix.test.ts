@@ -365,6 +365,14 @@ const MATRIX: readonly MatrixRow[] = [
     body: () => ({ requestId: 'matrix-coins-0001' }),
     expect: adminOnly(201),
   },
+
+  // streak
+  { route: 'GET /api/me/streak', expect: learnerOnly(200) },
+  {
+    route: 'GET /api/admin/learners/:id/streak',
+    url: (f) => `/api/admin/learners/${f.ids.learnerA}/streak`,
+    expect: adminOnly(200),
+  },
 ];
 
 function splitRoute(key: string): { method: string; path: string } {

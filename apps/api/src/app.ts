@@ -17,6 +17,8 @@ import type { QuestionsService } from './modules/questions/service';
 import type { LedgerService } from './modules/ledger/service';
 import type { Keyring } from './modules/settings/crypto';
 import { settingsRoutes } from './modules/settings/routes';
+import { streakRoutes } from './modules/streak/routes';
+import type { StreakService } from './modules/streak/service';
 import type { SettingsService } from './modules/settings/service';
 import { subjectsRoutes } from './modules/subjects/routes';
 import type { SubjectsService } from './modules/subjects/service';
@@ -44,6 +46,7 @@ export interface AppContext {
   readonly tasks: TasksService;
   readonly questions: QuestionsService;
   readonly progress: ProgressService;
+  readonly streak: StreakService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -72,6 +75,7 @@ function collectRoutes(ctx: AppContext): RouteDef[] {
     ...tasksRoutes(ctx),
     ...questionsRoutes(ctx),
     ...progressRoutes(ctx),
+    ...streakRoutes(ctx),
   ];
 }
 
