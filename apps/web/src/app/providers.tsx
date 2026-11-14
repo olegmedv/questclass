@@ -2,6 +2,7 @@ import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-qu
 import type { ReactNode } from 'react';
 import { isApiError, isUnauthorized } from '../api/client';
 import { authKeys } from '../api/queries/auth';
+import { AnimationProvider } from '../features/animation/AnimationManager';
 
 /** Client errors (4xx) are answers, not glitches: they are never retried. */
 function shouldRetry(failureCount: number, error: unknown): boolean {
@@ -35,5 +36,9 @@ export function createQueryClient(): QueryClient {
 }
 
 export function Providers({ client, children }: { client: QueryClient; children: ReactNode }) {
-  return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={client}>
+      <AnimationProvider>{children}</AnimationProvider>
+    </QueryClientProvider>
+  );
 }

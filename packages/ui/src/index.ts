@@ -2,6 +2,12 @@
 // the gallery at /dev/ui. Global styles: `import '@questclass/ui/styles.css'` once in the app.
 export * from './icons';
 export { Accordion, type AccordionItem, type AccordionProps } from './components/Accordion';
+export {
+  AnimatedHero,
+  type AnimatedHeroProps,
+  type HeroMotion,
+  type HeroSprite,
+} from './components/AnimatedHero/AnimatedHero';
 export { Avatar, type AvatarProps } from './components/Avatar';
 export { Badge, type BadgeProps, type BadgeTone } from './components/Badge';
 export {

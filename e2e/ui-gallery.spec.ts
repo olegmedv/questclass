@@ -42,6 +42,7 @@ const SECTIONS = [
   'option',
   'skeleton',
   'typography',
+  'animated-hero',
 ];
 
 test('gallery shows every component in five states and fits the screen', async ({ page }) => {
@@ -63,9 +64,29 @@ test('gallery shows every component in five states and fits the screen', async (
 test('gallery sections match their screenshots', async ({ page }) => {
   await page.goto('/dev/ui');
   await expect(page.getByRole('heading', { level: 1, name: 'Галерея компонентов' })).toBeVisible();
-  for (const id of SECTIONS) {
+  for (const id of [...SECTIONS, 'live-heroes']) {
     await expectScreenshot(page.locator(`[data-gallery="${id}"]`), `gallery-${id}`);
   }
+});
+
+test('every live hero and the 9 action animations play, one at a time', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto('/dev/ui');
+  const heroes = page.locator('[data-live-hero]');
+  await expect(heroes).toHaveCount(20);
+  await expect(heroes.filter({ hasText: 'Экшен' })).toHaveCount(9);
+  for (let i = 0; i < 20; i += 1) {
+    const card = heroes.nth(i);
+    const id = await card.getAttribute('data-live-hero');
+    await card.scrollIntoViewIfNeeded();
+    await card.getByRole('button', { name: 'Оживить героя' }).click();
+    // Moving = the animated WebP has loaded (or the CSS motion runs) — the poster came first.
+    await expect(card.locator('figure[data-moving]'), `${id} moves`).toHaveCount(1, {
+      timeout: 30_000,
+    });
+    await expect(page.locator('figure[data-moving]'), 'only one hero moves').toHaveCount(1);
+  }
+  await expect(page.locator('.qc-hero-error')).toHaveCount(1); // only the gallery's error demo
 });
 
 test('a modal opens over the page, traps focus and closes with Escape', async ({ page }) => {

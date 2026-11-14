@@ -731,7 +731,14 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Тесты testing-library: роли, подписи, фокус. e2e-скриншоты галереи на 390 и 1440 без горизонтальной прокрутки (FEAT-053).
 
 ### FEAT-035 — Анимации героев: менеджер и AnimatedHero
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `AnimatedHero` (ui) — только отображение: постер (картинка или ячейка спрайта), анимированный WebP поверх него появляется лишь после `load` (до этого виден постер, на кнопке индикатор), CSS-движения `bounce | float | pendulum | sway` для героев без WebP (Март, Фея, Cadence, Сик — как в оригинале), кнопка «Оживить героя / Остановить героя» (`aria-pressed`), «Движение выключено» (disabled), сообщение при ошибке загрузки. Остановленный герой — без анимированного `<img>` в DOM.
+  - `AnimationManager` (web): одна активная анимация на всё приложение; режимы `autoplay` (на экране — двигается, при возврате на экран/вкладку продолжает), `autoplay-3s` (сам один раз, 3 с считаются от загрузки анимации), `on-demand` (только по кнопке); скрытая вкладка и уход с экрана (IntersectionObserver) останавливают; `prefers-reduced-motion` отключает автозапуск и останавливает автозапущенное, нажатие работает всегда. Часы внедряются (тесты на фейковых таймерах). `AnimationProvider` подключён в `Providers` приложения; хук `useHeroAnimation(ref, mode)` и обёртка `LiveHero` для экранов (FEAT-029/033/034).
+  - Галерея: секция AnimatedHero в 5 состояниях и «Живые герои и экшен-анимации» — 11 живых героев и 9 экшенов (`screens/dev/liveHeroes.ts`: список как `builtinAnimations`/`actionAnimations` оригинала, пути, кадры и длительность берутся из манифеста; неизвестный ключ — ошибка). Реальный каталог с ценами — FEAT-017.
+  - Тесты: 15 в `apps/web/test/animation.test.tsx` (менеджер на фейковых таймерах + LiveHero с замоканным IntersectionObserver), 5 в `packages/ui/test/animated-hero.test.tsx`; e2e — каждый из 20 героев запускается по кнопке и двигается, одновременно двигается один; базы двух новых секций из Linux-контейнера (повторный прогон — 28 passed).
+  - Вне перечня Scope (необходимо): `apps/web/src/features/animation/LiveHero.tsx`, `apps/web/src/app/providers.tsx`, `apps/web/src/screens/dev/{UiGallery.tsx,liveHeroes.ts}`, `packages/ui/src/index.ts`, `packages/ui/test/animated-hero.test.tsx`, `packages/shared/package.json` (экспорт `./assets/manifest.json`), `e2e/ui-gallery.spec.ts`, `e2e/__screenshots__/**`.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: spec/02 §2.8 «одна анимация одновременно; надетый живой — на «Герое» и 3 с на главной; в магазине по кнопке; вне экрана стоит; reduced-motion отключает автозапуск; 9 экшен-анимаций»; Critique 1 MED#13, LOW.

@@ -2,6 +2,7 @@
 // error (CLAUDE.md rule 8). Built only from @questclass/ui; no CSS of its own.
 import {
   Accordion,
+  AnimatedHero,
   Avatar,
   Badge,
   BookOpen,
@@ -59,6 +60,8 @@ import {
   type Column,
 } from '@questclass/ui';
 import { useState, type ReactNode } from 'react';
+import { LiveHero } from '../../features/animation/LiveHero';
+import { describeHero, LIVE_HEROES } from './liveHeroes';
 
 type StateName = 'default' | 'disabled' | 'loading' | 'empty' | 'error';
 
@@ -306,6 +309,8 @@ export function UiGallery() {
     ['option', 'OptionTile'],
     ['skeleton', 'Skeleton'],
     ['typography', 'Heading и Text'],
+    ['animated-hero', 'AnimatedHero'],
+    ['live-heroes', 'Живые герои'],
   ];
 
   return (
@@ -1291,6 +1296,88 @@ export function UiGallery() {
               error: <Text tone="danger">Сообщение об ошибке</Text>,
             }}
           />
+
+          <Demo
+            id="animated-hero"
+            title="AnimatedHero"
+            description="Постер до старта; одновременно движется один герой; вне экрана и на скрытой вкладке — стоп; reduced-motion отключает автозапуск."
+            states={{
+              default: (
+                <Grid min="sm">
+                  <LiveHero
+                    poster="/assets/game/characters/vampire-boy.webp"
+                    src="/assets/game/animated/vampire-cape.webp"
+                    alt="Вампир · оживший плащ"
+                  />
+                </Grid>
+              ),
+              disabled: (
+                <Grid min="sm">
+                  <AnimatedHero
+                    poster="/assets/game/characters/vampire-boy.webp"
+                    src="/assets/game/animated/vampire-cape.webp"
+                    alt="Вампир"
+                    playing={false}
+                    onToggle={() => {}}
+                    disabled
+                  />
+                </Grid>
+              ),
+              loading: {
+                na: 'пока анимация грузится, виден постер, а на кнопке — индикатор (см. «Живые герои»)',
+              },
+              empty: (
+                <Grid min="sm">
+                  <AnimatedHero
+                    poster="/assets/game/characters/star-hero.webp"
+                    alt="Звёздный герой без анимации"
+                    playing={false}
+                  />
+                </Grid>
+              ),
+              error: (
+                <Grid min="sm">
+                  <AnimatedHero
+                    poster="/assets/game/characters/zombie-boy.webp"
+                    src="/assets/game/animated/missing-animation.webp"
+                    alt="Зомби"
+                    playing
+                    onToggle={() => {}}
+                  />
+                </Grid>
+              ),
+            }}
+          />
+
+          <Card
+            id="live-heroes"
+            data-gallery="live-heroes"
+            title="Живые герои и экшен-анимации"
+            description={`Все живые герои и 9 экшен-анимаций из манифеста ассетов (${LIVE_HEROES.length}). Запуск — кнопкой «Оживить героя».`}
+          >
+            <Grid min="sm">
+              {LIVE_HEROES.map((hero) => (
+                <Stack key={hero.id} gap="xs" align="center" data-live-hero={hero.id}>
+                  <LiveHero
+                    poster={hero.poster}
+                    src={hero.src}
+                    motion={hero.motion}
+                    sprite={hero.sprite}
+                    alt={hero.name}
+                  />
+                  <Badge tone={hero.group === 'action' ? 'gold' : 'live'}>
+                    {hero.group === 'action' ? 'Экшен' : 'Живой'}
+                  </Badge>
+                  <Text size="sm" weight="semibold">
+                    {hero.name}
+                  </Text>
+                  <Text size="xs" tone="muted">
+                    {describeHero(hero)}
+                  </Text>
+                </Stack>
+              ))}
+            </Grid>
+          </Card>
         </Stack>
       </Container>
     </ToastProvider>
