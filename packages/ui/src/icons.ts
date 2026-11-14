@@ -43,4 +43,4 @@ export {
 } from 'lucide-react';
 
 // Admin screens (FEAT-039…056).
-export { Copy, Pencil, Plus, Shapes } from 'lucide-react';
+export { ClipboardCheck, Copy, ListChecks, Pencil, Plus, Shapes } from 'lucide-react';

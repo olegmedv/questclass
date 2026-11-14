@@ -121,6 +121,48 @@ export const routes: RouteObject[] = [
                       Component: (await import('../screens/admin/TaskEdit')).TaskEdit,
                     }),
                   },
+                  {
+                    path: 'progress',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/LearnerProgress')).LearnerProgress,
+                    }),
+                  },
+                  {
+                    path: 'progress/:learnerId',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/LearnerProgress')).LearnerProgress,
+                    }),
+                  },
+                  {
+                    path: 'attempts/:id',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/AttemptDetails')).AttemptDetails,
+                    }),
+                  },
+                  {
+                    path: 'reviews',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/Reviews')).Reviews,
+                    }),
+                  },
+                  {
+                    path: 'awards',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/Awards')).Awards,
+                    }),
+                  },
+                  {
+                    path: 'awards/reasons',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/RewardReasons')).RewardReasons,
+                    }),
+                  },
+                  {
+                    path: 'awards/:learnerId',
+                    lazy: async () => ({
+                      Component: (await import('../screens/admin/Awards')).Awards,
+                    }),
+                  },
                   { path: '*', element: <AdminStub title="Такой страницы нет" /> },
                 ],
               },

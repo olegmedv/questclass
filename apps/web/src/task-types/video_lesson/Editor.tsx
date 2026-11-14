@@ -14,6 +14,7 @@ import {
 import { Field, Notice, NumberInput, Select, Stack, Switch, Text } from '@questclass/ui';
 import { QuestionBank } from '../../features/questions/QuestionBank';
 import type { TaskEditorProps, TaskSectionsProps, TaskTypeAdmin } from '../registry';
+import { ConfirmWatch } from './ConfirmWatch';
 
 const MODE_LABEL: Readonly<Record<WatchMode, string>> = {
   percent: 'По проценту просмотра',
@@ -105,4 +106,5 @@ export const videoLessonAdmin: TaskTypeAdmin = {
   type: VIDEO_LESSON_TYPE,
   Editor: VideoLessonEditor,
   Sections: VideoLessonSections,
+  ProgressActions: ConfirmWatch,
 };

@@ -1,7 +1,10 @@
 // Route layouts: the learner pages live inside LearnerShell, the admin pages inside AdminShell.
 import {
   BookOpen,
+  ClipboardCheck,
+  Gift,
   House,
+  ListChecks,
   Settings,
   Shapes,
   TabletSmartphone,
@@ -31,6 +34,19 @@ export const ADMIN_SECTIONS: readonly AdminSection[] = [
     href: '/admin/subjects',
     icon: <Shapes aria-hidden="true" />,
   },
+  {
+    id: 'progress',
+    label: 'Прогресс',
+    href: '/admin/progress',
+    icon: <ListChecks aria-hidden="true" />,
+  },
+  {
+    id: 'reviews',
+    label: 'Проверки',
+    href: '/admin/reviews',
+    icon: <ClipboardCheck aria-hidden="true" />,
+  },
+  { id: 'awards', label: 'Награды', href: '/admin/awards', icon: <Gift aria-hidden="true" /> },
   {
     id: 'settings',
     label: 'Настройки',

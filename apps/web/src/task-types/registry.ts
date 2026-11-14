@@ -32,6 +32,12 @@ export interface TaskSectionsProps {
   readonly task: TaskDto;
 }
 
+/** Type-specific actions on a learner's progress row («Подтвердить просмотр»). */
+export interface TaskProgressActionsProps {
+  readonly learnerId: number;
+  readonly progress: TaskProgressDto;
+}
+
 /**
  * The admin half of a type (FEAT-040): the config Editor and the type's own sections of the task
  * page. Registered apart from the Players, so a type can be edited before its Player exists.
@@ -40,6 +46,7 @@ export interface TaskTypeAdmin {
   readonly type: string;
   readonly Editor?: ComponentType<TaskEditorProps>;
   readonly Sections?: ComponentType<TaskSectionsProps>;
+  readonly ProgressActions?: ComponentType<TaskProgressActionsProps>;
 }
 
 export interface WebTaskType {
@@ -68,6 +75,8 @@ export interface TaskTypeRegistry {
   hasEditor(type: string): boolean;
   /** The type's own sections of the admin task page, or null. */
   renderSections(props: TaskSectionsProps): ReactElement | null;
+  /** The type's own actions on a learner's progress row, or null. */
+  renderProgressActions(props: TaskProgressActionsProps): ReactElement | null;
 }
 
 /** A type without an editor in this build: its config is set by import or later versions. */
@@ -131,6 +140,10 @@ export function createTaskTypeRegistry(
     renderSections(props) {
       const Sections = adminOf.get(props.task.type)?.Sections;
       return Sections ? createElement(Sections, props) : null;
+    },
+    renderProgressActions(props) {
+      const Actions = adminOf.get(props.progress.type)?.ProgressActions;
+      return Actions ? createElement(Actions, props) : null;
     },
   };
 }
