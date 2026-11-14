@@ -3,6 +3,8 @@
 import {
   Accordion,
   ActionList,
+  MediaPlayer,
+  type ShutterState,
   AnswerReview,
   ResultSummary,
   RewardLine,
@@ -559,6 +561,34 @@ function ResultSections() {
         }}
       />
     </>
+  );
+}
+
+/** The lesson player. The gallery has no lesson video, so the demos show the controls around an
+ *  unavailable file (the lesson screens play real HLS and MP4, see e2e/video.spec.ts). */
+function MediaSection() {
+  const [shutter, setShutter] = useState<ShutterState>({ heightPct: 12, visible: true });
+  const missing = { kind: 'mp4' as const, src: '/assets/gallery/no-video.mp4' };
+  return (
+    <Demo
+      id="media-player"
+      title="MediaPlayer"
+      description="Видео урока: ±10 сек, «Смотреть», перемотка, звук, чёрная полоса над субтитрами (тянуть или стрелками), на весь экран."
+      states={{
+        default: (
+          <MediaPlayer
+            source={missing}
+            label="Видео урока (демо)"
+            shutter={shutter}
+            onShutterChange={setShutter}
+          />
+        ),
+        disabled: <MediaPlayer source={missing} label="Видео без полосы" />,
+        loading: { na: 'пока видео подключается, на кадре «Подключаем видео…»' },
+        empty: { na: 'без видео урок не публикуется' },
+        error: { na: 'файла нет — на кадре «Видео не загрузилось» и «Загрузить видео заново»' },
+      }}
+    />
   );
 }
 
@@ -2026,6 +2056,7 @@ export function UiGallery() {
 
           {/* New sections go last: inserting above shifts every section below on the page. */}
           <ResultSections />
+          <MediaSection />
         </Stack>
       </Container>
     </ToastProvider>

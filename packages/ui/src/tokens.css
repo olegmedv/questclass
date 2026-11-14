@@ -18,6 +18,9 @@
   --q-overlay: #040912b3;
   --q-skeleton: #24364f;
 
+  /* The strip over burnt-in subtitles: as black as the video. */
+  --q-shutter: #000;
+
   /* Lines */
   --q-border: #3f5472;
   --q-border-strong: #496581;

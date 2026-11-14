@@ -4,6 +4,7 @@ import type { TaskProgressDto } from '@questclass/shared/progress/dto';
 import type { LearnerTaskDto, SubjectDto } from '@questclass/shared/tasks/dto';
 import { createElement, type ComponentType, type ReactElement } from 'react';
 import { quizTaskType } from './quiz/Player';
+import { videoLessonTaskType } from './video_lesson/Player';
 
 /**
  * What a Player gets: the task as the learner sees it (`GET /api/tasks/:id`, config already
@@ -34,7 +35,7 @@ export interface WebTaskType {
 }
 
 /** Registered task types. Each type adds its line here (quiz, video_lesson, chore…). */
-const TASK_TYPES: readonly WebTaskType[] = [quizTaskType];
+const TASK_TYPES: readonly WebTaskType[] = [quizTaskType, videoLessonTaskType];
 
 export interface TaskTypeRegistry {
   readonly types: readonly WebTaskType[];

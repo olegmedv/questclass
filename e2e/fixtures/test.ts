@@ -72,7 +72,12 @@ export const screenshotsEnabled =
   process.env['E2E_SCREENSHOTS'] === '1' ||
   (process.platform === 'linux' && process.env['E2E_SCREENSHOTS'] !== '0');
 
-export async function expectScreenshot(target: Page | Locator, name: string): Promise<void> {
+export async function expectScreenshot(
+  target: Page | Locator,
+  name: string,
+  /** Parts that differ between runs (a playing video) are painted over. */
+  options: { readonly mask?: Locator[] } = {},
+): Promise<void> {
   if (!screenshotsEnabled) {
     test.info().annotations.push({
       type: 'screenshot skipped',
@@ -81,9 +86,9 @@ export async function expectScreenshot(target: Page | Locator, name: string): Pr
     return;
   }
   if ('goto' in target) {
-    await expect(target).toHaveScreenshot(`${name}.png`, { fullPage: true });
+    await expect(target).toHaveScreenshot(`${name}.png`, { fullPage: true, ...options });
   } else {
-    await expect(target).toHaveScreenshot(`${name}.png`);
+    await expect(target).toHaveScreenshot(`${name}.png`, options);
   }
 }
 
