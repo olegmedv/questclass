@@ -14,9 +14,14 @@ import type { LedgerService } from './modules/ledger/service';
 import type { Keyring } from './modules/settings/crypto';
 import { settingsRoutes } from './modules/settings/routes';
 import type { SettingsService } from './modules/settings/service';
+import { subjectsRoutes } from './modules/subjects/routes';
+import type { SubjectsService } from './modules/subjects/service';
+import { tasksRoutes } from './modules/tasks/routes';
+import type { TasksService } from './modules/tasks/service';
 import { usersRoutes } from './modules/users/routes';
 import type { UsersService } from './modules/users/service';
 import { healthRoutes } from './modules/health/routes';
+import type { TaskTypeRegistry } from './task-types/registry';
 
 /** Dependencies shared by all modules; built once at startup (see startup.ts). */
 export interface AppContext {
@@ -29,6 +34,10 @@ export interface AppContext {
   readonly users: UsersService;
   readonly auth: AuthService;
   readonly ledger: LedgerService;
+  /** Task type plugins of this runtime. */
+  readonly taskTypes: TaskTypeRegistry;
+  readonly subjects: SubjectsService;
+  readonly tasks: TasksService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -53,6 +62,8 @@ function collectRoutes(ctx: AppContext): RouteDef[] {
     ...usersRoutes(ctx),
     ...settingsRoutes(ctx),
     ...ledgerRoutes(ctx),
+    ...subjectsRoutes(ctx),
+    ...tasksRoutes(ctx),
   ];
 }
 

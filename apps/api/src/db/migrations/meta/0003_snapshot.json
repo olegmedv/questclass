@@ -67,25 +67,17 @@
       "indexes": {
         "audit_log_at_idx": {
           "name": "audit_log_at_idx",
-          "columns": [
-            "at"
-          ],
+          "columns": ["at"],
           "isUnique": false
         },
         "audit_log_entity_idx": {
           "name": "audit_log_entity_idx",
-          "columns": [
-            "entity",
-            "entity_id"
-          ],
+          "columns": ["entity", "entity_id"],
           "isUnique": false
         },
         "audit_log_learner_at_idx": {
           "name": "audit_log_learner_at_idx",
-          "columns": [
-            "learner_id",
-            "at"
-          ],
+          "columns": ["learner_id", "at"],
           "isUnique": false
         }
       },
@@ -180,32 +172,22 @@
       "indexes": {
         "ledger_idem_key_uq": {
           "name": "ledger_idem_key_uq",
-          "columns": [
-            "idem_key"
-          ],
+          "columns": ["idem_key"],
           "isUnique": true
         },
         "ledger_reverses_id_uq": {
           "name": "ledger_reverses_id_uq",
-          "columns": [
-            "reverses_id"
-          ],
+          "columns": ["reverses_id"],
           "isUnique": true
         },
         "ledger_learner_at_idx": {
           "name": "ledger_learner_at_idx",
-          "columns": [
-            "learner_id",
-            "at"
-          ],
+          "columns": ["learner_id", "at"],
           "isUnique": false
         },
         "ledger_source_idx": {
           "name": "ledger_source_idx",
-          "columns": [
-            "source_type",
-            "source_id"
-          ],
+          "columns": ["source_type", "source_id"],
           "isUnique": false
         }
       },
@@ -214,12 +196,8 @@
           "name": "ledger_learner_id_users_id_fk",
           "tableFrom": "ledger",
           "tableTo": "users",
-          "columnsFrom": [
-            "learner_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["learner_id"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         },
@@ -227,12 +205,8 @@
           "name": "ledger_reverses_id_ledger_id_fk",
           "tableFrom": "ledger",
           "tableTo": "ledger",
-          "columnsFrom": [
-            "reverses_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["reverses_id"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         },
@@ -240,12 +214,8 @@
           "name": "ledger_created_by_users_id_fk",
           "tableFrom": "ledger",
           "tableTo": "users",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         }
@@ -400,23 +370,17 @@
       "indexes": {
         "sessions_token_hash_uq": {
           "name": "sessions_token_hash_uq",
-          "columns": [
-            "token_hash"
-          ],
+          "columns": ["token_hash"],
           "isUnique": true
         },
         "sessions_user_idx": {
           "name": "sessions_user_idx",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         },
         "sessions_device_idx": {
           "name": "sessions_device_idx",
-          "columns": [
-            "device_id"
-          ],
+          "columns": ["device_id"],
           "isUnique": false
         }
       },
@@ -425,12 +389,8 @@
           "name": "sessions_user_id_users_id_fk",
           "tableFrom": "sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         },
@@ -438,12 +398,8 @@
           "name": "sessions_device_id_trusted_devices_id_fk",
           "tableFrom": "sessions",
           "tableTo": "trusted_devices",
-          "columnsFrom": [
-            "device_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["device_id"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         }
@@ -546,9 +502,7 @@
       "indexes": {
         "trusted_devices_token_hash_uq": {
           "name": "trusted_devices_token_hash_uq",
-          "columns": [
-            "token_hash"
-          ],
+          "columns": ["token_hash"],
           "isUnique": true
         }
       },
@@ -557,12 +511,8 @@
           "name": "trusted_devices_created_by_users_id_fk",
           "tableFrom": "trusted_devices",
           "tableTo": "users",
-          "columnsFrom": [
-            "created_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["created_by"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         },
@@ -570,12 +520,8 @@
           "name": "trusted_devices_revoked_by_users_id_fk",
           "tableFrom": "trusted_devices",
           "tableTo": "users",
-          "columnsFrom": [
-            "revoked_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["revoked_by"],
+          "columnsTo": ["id"],
           "onDelete": "restrict",
           "onUpdate": "no action"
         }
@@ -669,17 +615,12 @@
       "indexes": {
         "users_login_uq": {
           "name": "users_login_uq",
-          "columns": [
-            "login"
-          ],
+          "columns": ["login"],
           "isUnique": true
         },
         "users_role_active_idx": {
           "name": "users_role_active_idx",
-          "columns": [
-            "role",
-            "active"
-          ],
+          "columns": ["role", "active"],
           "isUnique": false
         }
       },

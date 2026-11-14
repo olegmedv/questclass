@@ -67,25 +67,17 @@
       "indexes": {
         "audit_log_at_idx": {
           "name": "audit_log_at_idx",
-          "columns": [
-            "at"
-          ],
+          "columns": ["at"],
           "isUnique": false
         },
         "audit_log_entity_idx": {
           "name": "audit_log_entity_idx",
-          "columns": [
-            "entity",
-            "entity_id"
-          ],
+          "columns": ["entity", "entity_id"],
           "isUnique": false
         },
         "audit_log_learner_at_idx": {
           "name": "audit_log_learner_at_idx",
-          "columns": [
-            "learner_id",
-            "at"
-          ],
+          "columns": ["learner_id", "at"],
           "isUnique": false
         }
       },

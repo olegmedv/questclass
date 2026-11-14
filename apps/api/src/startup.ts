@@ -10,6 +10,10 @@ import { createLedgerService } from './modules/ledger/service';
 import { createKeyring } from './modules/settings/crypto';
 import { loadOrCreateMasterKey } from './modules/settings/masterKey';
 import { createSettingsService } from './modules/settings/service';
+import { seedSubjectsOnFirstStart } from './modules/subjects/seed';
+import { createSubjectsService } from './modules/subjects/service';
+import { createTasksService } from './modules/tasks/service';
+import { createTaskTypeRegistry } from './task-types/registry';
 import { createUsersService } from './modules/users/service';
 
 /** Releases a resource on shutdown (closed in reverse order of registration). */
@@ -26,6 +30,9 @@ const STARTUP_HOOKS: readonly StartupHook[] = [
       console.info(`No admin yet. One-time setup token: ${token}`);
       console.info('Open /setup and enter this token to create the first admin.');
     }
+  },
+  (ctx) => {
+    seedSubjectsOnFirstStart(ctx.db);
   },
 ];
 
@@ -52,6 +59,9 @@ export async function openRuntime(config: Config): Promise<Runtime> {
     const users = createUsersService(db, { audit });
     const auth = createAuthService(db, { config, audit, settings, keyring, users });
     const ledger = createLedgerService(db, { settings });
+    const taskTypes = createTaskTypeRegistry();
+    const subjects = createSubjectsService(db, { audit });
+    const tasks = createTasksService(db, { audit, settings, ledger, users, subjects, taskTypes });
     const ctx: AppContext = {
       config,
       db,
@@ -61,6 +71,9 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       users,
       auth,
       ledger,
+      taskTypes,
+      subjects,
+      tasks,
       trustedProxies: trustedProxiesFromSettings(settings),
     };
     return { ctx, closers };

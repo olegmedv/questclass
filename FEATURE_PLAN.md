@@ -321,7 +321,17 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - `GET /api/me/wallet` → `{xp, coins, level, levelXp, xpToNext}` по `economy.xpPerLevel` (ключи: xpPerLevel=300, defaultTaskXp=100, defaultTaskCoins=350). `GET /api/me/ledger` — постранично. Строки в FEAT-049.
 
 ### FEAT-008 — Предметы, задания, реестр типов, назначения
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Маршруты: `GET /api/subjects` (learner, admin), `GET/POST /api/admin/subjects`, `PATCH/DELETE /api/admin/subjects/:id`; `GET/POST /api/admin/tasks`, `GET/PATCH/DELETE /api/admin/tasks/:id`, `POST /api/admin/tasks/:id/assignments {learnerId}`, `DELETE /api/admin/tasks/:id/assignments/:learnerId`; ученику `GET /api/tasks`, `GET /api/tasks/:id` (чужое/невидимое → 404). Публикация, снятие и архив — `PATCH {status}`; итог `published` всегда проходит проверки типа (422 `cannot_publish`, `details.errors`).
+  - Сид предметов запускается хуком старта только на пустой таблице: удалённый админом стартовый предмет не возвращается после перезапуска. Сама `seedSubjects()` идемпотентна по `key` (и по имени) и существующие строки не трогает. Иконка — ключ ассета `game/subjects-pixel/<key>`.
+  - Уникальность имени предмета — колонка `name_key` (ru-RU lower-case, схлопнутые пробелы): `lower()` SQLite не знает кириллицу. `key` неизменяем; без ключа генерируется `s-<8 hex>`.
+  - Контракт: shared `defineTaskType({type, label, configSchema, submissionSchema, defaultConfig, publicConfig, canPublish})` (`defaultConfig` сверх DoD — конфиг нового задания); api `TaskTypePlugin {contract, canStart, grade?, publishChecks?, fromImport?}`. `grade` необязателен (у `chore` нет автопроверки), `publishChecks(task, {db, settings})` — серверные проверки (медиа готово, хватает вопросов). Реестр — на рантайм (`ctx.taskTypes`, `register()` для тестовых типов); списки встроенных типов (`task-types/registry.ts`, `shared/tasks/registry.ts`) пусты до FEAT-010/013/014.
+  - Назначения = аудитория: есть строки — задание только этим ученикам и первым в их очереди (`position`), нет строк — всем активным на момент запроса (`tasks.audience()` для FEAT-009/022). Назначения не история: удаляются вместе с черновиком.
+  - Удаление: строка в ledger по заданию или любая FK RESTRICT (будущие progress/attempts/media) → 409 `has_history` с `details.archive=true`. Ученик не видит задания архивных предметов, неизвестных типов и с невалидным сохранённым config.
+  - Вне Scope: `apps/api/src/db/constraints.ts` (распознавание FK/UNIQUE ошибок SQLite, пригодится дальше), `apps/api/test/fixtures/noteTaskType.ts` (тестовый тип для tasks- и matrix-тестов); `tasks/seed.ts` не создавался (сид уроков — FEAT-048). Колонка `tasks.external_id` (UNIQUE NULL) добавлена сразу — для upsert импорта FEAT-012.
+  - Матрица: данные для строк готовит `prepare()` в `access-matrix.test.ts` (14 строк). RSS в простое 73,3 МиБ.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: SPEC §8 «subjects, tasks, task_assignments, типы-плагины»; Critique 1 MED#8, MED#14, LOW (назначения «всем»).

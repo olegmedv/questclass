@@ -6,6 +6,7 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { ROLES } from '../src/http/route';
+import { NOTE_TYPE, READY_NOTE, noteTaskType } from './fixtures/noteTaskType';
 import {
   createTwoLearners,
   PERSONAS,
@@ -14,6 +15,47 @@ import {
 } from './fixtures/twoLearners';
 
 type Expectation = Readonly<Record<Persona, number>>;
+
+/** Domain objects the rows address, created once per fixture by `prepare()`. */
+interface MatrixData {
+  readonly subjectId: number;
+  /** A subject nothing refers to (deleted by its row). */
+  readonly spareSubjectId: number;
+  /** Published and assigned to learner A only. */
+  readonly taskA: number;
+  /** A draft nothing refers to (deleted by its row). */
+  readonly spareTask: number;
+  /** A draft assigned to learner B (the assignment is removed by its row). */
+  readonly assignedToB: number;
+}
+
+const prepared = new WeakMap<TwoLearners, MatrixData>();
+
+function data(f: TwoLearners): MatrixData {
+  const found = prepared.get(f);
+  if (!found) {
+    throw new Error('Fixture was not prepared');
+  }
+  return found;
+}
+
+/** Adds the domain data rows need (task types beyond the built-ins come from fixtures). */
+function prepare(f: TwoLearners): TwoLearners {
+  const { ctx } = f.runtime;
+  const admin = f.ids.admin;
+  ctx.taskTypes.register(noteTaskType);
+  const subjectId = ctx.subjects.findByKey('math')?.id ?? 0;
+  const spareSubjectId = ctx.subjects.create({ key: 'spare', name: 'Запасной' }, admin).id;
+  const task = (title: string) =>
+    ctx.tasks.create({ type: NOTE_TYPE, title, subjectId, config: READY_NOTE }, admin).id;
+  const taskA = task('Для Ани');
+  ctx.tasks.update(taskA, { status: 'published' }, admin);
+  ctx.tasks.assign(taskA, f.ids.learnerA, admin);
+  const assignedToB = task('Для Бори');
+  ctx.tasks.assign(assignedToB, f.ids.learnerB, admin);
+  prepared.set(f, { subjectId, spareSubjectId, taskA, spareTask: task('Лишнее'), assignedToB });
+  return f;
+}
 
 interface MatrixRow {
   /** `METHOD /path` exactly as declared with route(). */
@@ -48,6 +90,14 @@ const learnerOnly = (ok: number): Expectation => ({
   import: 401,
   learnerA: ok,
   learnerB: ok,
+  admin: 403,
+});
+/** A learner-only route addressing learner A's data: learner B must not learn it exists. */
+const ownedByA = (ok: number): Expectation => ({
+  anon: 401,
+  import: 401,
+  learnerA: ok,
+  learnerB: 404,
   admin: 403,
 });
 const signedIn = (ok: number): Expectation => ({
@@ -151,6 +201,69 @@ const MATRIX: readonly MatrixRow[] = [
     url: (f) => `/api/admin/learners/${f.ids.learnerA}/ledger`,
     expect: adminOnly(200),
   },
+
+  // subjects
+  { route: 'GET /api/subjects', expect: signedIn(200) },
+  { route: 'GET /api/admin/subjects', expect: adminOnly(200) },
+  {
+    route: 'POST /api/admin/subjects',
+    body: () => ({ name: 'Музыка' }),
+    expect: adminOnly(201),
+  },
+  {
+    route: 'PATCH /api/admin/subjects/:id',
+    url: (f) => `/api/admin/subjects/${data(f).subjectId}`,
+    body: () => ({ sort: 30 }),
+    expect: adminOnly(200),
+  },
+  {
+    route: 'DELETE /api/admin/subjects/:id',
+    url: (f) => `/api/admin/subjects/${data(f).spareSubjectId}`,
+    expect: adminOnly(204),
+  },
+
+  // tasks
+  { route: 'GET /api/tasks', expect: learnerOnly(200) },
+  {
+    route: 'GET /api/tasks/:id',
+    url: (f) => `/api/tasks/${data(f).taskA}`,
+    learnerOwned: true,
+    expect: ownedByA(200),
+  },
+  { route: 'GET /api/admin/tasks', expect: adminOnly(200) },
+  {
+    route: 'POST /api/admin/tasks',
+    body: () => ({ type: NOTE_TYPE, title: 'Новое', config: READY_NOTE }),
+    expect: adminOnly(201),
+  },
+  {
+    route: 'GET /api/admin/tasks/:id',
+    url: (f) => `/api/admin/tasks/${data(f).taskA}`,
+    expect: adminOnly(200),
+  },
+  {
+    route: 'PATCH /api/admin/tasks/:id',
+    url: (f) => `/api/admin/tasks/${data(f).taskA}`,
+    body: () => ({ title: 'Для Ани' }),
+    expect: adminOnly(200),
+  },
+  {
+    route: 'DELETE /api/admin/tasks/:id',
+    url: (f) => `/api/admin/tasks/${data(f).spareTask}`,
+    expect: adminOnly(204),
+  },
+  {
+    route: 'POST /api/admin/tasks/:id/assignments',
+    url: (f) => `/api/admin/tasks/${data(f).taskA}/assignments`,
+    body: (f) => ({ learnerId: f.ids.learnerA }),
+    // Already assigned: the repeat is answered with the unchanged task.
+    expect: adminOnly(200),
+  },
+  {
+    route: 'DELETE /api/admin/tasks/:id/assignments/:learnerId',
+    url: (f) => `/api/admin/tasks/${data(f).assignedToB}/assignments/${f.ids.learnerB}`,
+    expect: adminOnly(204),
+  },
 ];
 
 function splitRoute(key: string): { method: string; path: string } {
@@ -162,7 +275,7 @@ describe('access matrix', () => {
   let shared: TwoLearners;
 
   beforeAll(async () => {
-    shared = await createTwoLearners();
+    shared = prepare(await createTwoLearners());
   }, 30_000);
 
   afterAll(async () => {
@@ -208,7 +321,7 @@ describe('access matrix', () => {
     it(
       row.route,
       async () => {
-        const fixture = row.fresh ? await createTwoLearners() : shared;
+        const fixture = row.fresh ? prepare(await createTwoLearners()) : shared;
         try {
           const { method, path } = splitRoute(row.route);
           const url = row.url?.(fixture) ?? path;
