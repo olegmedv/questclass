@@ -7,7 +7,7 @@ const API = 'http://localhost:8080';
 
 export default defineConfig({
   // Files the admin replaced in «Оформление» come from the API, as in production.
-  plugins: [react(), replacedAssets(API)],
+  plugins: [react(), replacedAssets()],
   build: {
     // Hashed bundles go to /_app/*, so the unhashed game assets keep the /assets/* namespace
     // (public/assets, see FEAT-026) and only /_app/* may be served as immutable.

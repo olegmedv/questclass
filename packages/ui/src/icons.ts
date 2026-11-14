@@ -54,6 +54,7 @@ export {
   History,
   ImageOff,
   ListChecks,
+  Palette,
   Pencil,
   Plus,
   Shapes,

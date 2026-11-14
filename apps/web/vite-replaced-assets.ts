@@ -1,16 +1,24 @@
 // Development and preview only: in production Node answers /assets/* itself, with the admin's
 // replacements («Оформление», FEAT-059). Here Vite serves public/assets, so a file the admin
 // replaced is fetched from the API (`/api/appearance/files/<file>`) instead; every other file
-// stays Vite's. The list of replaced files is re-read at most once a second.
+// stays Vite's. The list of replaced files is re-read at most every 0.2 s; a URL with `?v=<n>`
+// (the admin's «Оформление» after a change) goes to the API at once.
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import type { Plugin } from 'vite';
+import type { Plugin, ProxyOptions } from 'vite';
 
 type Next = (err?: unknown) => void;
 
 const PREFIX = '/assets/';
-const FRESH_MS = 1000;
+const FRESH_MS = 200;
 
-export function replacedAssets(apiTarget: string): Plugin {
+/** Where the server's `/api` proxy points: the API this server works with. */
+function apiTargetOf(proxy: Record<string, string | ProxyOptions> | undefined): string | null {
+  const entry = proxy?.['/api'];
+  const target = typeof entry === 'string' ? entry : entry?.target;
+  return typeof target === 'string' ? target : null;
+}
+
+function middlewareFor(apiTarget: string) {
   let known: { at: number; files: Set<string> } = { at: 0, files: new Set() };
 
   const replacedFiles = async (): Promise<Set<string>> => {
@@ -31,10 +39,11 @@ export function replacedAssets(apiTarget: string): Plugin {
       next();
       return;
     }
-    const pathname = url.split('?')[0] ?? '';
+    const [pathname = '', search = ''] = url.split('?');
     const file = decodeURIComponent(pathname.slice(PREFIX.length));
+    const versioned = /(^|&)v=[1-9]/.test(search);
     void (async () => {
-      if (!(await replacedFiles()).has(file)) {
+      if (!versioned && !(await replacedFiles()).has(file)) {
         next();
         return;
       }
@@ -60,13 +69,20 @@ export function replacedAssets(apiTarget: string): Plugin {
     })().catch(next);
   };
 
+  return middleware;
+}
+
+/** Takes the API address from the `/api` proxy of the dev or preview server it runs in. */
+export function replacedAssets(): Plugin {
   return {
     name: 'questclass-replaced-assets',
     configureServer: (server) => {
-      server.middlewares.use(middleware);
+      const target = apiTargetOf(server.config.server.proxy);
+      if (target) server.middlewares.use(middlewareFor(target));
     },
     configurePreviewServer: (server) => {
-      server.middlewares.use(middleware);
+      const target = apiTargetOf(server.config.preview.proxy);
+      if (target) server.middlewares.use(middlewareFor(target));
     },
   };
 }

@@ -95,11 +95,18 @@ export function useUploads() {
   });
 }
 
-/** Sends the file as it is (the server checks the format, the size and the frames). */
-export async function uploadPicture(file: File): Promise<UploadDto> {
+/**
+ * Sends the file as it is (the server checks the format, the size and the frames). `forFile` —
+ * the built-in file it will replace («Оформление»): the limits follow that file, a sound is allowed.
+ */
+export async function uploadPicture(file: File, forFile?: string): Promise<UploadDto> {
+  const target =
+    forFile === undefined
+      ? '/api/admin/uploads'
+      : `/api/admin/uploads?for=${encodeURIComponent(forFile)}`;
   let res: Response;
   try {
-    res = await fetch('/api/admin/uploads', {
+    res = await fetch(target, {
       method: 'POST',
       body: file,
       credentials: 'same-origin',
@@ -129,7 +136,7 @@ export async function uploadPicture(file: File): Promise<UploadDto> {
 export function useUploadPicture() {
   const client = useQueryClient();
   return useMutation({
-    mutationFn: uploadPicture,
+    mutationFn: (file: File) => uploadPicture(file),
     onSuccess: () => client.invalidateQueries({ queryKey: shopKeys.uploads }),
   });
 }
