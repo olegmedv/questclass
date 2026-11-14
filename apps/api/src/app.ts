@@ -5,12 +5,15 @@ import { clientIpMiddleware, type TrustedProxiesSource } from './http/clientIp';
 import { handleError, handleNotFound } from './http/errors';
 import { sameOriginOnly } from './http/origin';
 import { mountRoutes, type AppEnv, type RouteDef } from './http/route';
+import { auditRoutes } from './modules/audit/routes';
+import type { AuditService } from './modules/audit/service';
 import { healthRoutes } from './modules/health/routes';
 
 /** Dependencies shared by all modules; built once at startup (see startup.ts). */
 export interface AppContext {
   readonly config: Config;
   readonly db: Db;
+  readonly audit: AuditService;
   /** Trusted reverse-proxy CIDRs used by `clientIp()`. */
   readonly trustedProxies: TrustedProxiesSource;
 }
@@ -27,8 +30,8 @@ export interface BuildOptions {
 }
 
 /** All API routes. Each module adds its line here. */
-function collectRoutes(_ctx: AppContext): RouteDef[] {
-  return [...healthRoutes()];
+function collectRoutes(ctx: AppContext): RouteDef[] {
+  return [...healthRoutes(), ...auditRoutes(ctx)];
 }
 
 /** Request middlewares contributed by modules (session → actor, etc.). */

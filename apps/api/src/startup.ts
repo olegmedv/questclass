@@ -4,6 +4,7 @@ import type { Config } from './config';
 import { openDatabase } from './db/client';
 import { runMigrations } from './db/migrate';
 import { snapshotsDir } from './db/snapshot';
+import { createAuditService } from './modules/audit/service';
 
 /** Releases a resource on shutdown (closed in reverse order of registration). */
 export type Closer = () => void | Promise<void>;
@@ -37,6 +38,7 @@ export async function startup(config: Config): Promise<Runtime> {
     const ctx: AppContext = {
       config,
       db,
+      audit: createAuditService(db),
       trustedProxies: () => DEFAULT_TRUSTED_PROXIES,
     };
     for (const hook of STARTUP_HOOKS) {

@@ -186,7 +186,12 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - `dayKey(ts,tz)` и `weekKey(ts,tz)` (неделя с понедельника) верны на границах суток и недели для Europe/Kaliningrad (тесты).
 
 ### FEAT-006 — Журнал действий (audit) — ядро
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Действие объявляется модулем: `defineAuditAction(name, zodSchema)`; `auditPayload(action, data)` оставляет только поля схемы и маскирует (по словам в имени поля: password, passcode, pin, token, value, secret, hash; булевы и null сохраняются). `record()` принимает только payload, собранный для того же действия; 6-й аргумент `{learnerId}`.
+  - `actor_id`/`learner_id` без FK: таблицы `users` ещё нет (FEAT-004 идёт позже), а добавить FK к существующей колонке в SQLite можно только пересборкой таблицы (не expand-only). Пользователи не удаляются, поэтому ссылки не повиснут.
+  - Пагинация по курсору `<at>_<id>`, новые сверху; `from` включительно, `to` исключительно (ISO 8601 с offset или epoch ms).
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: SPEC §8 «audit_log»; Critique 1 MED#1, MED#17.
