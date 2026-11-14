@@ -25,8 +25,8 @@ describe('routes', () => {
   it.each([
     ['/', 'Саша, начнём?'],
     ['/tasks/7', 'Задание не найдено'],
-    ['/hero', 'Герой'],
-    ['/shop', 'Магазин'],
+    ['/hero', 'Примерка'],
+    ['/shop', 'Магазин желаний'],
     ['/rewards', 'Мои награды'],
   ])('learner opens %s', async (path, title) => {
     mockApi(sessionApi(learner));
@@ -159,7 +159,14 @@ describe('/dev/ui', () => {
   it('is open to everyone in development', async () => {
     mockApi(sessionApi(null));
     renderRoute('/dev/ui');
-    expect(await heading('Галерея компонентов')).toBeInTheDocument();
+    // The gallery is a big lazy chunk: under a loaded test run it takes more than a second.
+    expect(
+      await screen.findByRole(
+        'heading',
+        { level: 1, name: 'Галерея компонентов' },
+        { timeout: 5000 },
+      ),
+    ).toBeInTheDocument();
   });
 
   it('in production needs an admin', async () => {

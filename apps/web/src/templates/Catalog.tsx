@@ -36,6 +36,8 @@ export interface CatalogProps<T, F extends string> {
   /** Buttons next to the title (e.g. «Мои желания»). */
   readonly actions?: ReactNode;
   readonly filter?: CatalogFilter<F>;
+  /** Own filter controls (e.g. CategoryFilter) between the title and the grid, instead of tabs. */
+  readonly filters?: ReactNode;
   readonly items: readonly T[];
   readonly itemKey: (item: T) => string;
   /** An ItemCard; `open` shows the details dialog for this item. */
@@ -58,6 +60,7 @@ export function Catalog<T, F extends string>({
   description,
   actions,
   filter,
+  filters,
   items,
   itemKey,
   renderItem,
@@ -113,6 +116,7 @@ export function Catalog<T, F extends string>({
         </Stack>
         {actions && <Inline>{actions}</Inline>}
       </Inline>
+      {filters}
       {filter ? (
         <Tabs
           label={filter.label}

@@ -32,6 +32,8 @@ export interface ProgressViewProps<Row> {
   /** Extra sections between totals and history (passed tasks, achievements…). */
   readonly children?: ReactNode;
   readonly history: DataTableProps<Row>;
+  /** Under the history: «Показать ещё». */
+  readonly historyFooter?: ReactNode;
 }
 
 export function ProgressView<Row>({
@@ -43,6 +45,7 @@ export function ProgressView<Row>({
   streak,
   children,
   history,
+  historyFooter,
 }: ProgressViewProps<Row>) {
   return (
     <Stack gap="lg">
@@ -82,6 +85,7 @@ export function ProgressView<Row>({
       {streak}
       {children}
       <DataTable {...history} />
+      {historyFooter}
     </Stack>
   );
 }

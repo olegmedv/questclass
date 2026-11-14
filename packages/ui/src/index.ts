@@ -37,6 +37,12 @@ export {
 } from './components/Button';
 export { Card, type CardProps } from './components/Card';
 export {
+  CategoryFilter,
+  type CategoryFilterProps,
+  type CategoryOption,
+  type CategoryTone,
+} from './components/CategoryFilter';
+export {
   ActionList,
   ActionRow,
   ChoiceTile,
@@ -124,9 +130,18 @@ export {
   type ReviewItem,
   type RewardLineProps,
 } from './components/Result';
+export {
+  ShopItemCard,
+  ShopMark,
+  ShopPreview,
+  type ShopItemCardProps,
+  type ShopMarkProps,
+  type ShopPreviewProps,
+} from './components/ShopItemCard';
 export { Skeleton, type SkeletonProps } from './components/Skeleton';
 export { Slider, type SliderProps } from './components/Slider';
 export { Spinner, type SpinnerProps } from './components/Spinner';
+export { SpriteImage, type SpriteCell, type SpriteImageProps } from './components/SpriteImage';
 export { StatChip, type StatChipProps, type StatKind } from './components/StatChip';
 export { StepList, type Step, type StepStatus } from './components/StepList';
 export { StreakCard, type StreakCardProps } from './components/StreakCard';
@@ -147,6 +162,7 @@ export {
 } from './components/Toast';
 export { Checkbox, Switch } from './components/Toggle';
 export { Tooltip, type TooltipProps } from './components/Tooltip';
+export { WishCard, type WishCardProps } from './components/WishCard';
 export {
   Heading,
   Text,
@@ -155,3 +171,37 @@ export {
   type HeadingProps,
   type TextProps,
 } from './components/Typography';
+export { DRESS_COVER_MS, DRESS_REVEAL_MS, DressEffect, type DressPhase } from './hero/DressEffect';
+export { HeroRibbon, type HeroRibbonProps, type RibbonCard } from './hero/Ribbon';
+export {
+  FittingRoom,
+  HeroScene,
+  LiveRoomPreview,
+  RoomLayers,
+  type FittingRoomProps,
+  type HeroSceneProps,
+  type LiveRoomPreviewProps,
+  type SceneFootAnchor,
+  type SceneRoom,
+} from './hero/Scene';
+export { usePrefersReducedMotion } from './internal/useReducedMotion';
+export { AmbientScene, type AmbientTheme } from './scenes/Ambient';
+export { AstroScene } from './scenes/Astro';
+export {
+  DEFAULT_ROOM_SETTINGS,
+  type LiveRoomProps,
+  type RoomSceneAssets,
+  type RoomSceneSettings,
+} from './scenes/common';
+export {
+  canRunRoomEvents,
+  createRoomSchedule,
+  NIGHT_HOTEL_EVENTS,
+  NightHotelDirector,
+  ROOM_TAP_COOLDOWN_MS,
+  type RoomEvent,
+} from './scenes/eventScheduler';
+export { NightHotelScene } from './scenes/NightHotel';
+export { ReboundScene } from './scenes/Rebound';
+export { createRoomAudio, soundResolver, type RoomAudio } from './scenes/roomAudio';
+export { RoomMotionLayer, StaticScene } from './scenes/Static';

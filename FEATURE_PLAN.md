@@ -4,7 +4,7 @@ Generated: 2026-11-14. Description: "MVP (Этап 1) КвестКласс 2 п�
 
 ## Summary
 - Total items: 56
-- Pending: 15 | Done: 40 (FEAT-001–FEAT-031, FEAT-035, FEAT-038, FEAT-048–FEAT-054; FEAT-050 условно) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
+- Pending: 12 | Done: 43 (FEAT-001–FEAT-031, FEAT-035, FEAT-038, FEAT-044–FEAT-046, FEAT-048–FEAT-054; FEAT-046 с оговоркой про GHCR-токен; FEAT-050 условно) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
 - Items requiring user decision: 3 — FEAT-050 и FEAT-046: SSH разрешён пользователем 14.11.2026; FEAT-047 отложен до после MVP
 - Critic iterations: 3 (+ патч после вердикта)
 - Critic verdict: halted at max iterations; HIGH и MED третьего круга закрыты патчем после вердикта (повторно не критиковались), 11 LOW — известные риски
@@ -559,6 +559,7 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Config `{repeat: once|daily|weekly}` (по умолчанию `once`), `publicConfig` = config; submission пуст (`{}`). `grade` нет — движок попыток отвечает 409 `no_questions`. Чужое, невидимое, черновик и задание другого типа → 404; закрытое правилами открытия → 409 `task_locked`. Отчёт отмечает задание начатым (`progress.markStarted`); task_progress зачётом не пишется — награда только через `chore:<id>`, а не через ключ `task:…:pass`.
   - Колонки сверх DoD: `reward_xp`, `reward_coins` (что выплатило одобрение — снимок награды задания на тот момент, как у попыток), `note` — комментарий отклонения. Ревью меняет строку ровно один раз. Индекс `(learner, task)` для истории. `period_key` — `dayKey`/`weekKey` по `settings.timezone` на момент отчёта. Audit `chore.approved|rejected` (с `learnerId`).
   - Вне Scope: `packages/shared/src/task-types/chore/dto.ts` (в маске Scope), регистрация в `app.ts`, `startup.ts` (`ctx.chores`), реестрах типов (api и shared), `schema/index.ts`. Строки FEAT-049 добавлены (5 маршрутов, learnerB → 404 на делах ученика A). Тестов 661 (+2 пропущено), было 647.
+  - Исправление 14.11.2026 (`fix/chore-progress`): одобрение разового дела (`repeat: once`) отмечает задание пройденным через `progress.markPassed()` без второй выплаты (награда уже в `chore:<id>`), поэтому оно засчитывается в «Задания от родителя: X из Y». Повторяющиеся дела после одобрения остаются «Начато» — открыты на следующий период. Найдено при FEAT-032.
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: SPEC §8 «chore»; Critique 1 HIGH#11.
@@ -1059,7 +1060,16 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - e2e с HLS-фикстурой и троттлингом «Slow 4G»: воспроизведение идёт, процент растёт, кнопка вопросов открывается.
 
 ### FEAT-032 — Дело (`chore`) у ученика
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Player `chore` (`task-types/chore/Player.tsx`, в реестре web): вступление (описание, правило периода «Награда — один раз в день / в неделю», «Награда за дело +XP · +монет»), шаги «Сделать → Проверка родителя → Награда». Состояние — `GET /api/tasks/:id/chore-completions`; «Я сделал» — `POST` того же ресурса (повтор безвреден: сервер вернёт ту же запись).
+  - «Ждёт проверки» (пока ждёт — перезапрос раз в 30 с и при возврате на вкладку) → «Засчитано» с наградой из ответа сервера и `Celebration` `pass` со звуком «complete»; праздник — один раз на отчёт и устройство (маркер `quest-chore-celebration-v1:<ученик>:<отчёт>` в localStorage) и только для одобрений не старше 3 дней. «Не засчитано» — «Комментарий родителя: …» и снова «Я сделал» (сервер разрешает новый отчёт в том же периоде).
+  - Повторяемые: после одобрения в текущем периоде — «Сегодня уже засчитано. Завтра можно снова.» / «На этой неделе уже засчитано…»; в новом периоде `current = null` и снова «Я сделал». Ниже — «Раньше»: прошлые отчёты с датой и статусом (комментарий отказа).
+  - Закрытое дело (`progress.available = false`) — «Это дело ещё не открыто.», кнопка недоступна; отказ сервера `task_locked` — то же сообщение.
+  - Тесты: 8 в `chore-player.test.tsx` (отчёт → «Ждёт проверки», праздник один раз на устройстве, ожидание → одобрение при перезапросе, отказ с комментарием и повторный отчёт, ежедневное дело по периодам и история, закрытое дело, отказ сервера, правило праздника). Тестов 781 (+2 пропущены), было 773. e2e в DoD нет.
+  - Найдено в API (не правилось, вне Scope): одобрение дела не пишет строку прогресса `passed`, поэтому разовое дело остаётся «Начато» и в «Задания от родителя: X из Y» не засчитывается; кнопка на главной для дела — общая «Открыть задание» (`features/tasks/model.tsx`).
+  - Вне перечня Scope (точка регистрации): `apps/web/src/task-types/registry.ts`.
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: SPEC §8 «chore».
@@ -1071,7 +1081,19 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - «Я сделал» → «Ждёт проверки» → «Засчитано» (Celebration) или «Не засчитано: комментарий». Повторяемые — по периоду (тест).
 
 ### FEAT-033 — Магазин и «Мои желания»
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `/shop` (`screens/learner/Shop.tsx`, шаблон `Catalog`): «Магазин желаний», «За монеты: персонажи, комнаты, Robux и желания.», баланс и «Мои желания». Разделы «Всё / Герои / Комнаты / Желания» и подфильтры «Все персонажи / Обычные / Анимированные», «Все комнаты / День / Ночь / Специальные / Анимированные» (солнце / луна / искры / хлопушка) с подсказкой «Комнату можно менять отдельно от персонажа…». Порядок — как отдаёт сервер (живые первыми, купленное скрыто). Пусто: «Здесь пока нет новых покупок» / «Загляни в другую категорию.». Отрицательный баланс — предупреждение «Пока не хватает монет…».
+  - Карточка: превью (живой герой — `LiveHero` по кнопке «Оживить героя», комната 3:2, билет — ячейка спрайта), метки раздела комнаты и «анимация», название — кнопка «Подробнее» (описание, цена, «Понятно»), кнопка цены; без монет — недоступна и «Ещё N монет». Подтверждение «Забираем персонажа / комнату / билет?»: картинка, описание, «Потратишь N монет. Останется M.», «Подтвердить покупку» / «Пока не покупать». `requestId` создаётся при открытии окна: повтор после сбоя сети отправляет тот же; отказ 409 (товар изменён, уже есть, не хватает монет) — сообщение сервера, кнопка недоступна, магазин перечитывается. Тосты по виду товара; после билета открываются «Мои желания».
+  - `/wishes` (`screens/learner/Wishes.tsx` + `features/shop/WishInventory.tsx`, его же возьмёт вкладка «Билетики» в FEAT-037): группы (все Robux вместе), «Билетов: N» / «N Robux», «Куплено · можно использовать» / «Просьба отправлена» + «Родитель получил твою просьбу.», «Хочу использовать»; свёрнутое «Получено» — «Выданы родителем · дата», «Показать ещё» по 20 (курсор API). Пусто — «Пока нет неиспользованных наград» и «В магазин».
+  - Шапка: «Мои желания» теперь показаны — число неиспользованных желаний, все Robux считаются за одно (`wishesCount`); пока данных нет — скрыто.
+  - Дизайн-система: `CategoryFilter` (цветные плитки разделов с галочкой, радиогруппа со стрелками; `size="sm"` для подфильтров), `ShopItemCard` + `ShopMark` + `ShopPreview`, `SpriteImage` (картинка или ячейка спрайта), `WishCard`; токены цветов разделов `--q-cat-*`; иконки `Heart`, `LayoutGrid`, `Moon`, `PartyPopper`, `Sun`. Секции галереи `category-filter`, `shop-item-card`, `wish-card` — в конце (`screens/dev/learnerGallery.tsx`, в `UiGallery.tsx` одна строка).
+  - Заглушка P-001 «Картинка товара» используется в карточке, окнах и «Моих желаниях» (строка в PLACEHOLDERS.md уточнена).
+  - Живые комнаты в карточке пока без «плей» (статичная миниатюра и метка анимации): сцены комнат появляются в FEAT-036.
+  - Тесты: 10 в `shop.test.tsx` (фильтры и подфильтры, «Ещё N монет», «Подробнее», покупка с повтором того же `requestId`, отказ 409, отрицательный баланс, билет → «Мои желания», «Хочу использовать» и счётчик в шапке, история «Показать ещё», модель), 6 в `packages/ui/test/shop.test.tsx`. e2e `shop.spec.ts`: покупка героя, комнаты и билета, «Хочу использовать», частичная выдача Robux родителем и история; живой герой по кнопке, нехватка монет. Скриншоты подтверждения, раздела «Желания» и «Моих желаний» (Linux-контейнер, `--update-snapshots=changed`), повторный прогон `shop`, `ui-gallery`, `home` в контейнере — 20 passed; полный прогон — 72 passed. Тестов 797 (+2 пропущены), было 781.
+  - Ручная сверка с reference-screens 06, 10, 13 — отметка в PARITY.md.
+  - Вне перечня Scope (необходимо): `packages/ui/src/components/{CategoryFilter,ShopItemCard,SpriteImage,WishCard}.*`, `packages/ui/src/{index.ts,icons.ts,tokens.css}`, `packages/ui/test/shop.test.tsx`, `apps/web/src/app/{router.tsx,layouts.tsx,providers.tsx}` (маршруты, «Мои желания» в шапке, `ToastProvider` над роутером — тост переживает переход в «Мои желания»), `apps/web/src/templates/Catalog.tsx` (слот `filters` вместо вкладок), `apps/web/src/screens/dev/{UiGallery.tsx,learnerGallery.tsx}`, `apps/web/test/{router,templates}.test.tsx` (заголовок «Магазин желаний»; ожидание ленивой галереи до 5 с — под нагрузкой полного прогона секунды не хватало), `e2e/ui-gallery.spec.ts`, `e2e/__screenshots__/**`, `docs/{PARITY,PLACEHOLDERS}.md`.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: spec/02 §2.5–2.6; reference-screens 06, 10, 13.
@@ -1084,7 +1106,18 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - e2e-покупка героя, комнаты и билета. Ручная сверка с reference 06, 10, 13 в PARITY.md.
 
 ### FEAT-034 — Герой: примерочная
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `/hero` (`screens/learner/Hero.tsx`): «Примерка», сцена, подпись (надетый образ, на вкладке «Комнаты» — комната), гардероб «Обычные / Живые / Комнаты»; на телефоне всё столбиком, от 720 px сцена и гардероб рядом (гардероб — сетка). Один тап по карточке надевает образ (`PUT /api/me/character/look`) или ставит комнату (`…/room`), тосты «Персонаж надет!» / «Комната выбрана!»; надетое — `aria-pressed` и «, надет» / «, выбрана» в имени карточки, живые — «, живой». Ошибка сохранения — сообщение сервера, старый герой остаётся. Пустые «Живые» — «Живые скины можно получить в магазине.» и «В магазин». Начальная вкладка — «Живые», если надет живой.
+  - Порядок переодевания как в оригинале (`useDressing`): сначала сохранение (`saving`, старый герой на месте, гардероб недоступен, «Сохраняем костюм…»), затем дымка 260 мс (`cover`), показ нового героя 380 мс (`reveal`); при `prefers-reduced-motion` или выключенном движении героя эффекты пропускаются. Длительности — токены `--q-duration` / `--q-duration-slow`.
+  - Сцена (`HeroScene`): комната 3:2 `object-fit: cover`, `image-rendering: pixelated`; герой (46 % ширины) стоит на `footAnchor` комнаты и сдвинут на `footOffset` героя; прежний фон держится, пока не загрузится новый («Загружаем комнату…», при ошибке — «Фон не загрузился…»). Надетый живой герой на «Герое» двигается сам (режим `autoplay` менеджера анимаций) и останавливается на время переодевания и настроек; кнопка «Остановить героя / Оживить героя» в шапке экрана.
+  - «Настройки героя» (`features/character/HeroSettings.tsx`): «Имя героя» (1–30, на сервере), на устройстве (`quest-hero-preferences` в localStorage, общий снимок для всех экранов): «Герой двигается сам», «Анимации фона», «Звуки комнаты» (общий выключатель, по умолчанию выкл.), «Атмосфера / дождь», «Музыка»; «Волшебные звуки» — переключатель и громкость звуков интерфейса (FEAT-038). Настройки комнаты используют живые комнаты FEAT-036.
+  - Главная показывает надетого героя на карточке урока (живой — 3 с сам), пока персонаж грузится — стартовый.
+  - Дизайн-система: `packages/ui/src/hero/` — `HeroScene` + `FittingRoom` (раскладка экрана), `HeroRibbon` (вкладки + лента карточек со стрелками), `DressEffect` (+ `DRESS_COVER_MS`, `DRESS_REVEAL_MS`); экспорт `usePrefersReducedMotion`. Секции галереи `hero-scene`, `hero-ribbon` — в конце.
+  - Тесты: 9 в `hero.test.tsx` (сцена и точка опоры, вкладки и метки, фазы переодевания по порядку, ошибка — старый герой, без дымки при reduced-motion, комната, пустые «Живые» и начальная вкладка, настройки на устройстве и имя на сервере, `useDressing`, герой на главной), 5 в `packages/ui/test/hero.test.tsx`. e2e `hero.spec.ts`: надеть героя и поставить комнату (сохраняется после перезагрузки), дымка и живой герой сам двигается, настройки (имя, движение выключено на устройстве). `home.spec.ts`: для проверки «живой 3 с» ученик теперь надевает купленного живого героя (новый ученик носит статичного стартового). Помощники `e2e/fixtures/wardrobe.ts` (монеты, покупка, надеть). Базы из Linux-контейнера (`--update-snapshots=changed`), полный прогон — 78 passed. Тестов 811 (+2 пропущены), было 797.
+  - Отличия от оригинала: шапка ученика на «Герое» не скрывается (в оригинале вкладка на 100dvh без шапки); кнопки «Послушать» и кубка в шапке примерочной нет («Награды» есть в шапке приложения); «Анимации героя» оригинала (`CharacterAnimations`, переход к связанным живым образам) не делались — связи «герой ↔ анимации» в каталоге нет.
+  - Вне перечня Scope (необходимо): `packages/ui/src/hero/*.css`, `packages/ui/src/index.ts`, `packages/ui/test/hero.test.tsx`, `apps/web/src/app/router.tsx`, `apps/web/src/features/tasks/{NextLesson.tsx,assets.ts}` (герой на главной), `apps/web/src/screens/dev/{UiGallery.tsx,learnerGallery.tsx}`, `apps/web/test/router.test.tsx` (заголовок «Примерка»), `e2e/{home.spec.ts,shop.spec.ts,ui-gallery.spec.ts}`, `e2e/fixtures/wardrobe.ts`, `e2e/__screenshots__/**`.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: spec/02 §2.8.
@@ -1098,7 +1131,19 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Настройки героя хранятся на устройстве (тесты). e2e: надеть героя и комнату.
 
 ### FEAT-036 — Живые комнаты: ambient, «Ночной отель», Astro, Rebound
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `HeroScene` выбирает слои комнаты по `room.scene` (`RoomLayers`): `static` (ничего, или анимированный WebP комнаты, если у неё своя анимация), `ambient:<тема>` → `AmbientScene`, `ambient:rebound` и `rebound` → `ReboundScene`, `night-hotel` → `NightHotelScene`, `astro` → `AstroScene`. Слои появляются, когда загрузился фон именно этой комнаты. На корне сцены `data-room-scene` и `data-room-motion="on|off"`.
+  - Общие условия (`scenes/common.ts`): комната движется, только если она активна (на «Герое» — не во время переодевания и настроек), вкладка видна, «Анимации фона» включены и нет `prefers-reduced-motion`; звучит — при «Звуки комнаты» и только после первого касания или клавиши на странице. Файлы сцены приходят из `sceneAssets` каталога, веб превращает ключи в URL (звуки — MP3 на iPhone/iPad, иначе OGG: `sceneAssetUrls`).
+  - «Ночной отель» (`scenes/eventScheduler.ts`): расписание как в оригинале (9 событий, интервалы и звуки — таблица `NIGHT_HOTEL_EVENTS`, тишина 20–35 с, одно событие за раз, касание — сразу, но не чаще чем через 8 с после конца события, визг по касанию — не чаще 3 мин) и `NightHotelDirector` без React и DOM (часы и звук внедряются): тик раз в секунду, слой события — свежий blob-URL (одноразовый WebP перезапускается), таймаут загрузки 10 с, сбой слоя — «Один из эффектов недоступен…», атмосфера и дождь / музыка петлями, звуки событий с задержками и последовательностями; уход в фон — всё сразу останавливается, новое расписание при возврате. Подсказки «Коснись комнаты — она оживёт / Кто-то просыпается… / Смотри, что происходит… / Ещё сюрприз через N с».
+  - Звук комнат (`scenes/roomAudio.ts`): петли по одному разу, один канал эффектов (новый эффект освобождает прежний), подготовка эффектов до 2,5 с, `dispose` освобождает всё; заблокированное браузером воспроизведение — подсказка «Переключи «Звуки комнаты»…».
+  - Ambient: два «дышащих» света и 10 огоньков в цвете темы, касание — искры 2,2 с, «Коснись комнаты — разбуди огоньки». Astro: анимированное небо поверх комнаты (появляется после загрузки), колыбельная, ночной воздух, звон звезды раз в 24 с. Rebound: порыв раз в 24 с — штора, свечи гаснут и загораются (SVG), листья влетают в окно, туман; ночная музыка, ночной воздух, скрип раз в 31 с, шорох раз в 19 с. Цвета — токены `--q-room-*`, `--q-rebound-*`.
+  - Магазин: живая комната в карточке и в «Подробнее» — `LiveRoomPreview`: миниатюра и «Посмотреть анимацию комнаты» (через менеджер анимаций — одна анимация на всё приложение; превью без касания и звука).
+  - Тесты: 15 в `packages/ui/test/scenes.test.tsx` (расписание: тишина и интервалы на 6 часах случайных событий, пауза касания 8 с, стоп при скрытой вкладке / reduced-motion / выключенных анимациях; директор на фейковых таймерах: звук только после жеста, событие → звук с задержкой → конец с паузой касания, скрытая вкладка останавливает всё и ничего не доигрывает, сбой слоя; звук комнаты; выбор сцены по `room.scene`, а не по id; ambient-касание; «Ночной отель» на скрытой вкладке), +1 в `shop.test.tsx` (превью живой комнаты). e2e `rooms.spec.ts`: каждая живая комната каталога и одна статичная открываются на «Герое» со своими слоями без ошибок в консоли, касание «Ночного отеля» запускает событие, превью комнаты в магазине; с reduced-motion все живые комнаты стоят (`data-room-motion="off"`, слоёв нет). Секция галереи `live-rooms` (только ambient: кадры анимированных WebP и SMIL-анимации Rebound в скриншот не попадают). Базы из Linux-контейнера (`--update-snapshots=changed`), полный прогон — 82 passed, повторный прогон `ui-gallery`, `rooms`, `hero` — 20 passed. Тестов 827 (+2 пропущены), было 811.
+  - Ручная сверка с `QuestClass-Source/app/{ambient-room,night-hotel-room,astro-room-audio,rebound-room}.tsx` — отметка в PARITY.md.
+  - Не сделано (нет данных в каталоге или ассетах): звук пузырей у темы water (`mart-bubbles.wav` нет среди ассетов MVP); полёт героя Рибаунда и звуки «призрак исчез / вернулся» — в оригинале привязаны к конкретным id анимаций, связи «образ ↔ поведение в комнате» в каталоге нет.
+  - Вне перечня Scope (необходимо): `packages/ui/src/scenes/{common.ts,scenes.css}`, `packages/ui/src/hero/Scene.css` (превью комнаты), `packages/ui/src/{index.ts,tokens.css}`, `apps/web/src/features/character/useCharacter.ts` (`sceneAssetUrls`, сцена и файлы комнаты), `apps/web/src/screens/learner/Hero.tsx` (настройки комнаты и покой во время переодевания), `apps/web/src/features/shop/{ShopItemMedia.tsx,RoomPreview.tsx}`, `apps/web/test/shop.test.tsx`, `apps/web/src/screens/dev/{UiGallery.tsx,learnerGallery.tsx}`, `e2e/{ui-gallery.spec.ts,fixtures/wardrobe.ts}` (повторные начисления в тестах — `force`), `e2e/__screenshots__/**`, `docs/PARITY.md`.
 - **Risk**: HIGH
 - **Requires decision**: N
 - **Spec reference**: spec/02 §2.8; Critique 1 MED#12.
@@ -1113,7 +1158,15 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Поведение сверено по `QuestClass-Source/app/{ambient-room,night-hotel-room,astro-room-audio,rebound-room}.tsx` (отметка в PARITY.md).
 
 ### FEAT-037 — Награды и прогресс ученика
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `/rewards` (`screens/learner/Rewards.tsx`): «Мои награды»; «Мой опыт» (подробности опыта, reference 05): «Уровень N», «X XP всего», полоса «levelXp / 300 XP · до уровня N+1», монеты, пояснения «XP — опыт…», «Монеты…» и ссылка «Мой прогресс». Вкладки «От родителя» (ручные начисления `GET /api/me/awards`: название, «причина · дата · предмет», комментарий, «+XP · +монет»; отменённое — «Отменено» и «Было начислено»; «Показать ещё» по 20; пусто — «Здесь будут награды от родителя») и «Билетики» (те же «Мои желания», что и `/wishes`). Вкладка в адресе — `?tab=tickets`. Ачивки — этап 2.
+  - `/progress` (`screens/learner/Progress.tsx`, шаблон `ProgressView`): итоги (уровень с «До N-го — K XP», опыт, монеты, «Заданий пройдено»), карточка серии (та же, что на главной), «Пройдено» — задания с предметом, датой и «верных X из N», «История начислений» — журнал `GET /api/me/ledger` («За что» с датой, XP, монеты со знаком; за задание — с названием задания, покупка, награда от родителя, дело, серия, отмена, обнуление), «Показать ещё» по 20. В шаблон `ProgressView` добавлен слот `historyFooter`.
+  - Запросы и подписи — `features/rewards/queries.ts` (`useMyAwards`, `useMyLedger`, `ledgerLabel`, `dateText`). Маршрут-заглушка ученика больше не нужна (удалена из `router.tsx`).
+  - Заглушка P-002 «Картинка похвалы» не понадобилась: в MVP у начислений родителя нет картинок (похвала с картинкой — этап 2), карточка показывает значок подарка.
+  - Тесты: 5 в `rewards-screen.test.tsx` (опыт и награды с отменённой и «Показать ещё», пустое состояние и «Билетики», открытие по ссылке, прогресс: итоги, серия, пройденное, история с подписями и догрузкой, подписи журнала). e2e `rewards.spec.ts`: награда родителя, пройденный тест и покупка билета через API → «Мои награды» (опыт, карточка, «Билетики») → «Мой прогресс» (пройденное, история); скриншоты обеих страниц (даты сегодняшних записей закрашены). Базы из Linux-контейнера (`--update-snapshots=changed`), полный прогон — 84 passed, повторный прогон `rewards` — 2 passed. Тестов 832 (+2 пропущены), было 827.
+  - Вне перечня Scope (необходимо): `apps/web/src/features/rewards/queries.ts`, `apps/web/src/templates/ProgressView.tsx` (слот `historyFooter`), `apps/web/src/app/router.tsx` (`/rewards`, `/progress`), `e2e/rewards.spec.ts`, `e2e/__screenshots__/**`.
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: reference-screens 05, 07, 09; SPEC §3 «ProgressView».
@@ -1290,7 +1343,18 @@ Discovery выполнен вручную, без Explore-агента: в ре�
 ### Фаза E — деплой
 
 ### FEAT-044 — Production-режим, Dockerfile, CLI
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `static.ts`: `mountStaticSite(app, root)` — один `GET *` после маршрутов API (HEAD тоже, без открытия файла). Существующий файл отдаётся как есть: `/_app/*` (хэшированные бандлы Vite) — `public, max-age=31536000, immutable`; `index.html` — `no-cache` + `X-Frame-Options: DENY`; остальное (`/assets/**` — игровая графика из `apps/web/public/assets`, шрифты) — `public, max-age=86400`. Range (через `parseRange` медиа-модуля), `If-Modified-Since` → 304, `nosniff`. Путь без расширения → `index.html` (deep links), отсутствующий файл с расширением (`/assets/x.webp`, старый бандл) → JSON 404, а не документ. `/api` и `/api/*` статика не трогает (JSON 404 API). Обход каталога (`..`, `%2e%2e`, `%2f`, `%5c`, NUL) и dot-файлы — 404 (тест на реальном HTTP с сырыми путями). Чтение только файлов, БД не трогается. MIME — таблица Hono + `audio/ogg` (в ней нет `.ogg`).
+  - `WEB_ROOT` = `apps/web/dist` относительно модуля (`src/` и `dist/` лежат в `apps/api` на одном уровне, как `MIGRATIONS_DIR`); образ сохраняет эту раскладку. `createApp(ctx, {webRoot?})`: по умолчанию статика только при `NODE_ENV=production`; dev — Vite, тесты передают `webRoot`; e2e по-прежнему через `vite preview`.
+  - CLI `backup <путь>`: `db.backup()` (online backup API, можно при работающем сервере, включает WAL) во временный `<путь>.partial` → `journal_mode=DELETE` (один самодостаточный файл без `-wal/-shm`) → `PRAGMA quick_check` → `chmod 600` → rename. Каталог или путь со слэшем на конце → `questclass-<UTC>.db` в нём. Существующий файл не перезаписывается (1), нет БД в `DATA_DIR` → 1 без создания пустой, без аргумента → 2. Миграции не запускаются; `master.key` и медиа не входят (FEAT-047). `reset-password` был с FEAT-004, не дублировался.
+  - Образ `deploy/Dockerfile` (контекст — корень репо, `docker build -f deploy/Dockerfile .`): сборка на `node:22-alpine3.24`, рантайм — чистый `alpine:3.24` + бинарник Node из того же образа (+ `libstdc++`, `libgcc`, `tini`): на `bookworm-slim` образ ~290 МБ (база 232 МБ + 73 МБ ассетов), а удаление npm/yarn из node-образа в верхнем слое объём не уменьшает (исправлено отдельным коммитом после замера в CI: так было 250,7 МБ). better-sqlite3 13 несёт N-API prebuilds (в т.ч. `linuxmusl-x64`), компилятор не нужен. В builder ставятся только `@questclass/api...` и `@questclass/web...` (`pnpm install --frozen-lockfile --filter`) — sharp, Playwright, lesson-prep и корневые dev-зависимости в образ не попадают, ffmpeg тоже. Рантайм: `/app/apps/api/dist` (без `.map`), `/app/apps/web/dist`, `/app/node_modules/better-sqlite3` (только `lib/` и бинарник платформы, 2,4 МБ); npm/corepack/yarn в образе нет; tini (PID 1), `USER node` (uid 1000, создаётся как в официальных образах), `/data` принадлежит 1000, `ENV NODE_ENV=production PORT=8080 DATA_DIR=/data NODE_OPTIONS=--max-old-space-size=96`, `HEALTHCHECK` → `deploy/healthcheck.mjs` (`GET /api/health`, таймаут 4 с), `WORKDIR /app/apps/api` (`docker exec … node dist/cli.js …`). Смоук при сборке: `node dist/cli.js` (все импорты бандла разрешаются) + открытие `:memory:` БД (нативный биндинг) + наличие `index.html`.
+  - Размер: сумма слоёв 225,6 МБ (`docker history`: alpine 9,1 + библиотеки 3,1 + node 130 + приложение 83,4), файловая система 215 МиБ (`du -sx /`), сжатый 129 МБ (`docker image inspect .Size` на containerd-снапшоттере Docker Desktop; там же «DISK USAGE» = распакованное + сжатые блобы).
+  - Проверено локально (Docker Desktop 29, Linux-контейнер): пустой том → master.key, «Applied 19 migration(s)», setup-токен в `docker logs`, health `healthy`; `/`, `/admin/users` → документ, бандл immutable, ассет `max-age=86400`, `.ogg` с Range → 206; SPA открывается в браузере (deep link → вход); `docker stop` → «Shutting down», выход 0 за 0,5 с; `backup /data/backups/` и `reset-password` через `docker exec`.
+  - RSS (`scripts/load.mjs`, VmRSS/VmHWM процесса Node из `/proc/<pid>/status` в контейнере): сразу после старта 98 МиБ; после прогрева (все URL смеси ×3 + проход по обеим дорожкам видео) и 10 с простоя — **103,7 МиБ** (< 150); под нагрузкой 2 мин (10 потоков HLS подряд без пауз ~108 МиБ/с + 50 запросов/с: экраны ученика, списки админа, файлы SPA, игровая графика; 0 ошибок, p95 39/54 мс) — пик **157,0 МиБ** VmHWM (< 200), включая загрузку урока чанками через lesson-prep (пик на загрузке 100 МиБ); простой после нагрузки 129,8 МиБ. `docker stats` (cgroup) в пике 82 МиБ. Повтор на образе alpine + node: 103,0 / 157,8 МиБ. `load.mjs` сам готовит свежую установку через API (setup-токен из `docker logs`, ученик + доверенное устройство, токен импорта, урок 60 с из `ffmpeg testsrc2`, публикация); нужен ffmpeg и `pnpm build`.
+  - Вне перечня Scope: `apps/api/src/app.ts` и `apps/api/src/cli/index.ts` (точки регистрации), `apps/api/test/cli-backup.test.ts` (тесты CLI backup). `.dockerignore` назван `deploy/Dockerfile.dockerignore`: BuildKit берёт `<Dockerfile>.dockerignore` рядом с Dockerfile, а `deploy/.dockerignore` при контексте = корень репо игнорировался бы.
+  - Для FEAT-046: бандл `/_app/index-*.js` 440 КБ без сжатия — в блок Caddy нужен `encode zstd gzip` (Node не сжимает ради CPU и RAM). Если `/data` — bind-mount, владелец uid 1000. Тестов 746 (+2 пропущено), было 727.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: Clarification «Node раздаёт API, SPA, медиа»; CLAUDE.md 13; Critique 1 MED#19, LOW (tini, backup CLI).
@@ -1305,7 +1369,18 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - Локальный `docker run` с томом: RSS после прогрева < 150 МБ. Под нагрузкой (`scripts/load.mjs`: 10 параллельных потоков видео + 50 запросов/с к API в течение 2 минут) — < 200 МБ (`measure-rss`).
 
 ### FEAT-045 — CI и публикация в GHCR
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `ci.yml` — на push в любую ветку и на PR (PR из ветки этого репо не дублирует прогон push; `docs/**` и `*.md` CI не запускают; новый push в ту же ветку отменяет текущий прогон). Две параллельные задачи на `ubuntu-24.04`:
+    - `check`: Node 22 (`setup-node`), pnpm через corepack, кэш pnpm store по `pnpm-lock.yaml`, ffmpeg из apt (иначе тесты lesson-prep с настоящим ffmpeg пропускаются), затем `lint`, `typecheck`, `test`.
+    - `e2e`: контейнер `mcr.microsoft.com/playwright:v1.64.1-noble` (`--ipc=host --init`) с теми же добавками, что `e2e/Dockerfile` (ffmpeg `--no-install-recommends`, corepack 0.36.0). Так окружение совпадает с тем, где сделаны скриншот-базы; шаг проверяет, что версия `@playwright/test` в `e2e/package.json` равна тегу образа. Затем `pnpm build` и `playwright test` (оба проекта — Chromium, 390×844 и 1440×900). При падении отчёт и трейсы `e2e/.output` — артефакт на 7 дней.
+  - `QuestClass-Source` CI не нужен: `apps/web/test/assets.test.ts` без него пропускает сверку с оригиналом (это единственный пропущенный тест на Linux).
+  - `release.yml` — на push в `main` и `workflow_dispatch`: buildx + `docker/build-push-action` (`deploy/Dockerfile`, linux/amd64, кэш слоёв `type=gha`, `provenance: false` — один манифест на тег, без «untagged» версий-аттестаций), вход в GHCR через `GITHUB_TOKEN` (`packages: write`). Теги: `ghcr.io/olegmedv/questclass:<sha>` всегда, `:latest` только из `main` (ручной запуск с другой ветки `latest` не перезаписывает). После публикации образ скачивается обратно и проверяется бюджет FEAT-044: распакованный < 250 МБ, иначе задача падает. Пакет приватный: анонимный запрос манифеста → 403. Release не ждёт CI: в `main` попадают только слияния веток, уже прошедших CI.
+  - Проверка: `workflow_dispatch` работает, только когда файл есть в ветке по умолчанию, поэтому release проверялся на временной ветке `feat/deploy-ci-trial` с временным триггером push (в этом коммите его нет).
+    - Первый прогон CI зелёный: https://github.com/olegmedv/questclass/actions/runs/43623418987 — check 5 мин (747 passed, 1 skipped), e2e 2 мин (52 passed).
+    - Release: https://github.com/olegmedv/questclass/actions/runs/43623419040 (образ 250,7 МБ — отсюда фикс FEAT-044), https://github.com/olegmedv/questclass/actions/runs/43624639238 — `ghcr.io/olegmedv/questclass:b333b20b4af1bf390e8645871b605e1096da2e81`, распакованный 223 МБ, сжатый 129 МБ.
+  - Для FEAT-046: на сервере нужен `docker login ghcr.io` классическим PAT только со scope `read:packages`. У `gh` на ПК scope `read:packages` нет, поэтому список версий пакета через API не читается — смотреть в логе release или на вкладке Packages. Тег для деплоя — `<sha>` коммита из `main` (или `latest`).
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: Clarification «GitHub Actions → GHCR».
@@ -1317,7 +1392,19 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - PR и push: lint, typecheck, test, e2e (Chromium). CI не использует `QuestClass-Source`. Push в `main`: образ `ghcr.io/olegmedv/questclass:{sha,latest}` (приватный). Первый прогон зелёный.
 
 ### FEAT-046 — Деплой на VPS
-- **Status**: pending
+- **Status**: done (14.11.2026) — с оговоркой: вход в GHCR на сервере ждёт токена владельца, первый образ доставлен по SSH
+- **Notes**:
+  - Сервер: `/opt/questclass/{docker-compose.yml,deploy.sh,current-tag,previous-tag,data/}`; `data/` — uid 1000, права 700. Проверочный контейнер FEAT-050 остановлен (`spike/` можно удалить), имя `questclass` и блок Caddy те же.
+  - Образ `ghcr.io/olegmedv/questclass:6e8d3c3` (коммит 6e8d3c3, 225 МБ) собран локально и доставлен `docker save | gzip | ssh docker load`: у `gh` на ПК нет `read:packages`, а classic PAT только с `read:packages` для `docker login ghcr.io` на сервере владелец ещё не создал. Как только токен будет — обновления через `deploy.sh up <sha>` из GHCR (README).
+  - `shared_web` = 172.21.0.0/16 входит в `http.trustedProxies` по умолчанию — ключ не менялся.
+  - Проверено: `deploy.sh up 6e8d3c3` → healthy за ~10 с; `up rbtest` (временный второй тег того же образа) → `rollback` → снова 6e8d3c3, теги в `current-tag`/`previous-tag` переключаются; временный тег удалён, `previous-tag` очищен. `restore-snapshot` проверен только на защите (нет файла / нет `--yes`): снимков ещё нет, они появятся при первой миграции на данных. При неудачном `up` скрипт сам возвращает предыдущий тег.
+  - После старта: 19 миграций, `master.key` создан, setup-токен взят из `docker logs` (в файле `setup-token` только хэш), первый админ создан; добавлен ученик и токен импорта lesson-prep. Учётные данные — у владельца в `D:\QuestClassMedia\prod-credentials.txt`.
+  - Контент: 5 сид-уроков загружены `lesson-prep import` (~1,38 ГБ HLS + картинки вопросов) и опубликованы.
+  - Память: 92 МиБ сразу после старта (`docker stats`, лимит 256m).
+  - Caddy: в блок `questclass.duckdns.org` добавлен `encode zstd gzip` (рекомендация FEAT-044: Node не сжимает). Бэкап `/opt/caddy/Caddyfile.bak-2026-11-14-questclass-encode`, запись через `cat > Caddyfile` (inode тот же), `caddy validate` → `reload`. Главный JS 440 КБ уходит zstd ~190 КБ, `immutable` сохраняется.
+  - Домены сервера до/после: site-a 200/200, landing 200/200, mcp.site-a 400/400, site-b 200/200, site-c 502/502 (контейнера нет и до деплоя).
+  - Проверка в браузере на https://questclass.duckdns.org: вход родителя → «Сделать устройство детским» → выход → «Кто учится?» → PIN → главная с уроком → видео HLS 360p играет (сегменты по ~0,2 с), «Место остановки сохранено». Проверочное устройство отозвано.
+  - Не сделано: замер скачивания из Калининграда (FEAT-050) — теперь проверяется просто просмотром урока на сайте.
 - **Risk**: HIGH
 - **Requires decision**: Y — разрешение на SSH в момент выполнения
 - **Spec reference**: SPEC §1 «новый блок в общем Caddyfile»; Critique 1 MED#19.

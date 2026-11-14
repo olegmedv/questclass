@@ -1,6 +1,7 @@
 // FEAT-029: the learner's home against the real API — the next lesson with the parent's tasks
 // counter, the streak card, the lesson picker, the live hero and the empty home.
 import { createQuiz } from './fixtures/content';
+import { buyItem, grantCoins, wearLook } from './fixtures/wardrobe';
 import { expect, expectNoHorizontalScroll, expectScreenshot, test } from './fixtures/learning';
 
 test('the next lesson, the parent’s tasks, the streak and the lesson picker', async ({
@@ -71,6 +72,9 @@ test('the hero on the home comes alive by itself for 3 seconds', async ({
   learner,
 }) => {
   await createQuiz(admin, { title: 'Урок с героем', learnerId: learner.id });
+  // The card shows the worn hero: a live one greets the learner.
+  await grantCoins(admin, learner.id, 100);
+  await wearLook(page, await buyItem(page, 'Синий исследователь'));
   await page.goto('/');
   const hero = page.getByRole('article', { name: 'Урок с героем' }).getByRole('figure');
   await expect(hero).toHaveAttribute('data-moving', 'true');

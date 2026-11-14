@@ -57,6 +57,12 @@ const SECTIONS = [
   'frames',
   'notice',
   'auth-frame',
+  'category-filter',
+  'shop-item-card',
+  'wish-card',
+  'hero-scene',
+  'hero-ribbon',
+  'live-rooms',
 ];
 
 test('gallery shows every component in five states and fits the screen', async ({ page }) => {

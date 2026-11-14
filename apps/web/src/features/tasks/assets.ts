@@ -34,8 +34,8 @@ export function subjectIconUrl(icon: string | null): string | null {
 }
 
 /**
- * The learner's hero on the home card. Until the character API (FEAT-021) and the fitting room
- * (FEAT-034) exist, every learner wears the starter hero: the blue explorer with its live greeting.
+ * The hero on the home card while the learner's character is still loading (or has no look):
+ * the blue explorer with its live greeting.
  */
 export const STARTER_HERO = {
   poster: assetUrl('game/animated/repaired/blue-idle-cover.webp'),

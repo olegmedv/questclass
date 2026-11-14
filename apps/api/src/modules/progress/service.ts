@@ -79,6 +79,12 @@ export interface ProgressService {
   /** Marks the task as started in the current epoch (no-op when already touched). */
   markStarted(learnerId: number, taskId: number, at?: number): void;
   /**
+   * Marks the task as passed in the current epoch without paying anything: for task types that
+   * pay their own reward (an approved one-time chore). No-op when already passed or closed.
+   * Meant to run inside the caller's transaction.
+   */
+  markPassed(learnerId: number, taskId: number, at?: number): void;
+  /**
    * Records a finished attempt in the current epoch and pays the reward of a pass. Meant to run
    * inside the caller's transaction (the attempt's `finish`).
    */
@@ -414,6 +420,15 @@ export function createProgressService(db: Db, deps: ProgressDeps): ProgressServi
         .values({ learnerId, taskId, epoch, state: 'started', startedAt: now, updatedAt: now })
         .onConflictDoNothing()
         .run();
+    },
+
+    markPassed(learnerId, taskId, at) {
+      const epoch = infoOf(learnerId, taskId).current;
+      const row = currentRow(learnerId, taskId, epoch);
+      if (row && row.state !== 'started') {
+        return;
+      }
+      writeRow(learnerId, taskId, epoch, { state: 'passed', completedAt: at ?? clock() });
     },
 
     recordResult(learnerId, taskId, result) {

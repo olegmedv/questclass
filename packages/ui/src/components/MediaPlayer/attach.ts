@@ -10,6 +10,9 @@ export interface MediaSource {
 const HLS_TYPE = 'application/vnd.apple.mpegurl';
 /** Fatal errors hls.js may recover from before the player gives up and shows «Загрузить заново». */
 const MAX_RECOVERIES = 3;
+/** How much video hls.js loads ahead of the playhead (and keeps behind it). */
+export const BUFFER_AHEAD_SEC = 60;
+const BUFFER_AHEAD_BYTES = 8 * 1000 * 1000;
 
 export const VIDEO_ERROR = 'Видео не загрузилось. Проверь интернет и попробуй ещё раз.';
 const UNSUPPORTED =
@@ -59,6 +62,12 @@ export function attachSource(
             },
           },
           capLevelToPlayerSize: true,
+          // Mobile data: keep about a minute ahead. By default hls.js fills up to 60 MB / 10 min,
+          // which a child who stops after a few minutes would download for nothing.
+          maxBufferLength: BUFFER_AHEAD_SEC,
+          maxMaxBufferLength: BUFFER_AHEAD_SEC,
+          maxBufferSize: BUFFER_AHEAD_BYTES,
+          backBufferLength: BUFFER_AHEAD_SEC,
         });
         let recoveries = 0;
         hls.on(Hls.Events.ERROR, (_event, data) => {

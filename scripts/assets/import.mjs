@@ -46,7 +46,10 @@ const MP3 = ['-c:a', 'libmp3lame', '-q:a', '4', '-id3v2_version', '0', '-write_i
 const OGG = ['-c:a', 'libvorbis', '-q:a', '4'];
 const FFMPEG_BITEXACT = ['-map_metadata', '-1', '-fflags', '+bitexact', '-flags', '+bitexact'];
 
-const MODES = new Set(['auto', 'keep']);
+const MODES = new Set(['auto', 'keep', 'icon']);
+/** `icon` mode: small UI pictures (subject icons) are shown at ≤64 CSS px, so 256 px is plenty. */
+const ICON_SIDE = 256;
+const WEBP_ICON = { quality: 90, effort: 6 };
 const COPY_AS_IS = new Set(['webp', 'svg', 'ttf', 'woff2', 'txt']);
 
 const byCodePoint = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
@@ -81,7 +84,8 @@ export function parseList(text) {
     if (!line || line.startsWith('#')) return;
     const [pattern, mode = 'auto', ...rest] = line.split(/\s+/);
     const where = `mvp-assets.txt:${index + 1}`;
-    if (rest.length || !MODES.has(mode)) throw new Error(`${where}: expected "<glob> [auto|keep]"`);
+    if (rest.length || !MODES.has(mode))
+      throw new Error(`${where}: expected "<glob> [auto|keep|icon]"`);
     const exclude = pattern.startsWith('!');
     const glob = exclude ? pattern.slice(1) : pattern;
     if (!glob || glob.startsWith('/') || glob.split('/').includes('..')) {
@@ -156,7 +160,10 @@ export function planTasks(source, selected) {
     const ext = extOf(rel);
     const stem = stemOf(rel);
     const add = (out, op) => tasks.push({ rel, src, out, op });
-    if (mode === 'keep' || COPY_AS_IS.has(ext)) add(rel, 'copy');
+    if (mode === 'icon') {
+      if (ext !== 'png' && ext !== 'webp') throw new Error(`${rel}: icon mode takes PNG or WebP`);
+      add(`${stem}.webp`, 'icon-webp');
+    } else if (mode === 'keep' || COPY_AS_IS.has(ext)) add(rel, 'copy');
     else if (ext === 'png') add(`${stem}.webp`, 'png-webp');
     else if (ext === 'ogg') {
       add(rel, 'copy');
@@ -215,6 +222,12 @@ async function runTask(task, outDir, sharp) {
       }
       return;
     }
+    case 'icon-webp':
+      await sharp(task.src)
+        .resize({ width: ICON_SIDE, height: ICON_SIDE, fit: 'inside', withoutEnlargement: true })
+        .webp(WEBP_ICON)
+        .toFile(out);
+      return;
     case 'mp3':
       await ffmpeg(task.src, ['-map', '0:a:0', '-vn', ...MP3], out);
       return;

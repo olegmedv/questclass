@@ -1,4 +1,4 @@
-import { UiLinkProvider, type UiLinkProps } from '@questclass/ui';
+import { ToastProvider, UiLinkProvider, type UiLinkProps } from '@questclass/ui';
 import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router';
@@ -48,7 +48,9 @@ export function Providers({ client, children }: { client: QueryClient; children:
     <QueryClientProvider client={client}>
       <UiLinkProvider component={RouterLink}>
         <AnimationProvider>
-          <SoundProvider>{children}</SoundProvider>
+          <SoundProvider>
+            <ToastProvider>{children}</ToastProvider>
+          </SoundProvider>
         </AnimationProvider>
       </UiLinkProvider>
     </QueryClientProvider>

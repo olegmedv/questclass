@@ -4,6 +4,7 @@ import type { TaskProgressDto } from '@questclass/shared/progress/dto';
 import type { LearnerTaskDto, SubjectDto, TaskDto } from '@questclass/shared/tasks/dto';
 import { createElement, type ComponentType, type ReactElement } from 'react';
 import { choreAdmin } from './chore/Editor';
+import { choreTaskType } from './chore/Player';
 import { quizAdmin } from './quiz/Editor';
 import { quizTaskType } from './quiz/Player';
 import { videoLessonAdmin } from './video_lesson/Editor';
@@ -60,7 +61,7 @@ export interface WebTaskType {
 }
 
 /** Registered task types. Each type adds its line here (quiz, video_lesson, chore…). */
-const TASK_TYPES: readonly WebTaskType[] = [quizTaskType, videoLessonTaskType];
+const TASK_TYPES: readonly WebTaskType[] = [quizTaskType, videoLessonTaskType, choreTaskType];
 
 /** Admin editors of the types. Each type adds its line here. */
 const TASK_EDITORS: readonly TaskTypeAdmin[] = [quizAdmin, videoLessonAdmin, choreAdmin];

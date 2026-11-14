@@ -85,6 +85,7 @@ import { useState, type ReactNode } from 'react';
 import { LiveHero } from '../../features/animation/LiveHero';
 import { INTERFACE_SOUNDS, soundUrl, type InterfaceSound } from '../../features/sound/SoundManager';
 import { useSound } from '../../features/sound/useSound';
+import { HeroSections, LiveRoomSections, ShopSections } from './learnerGallery';
 import { describeHero, LIVE_HEROES } from './liveHeroes';
 
 type StateName = 'default' | 'disabled' | 'loading' | 'empty' | 'error';
@@ -2057,6 +2058,9 @@ export function UiGallery() {
           {/* New sections go last: inserting above shifts every section below on the page. */}
           <ResultSections />
           <MediaSection />
+          <ShopSections Demo={Demo} />
+          <HeroSections Demo={Demo} />
+          <LiveRoomSections Demo={Demo} />
         </Stack>
       </Container>
     </ToastProvider>
