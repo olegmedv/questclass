@@ -257,7 +257,12 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - **Восстановление.** CLI `node dist/cli.js reset-password <login>` (через `docker exec`) работает (тест).
 
 ### FEAT-052 — HTTP API настроек и секретов
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - `GET /api/admin/settings` → `[{key,value,default,isDefault,updatedAt}]`; подписи и типы полей форма (FEAT-039) берёт из общего реестра `@questclass/shared/settings/registry`. `PUT /api/admin/settings` принимает `{ "<ключ>": значение, … }` (меняются только переданные ключи), атомарно: одно неверное значение (400) или неизвестный ключ (404) — ничего не сохраняется; неизменённые значения не пересохраняются и не пишутся в audit.
+  - Секреты: `GET /api/admin/secrets` → `[{key,isSet,updatedAt}]`, `PUT /api/admin/secrets/:key {value}` (только запись), дополнительно `DELETE /api/admin/secrets/:key` (очистить). В ядре секретов пока нет, поэтому HTTP-тесты секретов идут на сервисе с тестовым ключом; в матрице доступа админ на незарегистрированный ключ получает 404.
+  - Строки FEAT-049 добавлены (5 маршрутов).
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: SPEC §1 «Конфигурация»; Critique 1 MED#1.

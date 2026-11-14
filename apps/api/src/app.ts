@@ -10,6 +10,7 @@ import type { AuditService } from './modules/audit/service';
 import { authMiddleware, authRoutes } from './modules/auth/routes';
 import type { AuthService } from './modules/auth/service';
 import type { Keyring } from './modules/settings/crypto';
+import { settingsRoutes } from './modules/settings/routes';
 import type { SettingsService } from './modules/settings/service';
 import { usersRoutes } from './modules/users/routes';
 import type { UsersService } from './modules/users/service';
@@ -42,7 +43,13 @@ export interface BuildOptions {
 
 /** All API routes. Each module adds its line here. */
 function collectRoutes(ctx: AppContext): RouteDef[] {
-  return [...healthRoutes(), ...auditRoutes(ctx), ...authRoutes(ctx), ...usersRoutes(ctx)];
+  return [
+    ...healthRoutes(),
+    ...auditRoutes(ctx),
+    ...authRoutes(ctx),
+    ...usersRoutes(ctx),
+    ...settingsRoutes(ctx),
+  ];
 }
 
 /** Request middlewares contributed by modules (session → actor, etc.). */

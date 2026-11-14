@@ -113,6 +113,27 @@ const MATRIX: readonly MatrixRow[] = [
 
   // audit
   { route: 'GET /api/admin/audit', expect: adminOnly(200) },
+
+  // settings and secrets
+  { route: 'GET /api/admin/settings', expect: adminOnly(200) },
+  {
+    route: 'PUT /api/admin/settings',
+    body: () => ({ 'session.learnerDays': 180 }),
+    expect: adminOnly(200),
+  },
+  { route: 'GET /api/admin/secrets', expect: adminOnly(200) },
+  // The core registry has no secrets yet, so even the admin gets 404 for this key.
+  {
+    route: 'PUT /api/admin/secrets/:key',
+    url: () => '/api/admin/secrets/not.registered',
+    body: () => ({ value: 'x' }),
+    expect: adminOnly(404),
+  },
+  {
+    route: 'DELETE /api/admin/secrets/:key',
+    url: () => '/api/admin/secrets/not.registered',
+    expect: adminOnly(404),
+  },
 ];
 
 function splitRoute(key: string): { method: string; path: string } {
