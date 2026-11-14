@@ -5,6 +5,15 @@
 
 # Служебное
 /.playwright-mcp/
+/.claude/worktrees/
+/.claude/settings.local.json
 node_modules/
 .env*
 !.env.example
+
+# Сборка и локальные данные
+dist/
+coverage/
+*.tsbuildinfo
+/data/
+/.data/

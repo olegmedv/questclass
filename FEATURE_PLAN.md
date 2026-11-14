@@ -81,7 +81,13 @@ Discovery выполнен вручную, без Explore-агента: в ре�
 ### Фаза A — основа и безопасность
 
 ### FEAT-001 — Каркас монорепо
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-14
+- **Notes**:
+  - Вместо `vitest.workspace.ts` — корневой `vitest.config.ts` с `test.projects` (файл workspace удалён в Vitest 4+, стоит Vitest 5).
+  - TypeScript 6.0.x: TS 7 пока не поддерживается typescript-eslint (`<6.1`).
+  - Вместе с `package.json` пакетов добавлены их `tsconfig.json`, `build.mjs` (esbuild-бандл api и lesson-prep, shared инлайнится), `apps/web/{index.html,vite.config.ts}`; в `.gitignore` — `dist/`, `coverage/`, `/data/`, `/.claude/worktrees/`.
+  - Корневые скрипты вызывают `corepack pnpm` (pnpm не обязан быть в PATH); `packageManager` = pnpm 10.34.9.
 - **Risk**: LOW
 - **Requires decision**: N
 - **Spec reference**: SPEC §7; CLAUDE.md «Стек», «Структура», «Команды».

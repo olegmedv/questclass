@@ -1,0 +1,28 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "ignoreFiles": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "coverage/**",
+    "QuestClass-Source/**",
+    "ddatabase/**",
+    "deploy/spike/**",
+    ".claude/**",
+    ".playwright-mcp/**"
+  ],
+  "rules": {
+    "color-no-hex": true,
+    "color-named": "never",
+    "function-disallowed-list": ["rgb", "rgba", "hsl", "hsla", "hwb", "lab", "lch", "oklab", "oklch", "color"]
+  },
+  "overrides": [
+    {
+      "files": ["packages/ui/src/tokens.css"],
+      "rules": {
+        "color-no-hex": null,
+        "color-named": null,
+        "function-disallowed-list": null
+      }
+    }
+  ]
+}
