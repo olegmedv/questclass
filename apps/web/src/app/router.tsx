@@ -3,7 +3,9 @@ import { createBrowserRouter, type RouteObject } from 'react-router';
 import { Login } from '../screens/auth/Login';
 import { Setup } from '../screens/auth/Setup';
 import { Home } from '../screens/learner/Home';
+import { Shop } from '../screens/learner/Shop';
 import { TaskScreen } from '../screens/learner/TaskScreen';
+import { Wishes } from '../screens/learner/Wishes';
 import { TrustDevice } from '../screens/auth/TrustDevice';
 import { AdminPage } from '../templates/AdminShell';
 import { RouteErrorScreen, StatusScreen } from './ErrorBoundary';
@@ -49,9 +51,9 @@ export const routes: RouteObject[] = [
                 children: [
                   { path: '/', element: <Home /> },
                   { path: '/hero', element: <LearnerStub title="Герой" /> },
-                  { path: '/shop', element: <LearnerStub title="Магазин" /> },
+                  { path: '/shop', element: <Shop /> },
                   { path: '/rewards', element: <LearnerStub title="Мои награды" /> },
-                  { path: '/wishes', element: <LearnerStub title="Мои желания" /> },
+                  { path: '/wishes', element: <Wishes /> },
                 ],
               },
               { path: '/tasks/:id', element: <TaskScreen /> },

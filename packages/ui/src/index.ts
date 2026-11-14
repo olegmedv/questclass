@@ -37,6 +37,12 @@ export {
 } from './components/Button';
 export { Card, type CardProps } from './components/Card';
 export {
+  CategoryFilter,
+  type CategoryFilterProps,
+  type CategoryOption,
+  type CategoryTone,
+} from './components/CategoryFilter';
+export {
   ActionList,
   ActionRow,
   ChoiceTile,
@@ -124,9 +130,18 @@ export {
   type ReviewItem,
   type RewardLineProps,
 } from './components/Result';
+export {
+  ShopItemCard,
+  ShopMark,
+  ShopPreview,
+  type ShopItemCardProps,
+  type ShopMarkProps,
+  type ShopPreviewProps,
+} from './components/ShopItemCard';
 export { Skeleton, type SkeletonProps } from './components/Skeleton';
 export { Slider, type SliderProps } from './components/Slider';
 export { Spinner, type SpinnerProps } from './components/Spinner';
+export { SpriteImage, type SpriteCell, type SpriteImageProps } from './components/SpriteImage';
 export { StatChip, type StatChipProps, type StatKind } from './components/StatChip';
 export { StepList, type Step, type StepStatus } from './components/StepList';
 export { StreakCard, type StreakCardProps } from './components/StreakCard';
@@ -147,6 +162,7 @@ export {
 } from './components/Toast';
 export { Checkbox, Switch } from './components/Toggle';
 export { Tooltip, type TooltipProps } from './components/Tooltip';
+export { WishCard, type WishCardProps } from './components/WishCard';
 export {
   Heading,
   Text,

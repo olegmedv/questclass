@@ -2,6 +2,8 @@
 import { House, TabletSmartphone } from '@questclass/ui';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { useLogout, useMe } from '../api/queries/auth';
+import { wishesCount } from '../features/shop/model';
+import { useMyWishes } from '../features/shop/queries';
 import { useWallet } from '../features/wallet/queries';
 import { AdminShell, type AdminSection } from '../templates/AdminShell';
 import { LearnerShell, learnerSectionOf } from '../templates/LearnerShell';
@@ -30,6 +32,7 @@ export function adminSectionOf(pathname: string, sections = ADMIN_SECTIONS): str
 export function LearnerLayout() {
   const me = useMe();
   const wallet = useWallet();
+  const wishes = useMyWishes();
   const logout = useLogout();
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -37,10 +40,15 @@ export function LearnerLayout() {
   return (
     <LearnerShell
       learner={me.data}
-      // Wishes come with the shop (FEAT-019/020); until then the chip stays hidden.
       stats={
         wallet.data
-          ? { level: wallet.data.level, xp: wallet.data.xp, coins: wallet.data.coins }
+          ? {
+              level: wallet.data.level,
+              xp: wallet.data.xp,
+              coins: wallet.data.coins,
+              // «Мои желания»: hidden while unknown (still loading or failed).
+              wishes: wishes.data ? wishesCount(wishes.data.pages[0]?.groups ?? []) : null,
+            }
           : null
       }
       statsLoading={wallet.isPending}

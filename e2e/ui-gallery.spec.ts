@@ -57,6 +57,9 @@ const SECTIONS = [
   'frames',
   'notice',
   'auth-frame',
+  'category-filter',
+  'shop-item-card',
+  'wish-card',
 ];
 
 test('gallery shows every component in five states and fits the screen', async ({ page }) => {

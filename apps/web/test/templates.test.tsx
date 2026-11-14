@@ -106,7 +106,9 @@ describe('learner and admin layouts in the app', () => {
   it('learner pages live inside the shell; «Сменить ученика» signs out to the picker', async () => {
     const { calls } = mockApi(sessionApi(learner, { 'POST /api/auth/logout': { status: 204 } }));
     const { router } = renderRoute('/shop');
-    expect(await screen.findByRole('heading', { level: 1, name: 'Магазин' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Магазин желаний' }),
+    ).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Магазин' })).toHaveAttribute('aria-current', 'page');
     await userEvent.click(screen.getByRole('button', { name: 'Профиль' }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Сменить ученика' }));

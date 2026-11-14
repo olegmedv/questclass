@@ -1,0 +1,154 @@
+.qc-shop-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--q-space-2);
+  height: 100%;
+  min-width: 0;
+  padding: var(--q-space-2);
+  border: 1px solid var(--q-border);
+  border-radius: var(--q-radius-lg);
+  background: var(--q-surface);
+  color: var(--q-text);
+}
+
+.qc-shop-card[data-live] {
+  border-color: var(--q-cat-teal-border);
+}
+
+.qc-shop-card-media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: var(--q-radius-md);
+  background: var(--q-input);
+}
+
+.qc-shop-card-media[data-shape='wide'] {
+  aspect-ratio: 3 / 2;
+}
+
+.qc-shop-card-media > * {
+  width: 100%;
+  height: 100%;
+}
+
+.qc-shop-card-marks {
+  position: absolute;
+  top: var(--q-space-1);
+  right: var(--q-space-1);
+  display: flex;
+  gap: var(--q-space-1);
+  width: auto;
+  height: auto;
+  pointer-events: none;
+}
+
+.qc-shop-card-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.4em;
+  margin: 0;
+  font-size: var(--q-text-md);
+  font-weight: var(--q-weight-bold);
+  line-height: var(--q-leading-tight);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.qc-shop-card-details {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  cursor: pointer;
+}
+
+.qc-shop-card-details:hover {
+  text-decoration: underline;
+}
+
+.qc-shop-card-price {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: var(--q-control-height);
+  margin-top: auto;
+  padding: var(--q-space-1) var(--q-space-2);
+  border: 1px solid var(--q-border);
+  border-radius: var(--q-radius-md);
+  background: var(--q-raised);
+  color: var(--q-coin);
+  font-weight: var(--q-weight-bold);
+  transition: background var(--q-duration-fast);
+}
+
+.qc-shop-card-price:disabled {
+  color: var(--q-subtle);
+}
+
+.qc-shop-card-price:not(:disabled):hover {
+  background: var(--q-selected);
+}
+
+.qc-shop-card-price:not(:disabled):active {
+  transform: translateY(2px);
+}
+
+.qc-shop-card-amount {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--q-space-1);
+  font-size: var(--q-text-lg);
+  font-variant-numeric: tabular-nums;
+}
+
+.qc-shop-card-amount svg {
+  width: 18px;
+  height: 18px;
+}
+
+.qc-shop-card-missing {
+  color: var(--q-muted);
+  font-size: var(--q-text-xs);
+  font-weight: var(--q-weight-medium);
+}
+
+/* A small mark over the picture (room section, «анимация»). */
+.qc-shop-mark {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--q-border);
+  border-radius: var(--q-radius-sm);
+  background: var(--q-nav);
+  color: var(--q-gold);
+}
+
+.qc-shop-mark[data-tone='teal'] {
+  border-color: var(--q-cat-teal-border);
+  background: var(--q-cat-teal-bg);
+  color: var(--q-cat-teal);
+}
+
+.qc-shop-mark svg {
+  width: 16px;
+  height: 16px;
+}
+
+.qc-shop-preview {
+  max-width: 320px;
+  margin-inline: auto;
+}
+
+.qc-shop-preview[data-shape='wide'] {
+  max-width: 440px;
+}

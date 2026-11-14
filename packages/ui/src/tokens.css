@@ -65,6 +65,26 @@
   --q-live-bg: #33264b;
   --q-live-border: #80629f;
 
+  /* Shop categories: each filter has its colour (spec/02 §2.5) */
+  --q-cat-blue: #9cc6ff;
+  --q-cat-blue-bg: #1b3358;
+  --q-cat-blue-border: #3d6fb3;
+  --q-cat-green: #9fe6c3;
+  --q-cat-green-bg: #173f35;
+  --q-cat-green-border: #3f8f6f;
+  --q-cat-pink: #ffb3d9;
+  --q-cat-pink-bg: #44233a;
+  --q-cat-pink-border: #9b4f80;
+  --q-cat-gold: #ffd98a;
+  --q-cat-gold-bg: #3d3420;
+  --q-cat-gold-border: #9a7d3c;
+  --q-cat-violet: #cdc4ff;
+  --q-cat-violet-bg: #2b2a52;
+  --q-cat-violet-border: #6e66c4;
+  --q-cat-teal: #8befe0;
+  --q-cat-teal-bg: #0f3f42;
+  --q-cat-teal-border: #42bcb0;
+
   /* Status */
   --q-success: #a6e2c4;
   --q-success-bg: #1e403a;
