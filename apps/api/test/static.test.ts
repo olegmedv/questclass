@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { serve, type ServerType } from '@hono/node-server';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createApp } from '../src/app';
-import { CACHE_DOCUMENT, CACHE_IMMUTABLE, CACHE_PUBLIC, WEB_ROOT } from '../src/static';
+import { CACHE_ASSETS, CACHE_DOCUMENT, CACHE_IMMUTABLE, WEB_ROOT } from '../src/static';
 import { createTempDir, createTestRuntime, removeDir, type TestRuntime } from './helpers/db';
 
 const INDEX = '<!doctype html><title>КвестКласс</title><div id="root"></div>';
@@ -66,11 +66,13 @@ describe('the built SPA', () => {
     expect(await res.text()).toBe(BUNDLE);
   });
 
-  it('serves unhashed game assets with a bounded cache, not immutable', async () => {
+  it('serves game assets revalidated by ETag (the admin may replace them), not immutable', async () => {
     const res = await app.request('/assets/game/hero.webp');
     expect(res.status).toBe(200);
     expect(res.headers.get('content-type')).toBe('image/webp');
-    expect(res.headers.get('cache-control')).toBe(CACHE_PUBLIC);
+    expect(res.headers.get('cache-control')).toBe(CACHE_ASSETS);
+    expect(res.headers.get('etag')).toMatch(/^W\/"b12-\d+"$/);
+    expect(res.headers.get('last-modified')).toBeNull();
     const audio = await app.request('/assets/game/audio/tap.ogg');
     expect(audio.headers.get('content-type')).toBe('audio/ogg');
     expect(Buffer.from(await audio.arrayBuffer())).toEqual(OGG);
@@ -115,15 +117,35 @@ describe('the built SPA', () => {
     expect(beyond.status).toBe(416);
   });
 
-  it('answers If-Modified-Since with 304 for an unchanged file', async () => {
-    const res = await app.request('/assets/game/hero.webp', {
-      headers: { 'if-modified-since': new Date('2026-02-01T00:00:00Z').toUTCString() },
+  it('answers If-Modified-Since with 304 for an unchanged document or bundle', async () => {
+    const first = await app.request('/_app/index-Dpg5PiNM.js');
+    const since = first.headers.get('last-modified') ?? '';
+    const res = await app.request('/_app/index-Dpg5PiNM.js', {
+      headers: { 'if-modified-since': since },
     });
     expect(res.status).toBe(304);
-    const changed = await app.request('/assets/game/hero.webp', {
-      headers: { 'if-modified-since': new Date('2025-12-01T00:00:00Z').toUTCString() },
+    const changed = await app.request('/_app/index-Dpg5PiNM.js', {
+      headers: { 'if-modified-since': new Date('2000-01-01T00:00:00Z').toUTCString() },
     });
     expect(changed.status).toBe(200);
+  });
+
+  it('revalidates a game asset by its ETag only: If-Modified-Since alone never gives 304', async () => {
+    const first = await app.request('/assets/game/hero.webp');
+    const etag = first.headers.get('etag') ?? '';
+    const same = await app.request('/assets/game/hero.webp', {
+      headers: { 'if-none-match': etag },
+    });
+    expect(same.status).toBe(304);
+    const other = await app.request('/assets/game/hero.webp', {
+      headers: { 'if-none-match': '"r12"' },
+    });
+    expect(other.status).toBe(200);
+    // A browser that cached a replacement asks with its date: the built-in file is sent again.
+    const dated = await app.request('/assets/game/hero.webp', {
+      headers: { 'if-modified-since': new Date('2030-01-01T00:00:00Z').toUTCString() },
+    });
+    expect(dated.status).toBe(200);
   });
 
   it('is not served outside production unless a web root is given', async () => {

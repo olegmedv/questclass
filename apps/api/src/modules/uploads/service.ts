@@ -118,6 +118,8 @@ export interface UploadsService {
   create(bytes: Uint8Array, actorId: number | null, options?: UploadOptions): CreatedUploadDto;
   /** Stored uploads, newest first. */
   list(): UploadDto[];
+  /** One ready upload; undefined when there is none. */
+  get(id: number): UploadDto | undefined;
   /** Facts the catalog needs (read from the file's headers); undefined if not a ready upload. */
   describe(id: number): UploadInfo | undefined;
   /** What a ready upload can replace: a still, an animation or a sound; undefined otherwise. */
@@ -342,6 +344,11 @@ export function createUploadsService(db: Db, deps: UploadsDeps): UploadsService 
         .orderBy(desc(media.createdAt), desc(media.id))
         .all();
       return rows.map(({ row, filePath }) => toDto(row, filePath));
+    },
+
+    get(id) {
+      const found = ready(id);
+      return found ? toDto(found.row, found.filePath) : undefined;
     },
 
     describe,

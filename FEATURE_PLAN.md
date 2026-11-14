@@ -4,7 +4,7 @@ Generated: 2026-11-14. Description: "MVP (Этап 1) КвестКласс 2 п�
 
 ## Summary
 - Total items: 61
-- Pending: 3 (FEAT-059–FEAT-061, фаза F «оформление из кабинета») | Done: 57 (FEAT-001–FEAT-046, FEAT-048–FEAT-058; FEAT-046 с оговоркой про GHCR-токен; FEAT-050 условно — нет замера из Калининграда) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
+- Pending: 2 (FEAT-060–FEAT-061, фаза F «оформление из кабинета») | Done: 58 (FEAT-001–FEAT-046, FEAT-048–FEAT-059; FEAT-046 с оговоркой про GHCR-токен; FEAT-050 условно — нет замера из Калининграда) | Blocked: 1 (FEAT-047 отложен до после MVP) | Superseded: 0
 - Items requiring user decision: 1 — FEAT-047 (где хранить бэкапы), после MVP. Открытый вопрос из FEAT-041: должен ли сброс прогресса требовать пересмотра видео (сейчас нет).
 - Critic iterations: 3 (+ патч после вердикта)
 - Critic verdict: halted at max iterations; HIGH и MED третьего круга закрыты патчем после вердикта (повторно не критиковались), 11 LOW — известные риски
@@ -1481,7 +1481,15 @@ Discovery выполнен вручную, без Explore-агента: в ре�
   - `UploadDto.kind: image | audio`; выбор картинок для товаров и предметов не показывает звуки (тесты).
 
 ### FEAT-059 — Замена встроенных файлов: таблица, API, раздача по тому же адресу
-- **Status**: pending
+- **Status**: done
+- **Completed**: 2026-11-15
+- **Notes**:
+  - Таблица `asset_overrides` (миграция 0020, FK `media` и `users` ON DELETE RESTRICT): одна строка — одна замена; «вернуть встроенный» удаляет строку, история — в audit (`asset.replaced` с прежней загрузкой, `asset.restored`).
+  - `AppearanceService` (`modules/appearance`): `list` (все места + замена), `replace` (вид загрузки = вид места, иначе 400 `wrong_kind`; нет загрузки — 400 `invalid_upload`; нет места — 404), `restore`, `current` (публичные версии и длительности), `replacementOf(file)`, `durationOf(file)`. Строки читаются один раз и перечитываются после изменения (один процесс; чтение не пишет).
+  - REST: `GET /api/admin/appearance`, `PUT|DELETE /api/admin/appearance/<место>` (admin), `GET /api/appearance` и `GET /api/appearance/files/<файл>` (public — логотип и favicon видны до входа). Матрица доступа — 5 строк.
+  - Раздача: `/assets/<файл>` отдаёт замену по тому же адресу (тип — по самой замене; пара звуков — по обоим адресам), иначе встроенный файл. Для `/assets` — `Cache-Control: no-cache` + ETag (`W/"b<размер>-<время>"` / `"r<загрузка>"`), `If-Modified-Since` не используется: замена и возврат видны при следующей загрузке. Потребители (каталог, сцены комнат, звуки, `index.html`) не менялись.
+  - Разработка: плагин Vite `apps/web/vite-replaced-assets.ts` (dev и preview) берёт заменённые файлы из API; в образ не попадает.
+  - Тесты: `appearance.test.ts` (5: логотип — замена по тому же адресу, 304 по ETag, возврат; звук — оба адреса; ролик — длительность в публичном списке; отказы; список), `static.test.ts` (ETag вместо Last-Modified для /assets), матрица доступа. Всего 945.
 - **Risk**: MED
 - **Requires decision**: N
 - **Spec reference**: запрос пользователя «всё настраивается без правки кода».

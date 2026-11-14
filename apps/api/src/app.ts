@@ -42,10 +42,12 @@ import { tasksRoutes } from './modules/tasks/routes';
 import type { TasksService } from './modules/tasks/service';
 import { uploadsRoutes } from './modules/uploads/routes';
 import type { UploadsService } from './modules/uploads/service';
+import { appearanceRoutes } from './modules/appearance/routes';
+import type { AppearanceService } from './modules/appearance/service';
 import { usersRoutes } from './modules/users/routes';
 import type { UsersService } from './modules/users/service';
 import { healthRoutes } from './modules/health/routes';
-import { mountStaticSite, WEB_ROOT } from './static';
+import { mountStaticSite, WEB_ROOT, type AssetReplacements } from './static';
 import { wishesRoutes } from './modules/wishes/routes';
 import type { WishesService } from './modules/wishes/service';
 import { choreRoutes } from './task-types/chore/routes';
@@ -87,6 +89,8 @@ export interface AppContext {
   readonly catalog: CatalogService;
   /** Pictures uploaded by the admin (media `role = upload`). */
   readonly uploads: UploadsService;
+  /** Built-in files replaced with the admin's uploads («Оформление»). */
+  readonly appearance: AppearanceService;
   /** The learner's shop, purchases and what they own. */
   readonly shop: ShopService;
   /** Ticket requests and handing out wishes and Robux. */
@@ -110,6 +114,8 @@ export interface BuildOptions {
   readonly middlewares?: readonly MiddlewareHandler<AppEnv>[];
   /** Built SPA served for every GET outside `/api` (static.ts); without it only the API answers. */
   readonly webRoot?: string;
+  /** Replacements of built-in game files, answered at their /assets URLs. */
+  readonly assetReplacements?: AssetReplacements;
 }
 
 /** All API routes. Each module adds its line here. */
@@ -134,6 +140,7 @@ function collectRoutes(ctx: AppContext): RouteDef[] {
     ...choreRoutes(ctx),
     ...catalogRoutes(ctx),
     ...uploadsRoutes(ctx),
+    ...appearanceRoutes(ctx),
     ...shopRoutes(ctx),
     ...wishesRoutes(ctx),
     ...characterRoutes(ctx),
@@ -169,7 +176,7 @@ export function buildApp(
   }
   mountRoutes(app, routes);
   if (options.webRoot !== undefined) {
-    mountStaticSite(app, options.webRoot);
+    mountStaticSite(app, options.webRoot, options.assetReplacements);
   }
   return { app, routes: Object.freeze([...routes]) };
 }
@@ -183,5 +190,6 @@ export function createApp(ctx: AppContext, options: Pick<BuildOptions, 'webRoot'
   return buildApp(ctx, collectRoutes(ctx), {
     middlewares: collectMiddlewares(ctx),
     ...(webRoot !== undefined && { webRoot }),
+    assetReplacements: (file) => ctx.appearance.replacementOf(file),
   });
 }

@@ -32,6 +32,7 @@ import { createChoresService } from './task-types/chore/service';
 import { createTaskTypeRegistry } from './task-types/registry';
 import { createWatchService } from './task-types/video_lesson/watch';
 import { createUploadsService } from './modules/uploads/service';
+import { createAppearanceService } from './modules/appearance/service';
 import { createUsersService } from './modules/users/service';
 import { createWishesService } from './modules/wishes/service';
 
@@ -129,6 +130,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
     const rewards = createRewardsService(db, { audit, ledger, users, subjects, tasks });
     const chores = createChoresService(db, { audit, settings, ledger, tasks, progress });
     const uploads = createUploadsService(db, { audit, media });
+    const appearance = createAppearanceService(db, { audit, uploads });
     const catalog = createCatalogService(db, {
       audit,
       describeUpload: (id) => uploads.describe(id),
@@ -166,6 +168,7 @@ export async function openRuntime(config: Config): Promise<Runtime> {
       chores,
       catalog,
       uploads,
+      appearance,
       shop,
       wishes,
       character,

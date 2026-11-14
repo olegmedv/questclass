@@ -920,6 +920,27 @@ const MATRIX: readonly MatrixRow[] = [
     expect: signedIn(200),
   },
 
+  // «Оформление»: built-in files replaced with uploads; the versions are public (sign-in screen)
+  { route: 'GET /api/admin/appearance', expect: adminOnly(200) },
+  {
+    route: 'PUT /api/admin/appearance/:slot{.+}',
+    url: () => '/api/admin/appearance/icons/star-v1-32.png',
+    body: (f) => ({ uploadId: data(f).upload }),
+    fresh: true,
+    expect: adminOnly(200),
+  },
+  {
+    route: 'DELETE /api/admin/appearance/:slot{.+}',
+    url: () => '/api/admin/appearance/icons/star-v1-32.png',
+    expect: adminOnly(200),
+  },
+  { route: 'GET /api/appearance', expect: everyone(200) },
+  {
+    route: 'GET /api/appearance/files/:file{.+}',
+    url: () => '/api/appearance/files/icons/star-v1-32.png',
+    expect: everyone(404),
+  },
+
   // shop: each learner buys their own copy under their own key
   { route: 'GET /api/shop', expect: learnerOnly(200) },
   {

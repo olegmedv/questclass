@@ -141,6 +141,13 @@
       "when": 1794688877777,
       "tag": "0019_subject_icon_upload",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "6",
+      "when": 1794690810852,
+      "tag": "0020_asset_overrides",
+      "breakpoints": true
     }
   ]
 }
