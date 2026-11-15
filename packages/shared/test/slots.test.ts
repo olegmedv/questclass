@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import manifestJson from '../src/assets/manifest.json';
-import { ASSET_GROUPS, ASSET_SLOTS, assetSlot, assetSlotOfFile } from '../src/assets/slots';
+import { ASSET_SLOTS, assetSlot, assetSlotOfFile } from '../src/assets/slots';
+import { APP_ASSETS, appAssetUses } from '../src/assets/uses';
 
 const manifest = manifestJson as Record<string, { kind: string; animated?: boolean }>;
 
@@ -29,11 +30,20 @@ describe('replaceable built-in files', () => {
     expect(assetSlotOfFile('celebrations/streak-five-v1.ogg')?.kind).toBe('audio');
   });
 
-  it('groups: the special rooms come before the other rooms, every slot has a known group', () => {
-    const ids = new Set<string>(ASSET_GROUPS.map((group) => group.id));
-    expect(ASSET_SLOTS.every((slot) => ids.has(slot.group))).toBe(true);
-    expect(assetSlotOfFile('game/rooms/night-hotel/room_base.webp')?.group).toBe('night-hotel');
-    expect(assetSlotOfFile('icons/star-v1-32.png')?.group).toBe('brand');
-    expect(assetSlotOfFile('game/subjects-pixel/math.webp')?.group).toBe('subjects');
+  it("the app's own files are built-in files, each with one use and no admin page", () => {
+    for (const asset of Object.values(APP_ASSETS)) {
+      expect(assetSlotOfFile(asset.file), asset.file).toBeDefined();
+    }
+    const uses = appAssetUses();
+    expect(uses).toHaveLength(Object.keys(APP_ASSETS).length);
+    expect(uses.find((use) => use.file === APP_ASSETS.logo.file)).toEqual({
+      file: 'icons/star-v1-192.png',
+      area: 'brand',
+      role: 'app',
+      owner: null,
+      part: 'Логотип',
+      place: 'Шапка кабинета и ученика, экран входа',
+      href: null,
+    });
   });
 });

@@ -1,3 +1,4 @@
+import type { AssetFileUse } from '@questclass/shared/assets/uses';
 import {
   subjectNameKey,
   type SubjectCreateRequest,
@@ -44,6 +45,8 @@ export interface SubjectsService {
   update(id: number, patch: SubjectUpdateRequest, actorId: number | null): SubjectDto;
   /** Deletes a subject nothing refers to; otherwise 409 `has_history` (archive it instead). */
   remove(id: number, actorId: number | null): void;
+  /** Built-in icons the active subjects show («Оформление» names them by subject). */
+  assetUses(): AssetFileUse[];
 }
 
 const SORT_STEP = 10;
@@ -113,6 +116,20 @@ export function createSubjectsService(db: Db, deps: SubjectsDeps): SubjectsServi
     get: (id) => toSubjectDto(requireRow(id)),
     findRow: (id) => repo.findById(id),
     findByKey: (key) => repo.findByKey(key),
+
+    assetUses: () =>
+      repo
+        .list({ includeArchived: false })
+        .filter((row) => row.icon !== null && row.iconUploadId === null)
+        .map((row) => ({
+          file: `${row.icon}.webp`,
+          area: 'subjects',
+          role: 'icon',
+          owner: row.name,
+          part: 'Значок предмета',
+          place: 'Задания и уроки ученика',
+          href: '/admin/subjects',
+        })),
 
     create(input, actorId) {
       const now = clock();

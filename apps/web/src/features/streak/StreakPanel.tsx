@@ -1,6 +1,7 @@
 // «Серия занятий» on the learner's home: the compact row with the days of the cycle, expanding
 // to the rule, the bonus and a preview of the bonus celebration (nothing is paid in the preview).
 import { Button, Celebration, Inline, Play, StreakCard, Text } from '@questclass/ui';
+import { APP_ASSETS, assetStem } from '@questclass/shared/assets/uses';
 import type { StreakDto } from '@questclass/shared/progress/dto';
 import { useState } from 'react';
 import { useAssetDuration } from '../appearance/queries';
@@ -101,7 +102,7 @@ export function StreakPanel() {
         movie={{
           ...STREAK_MOVIE,
           durationMs: durationOf(STREAK_MOVIE_FILE) ?? STREAK_MOVIE.durationMs,
-          audio: `/assets/celebrations/streak-five-v1.${sound.format}`,
+          audio: `/assets/${assetStem(APP_ASSETS.streakSound.file)}.${sound.format}`,
         }}
         volume={sound.preferences.volume}
         onReward={() => sound.play('complete')}

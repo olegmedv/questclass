@@ -1,4 +1,5 @@
 import manifestJson from '@questclass/shared/assets/manifest.json';
+import type { AssetFileUse } from '@questclass/shared/assets/uses';
 import {
   EDITABLE_ITEM_FIELDS,
   assetUrl,
@@ -31,6 +32,7 @@ import {
 } from '../../db/schema/catalog';
 import { badRequest, conflict, notFound } from '../../http/errors';
 import { auditPayload, defineAuditAction, type AuditService } from '../audit/service';
+import { itemAssetUses } from './assetUses';
 
 export const catalogItemCreated = defineAuditAction(
   'catalog_item.created',
@@ -107,6 +109,8 @@ export interface CatalogService {
   resolve(draft: ItemDraft, lookup?: LibraryLookup): ItemColumns;
   /** A stored item as a draft (library references by key). */
   draftOf(row: CatalogItemRow): ItemDraft;
+  /** Built-in files every item shows, named by item («Оформление»). */
+  assetUses(): AssetFileUse[];
 }
 
 export interface CatalogDeps {
@@ -554,6 +558,11 @@ export function createCatalogService(db: Db, deps: CatalogDeps): CatalogService 
 
     resolve,
     draftOf: (row) => draftOf(row, loadLibrary()),
+
+    assetUses() {
+      const lib = loadLibrary();
+      return allItems().flatMap((row) => itemAssetUses(row, lib));
+    },
 
     create(input, actorId) {
       const now = clock();

@@ -1,3 +1,4 @@
+import { appAssetUses } from '@questclass/shared/assets/uses';
 import type { AppContext } from './app';
 import type { Config } from './config';
 import { openDatabase } from './db/client';
@@ -130,7 +131,12 @@ export async function openRuntime(config: Config): Promise<Runtime> {
     const rewards = createRewardsService(db, { audit, ledger, users, subjects, tasks });
     const chores = createChoresService(db, { audit, settings, ledger, tasks, progress });
     const uploads = createUploadsService(db, { audit, media });
-    const appearance = createAppearanceService(db, { audit, uploads });
+    // Uses are read on each admin list; `catalog` is created right below.
+    const appearance = createAppearanceService(db, {
+      audit,
+      uploads,
+      uses: () => [...catalog.assetUses(), ...subjects.assetUses(), ...appAssetUses()],
+    });
     const catalog = createCatalogService(db, {
       audit,
       describeUpload: (id) => uploads.describe(id),
