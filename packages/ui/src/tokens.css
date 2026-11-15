@@ -1,0 +1,193 @@
+/*
+ * Design tokens — the only place with raw colours (stylelint enforces it). Values follow the
+ * original's dark theme (`QuestClass-Source/app/focus-theme.css`, `--q-*`) and its warm action
+ * colour #f4c65f. Components and screens use only these variables.
+ */
+:root {
+  color-scheme: dark;
+
+  /* Surfaces */
+  --q-page: #101827;
+  --q-surface: #18253a;
+  --q-card: #182a3e;
+  --q-raised: #21314b;
+  --q-input: #111e31;
+  --q-nav: #142235;
+  --q-selected: #263f67;
+  --q-selected-strong: #2d4b70;
+  --q-overlay: #040912b3;
+  --q-skeleton: #24364f;
+
+  /* The strip over burnt-in subtitles: as black as the video. */
+  --q-shutter: #000;
+
+  /* Lines */
+  --q-border: #3f5472;
+  --q-border-strong: #496581;
+  --q-border-selected: #80afe7;
+  --q-divider: #2b3d57;
+
+  /* Text */
+  --q-text: #eaf1fc;
+  --q-muted: #b4c5df;
+  --q-subtle: #91a7c6;
+  --q-blue: #aacbff;
+  --q-focus: #91bbff;
+  --q-link: #aacbff;
+  --q-on-light: #152339;
+
+  /* Accent: warm action colour of the original */
+  --q-accent: #f4c65f;
+  --q-accent-hover: #f9d279;
+  --q-accent-shadow: #b98a32;
+  --q-accent-ink: #182b43;
+
+  /* Big "start" call to action (yellow) */
+  --q-cta-top: #ffdf19;
+  --q-cta-bottom: #ffd000;
+  --q-cta-border: #ffe565;
+  --q-cta-shadow: #ba900b;
+
+  /* Secondary blue action */
+  --q-primary: #345fc6;
+  --q-primary-hover: #3c6bd5;
+  --q-primary-shadow: #0d2148;
+  --q-on-primary: #fff;
+
+  /* Game values */
+  --q-coin: #ffda48;
+  --q-gold: #ffdb87;
+  --q-gold-bg: #3b321e;
+  --q-gold-border: #89733e;
+  --q-xp: #c7b7ff;
+  --q-xp-bg: #2a2547;
+  --q-live: #dec9ff;
+  --q-live-bg: #33264b;
+  --q-live-border: #80629f;
+
+  /* Shop categories: each filter has its colour (spec/02 §2.5) */
+  --q-cat-blue: #9cc6ff;
+  --q-cat-blue-bg: #1b3358;
+  --q-cat-blue-border: #3d6fb3;
+  --q-cat-green: #9fe6c3;
+  --q-cat-green-bg: #173f35;
+  --q-cat-green-border: #3f8f6f;
+  --q-cat-pink: #ffb3d9;
+  --q-cat-pink-bg: #44233a;
+  --q-cat-pink-border: #9b4f80;
+  --q-cat-gold: #ffd98a;
+  --q-cat-gold-bg: #3d3420;
+  --q-cat-gold-border: #9a7d3c;
+  --q-cat-violet: #cdc4ff;
+  --q-cat-violet-bg: #2b2a52;
+  --q-cat-violet-border: #6e66c4;
+  --q-cat-teal: #8befe0;
+  --q-cat-teal-bg: #0f3f42;
+  --q-cat-teal-border: #42bcb0;
+
+  /* Live rooms: light of ambient themes, hints over the scene, Rebound's hotel */
+  --q-room-embers: #ffb858;
+  --q-room-fairy: #f2a5ff;
+  --q-room-forest: #c0f470;
+  --q-room-water: #6de9ff;
+  --q-room-clock: #f6dc9a;
+  --q-room-hint-bg: #14223deb;
+  --q-room-touch-focus: #ffda80;
+  --q-rebound-flame: #f9a53e;
+  --q-rebound-flame-core: #fff1b2;
+  --q-rebound-glow: #ffbe66;
+  --q-rebound-warm: #ffb46d;
+  --q-rebound-smoke: #c4cde2;
+  --q-rebound-draft: #b2c7ef;
+  --q-rebound-mist: #c2d0f8;
+  --q-rebound-mist-violet: #ad96d9;
+  --q-rebound-leaf-olive: #9a9e65;
+  --q-rebound-leaf-brown: #ac7950;
+  --q-rebound-leaf-edge: #504b35;
+  --q-rebound-leaf-vein: #d2b481;
+
+  /* Status */
+  --q-success: #a6e2c4;
+  --q-success-bg: #1e403a;
+  --q-success-border: #4f8f77;
+  --q-warning: #ffe0a0;
+  --q-warning-bg: #44351e;
+  --q-warning-border: #b5904b;
+  --q-danger: #ffc4c5;
+  --q-danger-bg: #42272d;
+  --q-danger-border: #9c6269;
+  --q-info: #c2d7f7;
+  --q-info-bg: #223858;
+
+  /* Typography */
+  --q-font: arial, helvetica, sans-serif;
+  --q-font-display: 'Arial Black', arial, helvetica, sans-serif;
+  --q-text-xs: 12px;
+  --q-text-sm: 13px;
+  --q-text-md: 15px;
+  --q-text-base: 16px;
+  --q-text-lg: 18px;
+  --q-text-xl: 23px;
+  --q-text-2xl: 28px;
+  --q-text-3xl: 34px;
+  --q-weight-regular: 400;
+  --q-weight-medium: 500;
+  --q-weight-semibold: 650;
+  --q-weight-bold: 750;
+  --q-weight-black: 900;
+  --q-leading-tight: 1.2;
+  --q-leading: 1.45;
+
+  /* Spacing (4 px grid) */
+  --q-space-1: 4px;
+  --q-space-2: 8px;
+  --q-space-3: 12px;
+  --q-space-4: 16px;
+  --q-space-5: 20px;
+  --q-space-6: 24px;
+  --q-space-7: 28px;
+  --q-space-8: 32px;
+  --q-space-10: 40px;
+  --q-space-12: 48px;
+
+  /* Radii */
+  --q-radius-sm: 8px;
+  --q-radius-md: 13px;
+  --q-radius-lg: 16px;
+  --q-radius-xl: 20px;
+  --q-radius-2xl: 24px;
+  --q-radius-round: 999px;
+
+  /* Shadows */
+  --q-shadow-press: 0 4px 0;
+  --q-shadow-overlay: 0 18px 48px #02060eb3;
+  --q-shadow-nav: 0 -6px 22px #080f1c33;
+  --q-inset-highlight: inset 0 1px #ffffff0a;
+
+  /* Sizes */
+  --q-control-height: 46px;
+  --q-control-height-sm: 38px;
+  --q-control-height-lg: 52px;
+  --q-touch: 44px;
+  --q-content-width: 760px;
+  --q-shell-width: 960px;
+  --q-admin-width: 1200px;
+  --q-nav-height: 88px;
+
+  /* Square pictures: subject icons in lists, tiles of an icon picker, a big preview. */
+  --q-icon-sm: 40px;
+  --q-icon-md: 64px;
+  --q-icon-lg: 96px;
+
+  /* Motion */
+  --q-duration-fast: 150ms;
+  --q-duration: 260ms;
+  --q-duration-slow: 380ms;
+  --q-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  /* Layers */
+  --q-layer-nav: 30;
+  --q-layer-overlay: 50;
+  --q-layer-toast: 60;
+  --q-layer-tooltip: 70;
+}

@@ -1,0 +1,117 @@
+.qc-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--q-space-1);
+  width: 100%;
+  min-width: 0;
+
+  --qc-progress-color: var(--q-blue);
+  --qc-progress-height: 9px;
+}
+
+.qc-progress[data-size='sm'] {
+  --qc-progress-height: 6px;
+}
+
+.qc-progress[data-tone='accent'] {
+  --qc-progress-color: var(--q-accent);
+}
+
+.qc-progress[data-tone='success'] {
+  --qc-progress-color: var(--q-success);
+}
+
+.qc-progress[data-tone='xp'] {
+  --qc-progress-color: var(--q-xp);
+}
+
+.qc-progress-caption {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--q-space-2);
+  color: var(--q-muted);
+  font-size: var(--q-text-sm);
+}
+
+.qc-progress-value {
+  color: var(--q-text);
+  font-weight: var(--q-weight-semibold);
+}
+
+.qc-progress-track {
+  position: relative;
+  height: var(--qc-progress-height);
+  overflow: hidden;
+  border-radius: var(--q-radius-round);
+  background: var(--q-input);
+  box-shadow: inset 0 0 0 1px var(--q-border);
+}
+
+.qc-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--qc-progress-color);
+  transition: width var(--q-duration) var(--q-ease);
+}
+
+.qc-progress-fill[data-indeterminate] {
+  width: 40%;
+  animation: qc-progress-slide 1.2s ease-in-out infinite;
+}
+
+@keyframes qc-progress-slide {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(250%);
+  }
+}
+
+.qc-ring {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  --qc-progress-color: var(--q-blue);
+}
+
+.qc-ring[data-tone='accent'] {
+  --qc-progress-color: var(--q-accent);
+}
+
+.qc-ring[data-tone='success'] {
+  --qc-progress-color: var(--q-success);
+}
+
+.qc-ring[data-tone='xp'] {
+  --qc-progress-color: var(--q-xp);
+}
+
+.qc-ring > svg {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+}
+
+.qc-ring-track {
+  fill: none;
+  stroke: var(--q-input);
+}
+
+.qc-ring-fill {
+  fill: none;
+  stroke: var(--qc-progress-color);
+  stroke-linecap: round;
+  transition: stroke-dashoffset var(--q-duration) var(--q-ease);
+}
+
+.qc-ring-center {
+  position: relative;
+  color: var(--q-text);
+  font-size: var(--q-text-sm);
+  font-weight: var(--q-weight-bold);
+}

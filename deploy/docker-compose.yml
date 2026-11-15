@@ -1,0 +1,25 @@
+# КвестКласс 2 on the shared VPS (FEAT-046). Lives in /opt/questclass on the server.
+# Started only through deploy.sh, which sets QC_TAG (image tag) — see deploy/README.md.
+# Caddy (another project) proxies questclass.duckdns.org → questclass:8080 over shared_web.
+services:
+  questclass:
+    image: ghcr.io/olegmedv/questclass:${QC_TAG:?QC_TAG is set by deploy.sh}
+    container_name: questclass
+    restart: unless-stopped
+    # Owned by uid 1000 (user `node` in the image). Holds questclass.db, master.key, media, snapshots.
+    volumes:
+      - /opt/questclass/data:/data
+    networks:
+      - shared_web
+    mem_limit: 256m
+    # tini forwards SIGTERM; the server finishes in-flight requests and closes the DB.
+    stop_grace_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  shared_web:
+    external: true

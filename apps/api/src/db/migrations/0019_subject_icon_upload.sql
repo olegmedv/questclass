@@ -1,0 +1,1 @@
+ALTER TABLE `subjects` ADD `icon_upload_id` integer REFERENCES `media`(`id`) ON UPDATE no action ON DELETE restrict;

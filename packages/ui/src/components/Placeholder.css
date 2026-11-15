@@ -1,0 +1,39 @@
+.qc-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--q-space-2);
+  width: 100%;
+  padding: var(--q-space-2);
+  border: 2px dashed var(--q-border);
+  border-radius: var(--q-radius-md);
+  background: var(--q-input);
+  color: var(--q-subtle);
+  text-align: center;
+}
+
+.qc-placeholder svg {
+  width: 28px;
+  height: 28px;
+}
+
+.qc-placeholder[data-size='sm'] {
+  width: 48px;
+  padding: var(--q-space-1);
+}
+
+.qc-placeholder[data-size='sm'] svg {
+  width: 20px;
+  height: 20px;
+}
+
+.qc-placeholder[data-size='md'] {
+  width: 120px;
+}
+
+.qc-placeholder-label {
+  font-size: var(--q-text-xs);
+  font-weight: var(--q-weight-semibold);
+  line-height: var(--q-leading-tight);
+}

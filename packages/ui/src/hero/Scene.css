@@ -1,0 +1,200 @@
+.qc-scene {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: var(--q-radius-md);
+  background: var(--q-input);
+}
+
+.qc-scene-backdrop {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+/* The hero's feet stand on the room's foot point; the hero moves, never the room. */
+.qc-scene-actor {
+  position: absolute;
+  z-index: 1;
+  left: var(--qc-foot-x);
+  bottom: var(--qc-foot-bottom);
+  width: 46%;
+  aspect-ratio: 1 / 1;
+  transform: translate(-50%, var(--qc-foot-offset));
+  pointer-events: none;
+}
+
+.qc-scene-hero {
+  width: 100%;
+  height: 100%;
+}
+
+.qc-scene-hero .qc-hero-frame {
+  overflow: visible;
+}
+
+.qc-scene[data-phase='cover'] .qc-scene-hero {
+  animation: qc-scene-hero-hide var(--q-duration) ease-in forwards;
+}
+
+.qc-scene[data-phase='reveal'] .qc-scene-hero {
+  animation: qc-scene-hero-show var(--q-duration-slow) ease-out both;
+}
+
+.qc-scene-status {
+  position: absolute;
+  z-index: 4;
+  bottom: var(--q-space-2);
+  left: 50%;
+  max-width: 90%;
+  padding: var(--q-space-1) var(--q-space-3);
+  border-radius: var(--q-radius-sm);
+  background: var(--q-overlay);
+  color: var(--q-text);
+  font-size: var(--q-text-sm);
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+@keyframes qc-scene-hero-hide {
+  to {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+
+@keyframes qc-scene-hero-show {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qc-scene[data-phase] .qc-scene-hero {
+    animation: none;
+  }
+}
+
+/* The «Герой» screen: scene and caption, then the wardrobe; side by side on wide screens. */
+.qc-fitting {
+  display: grid;
+  grid-template-areas:
+    'header'
+    'stage'
+    'wardrobe';
+  gap: var(--q-space-3);
+  min-width: 0;
+}
+
+.qc-fitting-header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--q-space-2);
+  min-width: 0;
+}
+
+.qc-fitting-title {
+  margin: 0;
+  font-family: var(--q-font-display);
+  font-size: var(--q-text-xl);
+  line-height: var(--q-leading-tight);
+}
+
+.qc-fitting-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--q-space-1);
+}
+
+.qc-fitting-stage {
+  grid-area: stage;
+  display: flex;
+  flex-direction: column;
+  gap: var(--q-space-2);
+  min-width: 0;
+}
+
+.qc-fitting-caption {
+  margin: 0;
+  font-size: var(--q-text-base);
+  font-weight: var(--q-weight-bold);
+  line-height: var(--q-leading-tight);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.qc-fitting-wardrobe {
+  grid-area: wardrobe;
+  display: flex;
+  flex-direction: column;
+  gap: var(--q-space-2);
+  min-width: 0;
+}
+
+@media (width >= 720px) {
+  .qc-fitting {
+    grid-template-areas:
+      'header header'
+      'stage wardrobe';
+    grid-template-columns: minmax(0, 1.3fr) minmax(260px, 1fr);
+    align-items: start;
+  }
+}
+
+/* A live room in the shop: the thumbnail until «плей», then the moving room. */
+.qc-room-preview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.qc-room-preview .qc-scene {
+  height: 100%;
+  border-radius: 0;
+}
+
+.qc-room-preview-thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+.qc-room-preview-toggle {
+  position: absolute;
+  z-index: 5;
+  right: var(--q-space-1);
+  bottom: var(--q-space-1);
+  display: grid;
+  place-items: center;
+  width: var(--q-touch);
+  height: var(--q-touch);
+  border: 1px solid var(--q-cat-teal-border);
+  border-radius: var(--q-radius-round);
+  background: var(--q-cat-teal-bg);
+  color: var(--q-cat-teal);
+}
+
+.qc-room-preview-toggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+.qc-room-preview-toggle[aria-pressed='true'] {
+  border-color: var(--q-cat-teal);
+}

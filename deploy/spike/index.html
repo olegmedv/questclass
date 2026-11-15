@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>КвестКласс — проверка связи</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; padding: 16px; font: 16px/1.4 system-ui, sans-serif; background: #101827; color: #e8eefc; }
+  h1 { font-size: 20px; margin: 0 0 8px; }
+  p { color: #a9b6d3; margin: 0 0 16px; }
+  button { display: block; width: 100%; max-width: 420px; margin: 0 0 10px; padding: 14px; border: 0; border-radius: 12px;
+           background: #f4c65f; color: #1b2233; font: 600 16px system-ui, sans-serif; cursor: pointer; }
+  button:disabled { opacity: .5; }
+  .row { max-width: 420px; padding: 10px 12px; margin: 0 0 8px; border-radius: 10px; background: #1b2740; font-size: 14px; }
+  .ok { color: #8ee3a5; } .bad { color: #ff9a9a; }
+</style>
+</head>
+<body>
+<h1>Проверка связи с сервером</h1>
+<p>Откройте эту страницу <b>без VPN</b> — дома по Wi-Fi и с мобильного интернета. Нажмите кнопки по очереди и пришлите результаты (скриншот).</p>
+<button data-file="test-1mb.bin" data-mb="1">Скачать 1 МБ</button>
+<button data-file="test-10mb.bin" data-mb="10">Скачать 10 МБ</button>
+<button data-file="test-100mb.bin" data-mb="100">Скачать 100 МБ</button>
+<button id="range">Проверить перемотку (Range)</button>
+<div id="log"></div>
+<script>
+  const log = (html, cls) => { const d = document.createElement('div'); d.className = 'row ' + (cls || ''); d.innerHTML = html; document.getElementById('log').prepend(d); };
+  const net = () => (navigator.connection && navigator.connection.effectiveType) ? ' · сеть: ' + navigator.connection.effectiveType : '';
+  document.querySelectorAll('button[data-file]').forEach(btn => btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    const file = btn.dataset.file, mb = +btn.dataset.mb, t0 = performance.now();
+    let got = 0;
+    try {
+      const res = await fetch(file + '?t=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const reader = res.body.getReader();
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        got += value.length;
+        btn.textContent = `Скачиваю ${mb} МБ… ${(got / 1048576).toFixed(1)} МБ`;
+      }
+      const sec = (performance.now() - t0) / 1000, mbit = (got * 8 / 1e6) / sec;
+      const full = got === mb * 1048576;
+      log(`${mb} МБ: ${full ? 'скачано полностью' : 'ОБРЫВ на ' + (got / 1048576).toFixed(2) + ' МБ'} за ${sec.toFixed(1)} с · ${mbit.toFixed(1)} Мбит/с${net()}`, full ? 'ok' : 'bad');
+    } catch (e) {
+      log(`${mb} МБ: ошибка после ${(got / 1048576).toFixed(2)} МБ — ${e.message}${net()}`, 'bad');
+    }
+    btn.textContent = `Скачать ${mb} МБ`; btn.disabled = false;
+  }));
+  document.getElementById('range').addEventListener('click', async () => {
+    try {
+      const res = await fetch('test-100mb.bin?t=' + Date.now(), { headers: { Range: 'bytes=52428800-52429823' }, cache: 'no-store' });
+      const buf = await res.arrayBuffer();
+      const ok = res.status === 206 && buf.byteLength === 1024;
+      log(`Перемотка: HTTP ${res.status}, получено ${buf.byteLength} байт — ${ok ? 'работает' : 'НЕ работает'}`, ok ? 'ok' : 'bad');
+    } catch (e) { log('Перемотка: ошибка — ' + e.message, 'bad'); }
+  });
+</script>
+</body>
+</html>

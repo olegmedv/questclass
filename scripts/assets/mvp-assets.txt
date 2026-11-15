@@ -1,0 +1,75 @@
+# MVP assets imported from the original app (FEAT-026).
+#
+# Paths are relative to the original's `public/` directory (QuestClass-Source/public).
+# One glob per line: `*` = any characters except `/`, `**/` = any number of folders, `?` = one character.
+# `!glob` excludes files. When several lines match a file, the LAST matching line wins.
+# Optional second column — conversion mode:
+#   auto (default)  PNG -> lossless WebP (same size), WebP/SVG/TTF/TXT copied as is (animated WebP keeps
+#                   its frames), OGG -> OGG + MP3, MP3 -> MP3 + OGG, MP4 -> animated WebP (+ OGG/MP3 of
+#                   its soundtrack, if any).
+#   keep            copy the file byte for byte (platform icons that must stay PNG).
+#   icon            PNG/WebP -> WebP downscaled to fit 256x256 (small UI pictures such as subject icons).
+# Every line must match at least one file, otherwise the import fails.
+# Quiz images are not listed here: they travel with lessons through the lesson import.
+# Excludes below are files the original's code does not reference (superseded versions, leftovers).
+
+# Heroes (static art, packs, live sets).
+game/characters/**
+!game/characters/red-hero.jpg
+!game/characters/rebound-boy-boo.webp
+!game/characters/rebound-boy-hover-wave.webp
+!game/characters/rebound-boy-idle.webp
+!game/characters/rebound-boy-wave.webp
+
+# Animated heroes and the 9 action animations with their covers.
+game/animated/**
+!game/animated/blue-cover.png
+!game/animated/blue-idle.webp
+!game/animated/repaired/vampire-juice.webp
+!game/animated/repaired/vampire-juice-cover.webp
+
+# Fitting room: default room and the starter heroes.
+game/fitting-room/**
+!game/fitting-room/heroes.png
+!game/fitting-room/heroes-compact.webp
+!game/fitting-room/room.png
+!game/fitting-room/room-compact.webp
+
+# Rooms with thumbnails, the "Night hotel" layers and audio, Astro and Rebound audio.
+game/rooms/**
+!game/rooms/room-rebound-hotel.webp
+!game/rooms/room-rebound-hotel-thumb.webp
+!game/rooms/rebound-curtain.webp
+!game/rooms/rebound-audio/**
+!game/rooms/night-hotel/audio/ui/coin_pickup.ogg
+!game/rooms/night-hotel/audio/ui/drawer_open.ogg
+
+# Game menu covers.
+game/menu/**
+!game/menu/multiplication.webp
+
+# Interface sounds.
+game/ui-audio/**
+
+# Subjects, sprite sheets, Robux icon.
+game/subjects-pixel/**  icon
+game/subjects.png  icon
+game/report-robux.svg
+game/heroes.png
+game/special.png
+game/wishes*.png
+
+# App, notification and Star mascot icons. Platform icons (manifest, apple-touch, favicon,
+# notification icon and badge) must stay PNG.
+icons/**
+icons/*.png keep
+icons/stars-transparent-v7/*-192.png keep
+!icons/stars/**
+!icons/stars-cobalt-v5/**
+
+# Praise art and celebrations (the streak clip becomes an animated WebP, no MP4 in git).
+rewards/**
+celebrations/**
+
+# Fonts for the PDF report (jsPDF needs TTF) and their license.
+fonts/**

@@ -1,0 +1,177 @@
+.qc-media {
+  display: flex;
+  flex-direction: column;
+  gap: var(--q-space-2);
+}
+
+.qc-media-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--q-radius-lg);
+  background: var(--q-input);
+  aspect-ratio: 16 / 9;
+}
+
+/* Fullscreen keeps the strip and the controls: the whole player goes fullscreen. */
+.qc-media[data-fullscreen] {
+  justify-content: center;
+  padding: var(--q-space-3);
+  background: var(--q-shutter);
+}
+
+.qc-media[data-fullscreen] .qc-media-frame {
+  flex: 1;
+  min-height: 0;
+  border-radius: 0;
+  aspect-ratio: auto;
+}
+
+.qc-media-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* The black strip over burnt-in subtitles; it is part of the fullscreen frame. */
+.qc-media-shutter {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: var(--q-shutter);
+}
+
+.qc-media-shutter-handle {
+  position: absolute;
+  top: calc(-1 * var(--q-touch) / 2);
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: var(--q-touch);
+  transform: translateX(-50%);
+  cursor: ns-resize;
+  touch-action: none;
+}
+
+.qc-media-shutter-grip {
+  width: 54px;
+  height: 6px;
+  border-radius: var(--q-radius-round);
+  background: var(--q-text);
+  box-shadow: 0 0 0 5px var(--q-overlay);
+}
+
+.qc-media-shutter-open {
+  position: absolute;
+  right: var(--q-space-2);
+  bottom: 50%;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: var(--q-radius-round);
+  background: transparent;
+  color: var(--q-muted);
+  transform: translateY(50%);
+}
+
+.qc-media-shutter-open svg {
+  width: 20px;
+  height: 20px;
+}
+
+.qc-media-status {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--q-space-3);
+  padding: var(--q-space-4);
+  background: var(--q-overlay);
+  color: var(--q-text);
+  text-align: center;
+}
+
+.qc-media-reload {
+  border: 0;
+  background: transparent;
+  color: var(--q-link);
+  font-weight: var(--q-weight-semibold);
+  text-decoration: underline;
+}
+
+.qc-media-timeline {
+  display: flex;
+  align-items: center;
+  gap: var(--q-space-2);
+  color: var(--q-muted);
+  font-size: var(--q-text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.qc-media-range {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--q-primary);
+}
+
+.qc-media-volume {
+  flex: 0 1 120px;
+}
+
+.qc-media-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--q-space-2);
+}
+
+.qc-media-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--q-space-2);
+  min-width: 44px;
+  min-height: 48px;
+  padding: var(--q-space-2) var(--q-space-3);
+  border: 1px solid var(--q-border);
+  border-radius: var(--q-radius-sm);
+  background: var(--q-raised);
+  color: var(--q-text);
+  font-size: var(--q-text-md);
+  font-weight: var(--q-weight-semibold);
+}
+
+.qc-media-btn svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.qc-media-btn:disabled {
+  opacity: 0.55;
+}
+
+.qc-media-controls[data-row='main'] {
+  flex-wrap: nowrap;
+}
+
+.qc-media-play {
+  flex: 1 1 120px;
+  max-width: 240px;
+  border-color: var(--q-border-selected);
+  background: var(--q-primary);
+  color: var(--q-on-primary);
+}
+
+.qc-media-note {
+  color: var(--q-muted);
+  font-size: var(--q-text-sm);
+  text-align: center;
+}

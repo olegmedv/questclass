@@ -1,0 +1,13 @@
+packages:
+  - apps/*
+  - packages/*
+  - tools/*
+  - e2e
+
+# Packages allowed to run install scripts.
+onlyBuiltDependencies:
+  - esbuild
+
+# better-sqlite3 ships N-API prebuilds (incl. linux-x64/musl); compiling it is never needed.
+ignoredBuiltDependencies:
+  - better-sqlite3

@@ -1,0 +1,3 @@
+/* Entry stylesheet of the design system: tokens first, then the global base. */
+@import url('./tokens.css');
+@import url('./base.css');

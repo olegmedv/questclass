@@ -1,0 +1,378 @@
+// Gallery sections of the learner's game screens (shop, wishes, hero). Kept apart from
+// UiGallery.tsx so the gallery file only grows by one line per group; rendered at the end of
+// /dev/ui (new sections go last: inserting above shifts every section below).
+import {
+  AnimatedHero,
+  Badge,
+  Button,
+  CategoryFilter,
+  Clapperboard,
+  DEFAULT_ROOM_SETTINGS,
+  Grid,
+  HeroRibbon,
+  HeroScene,
+  Play,
+  House,
+  LayoutGrid,
+  LiveRoomPreview,
+  Moon,
+  Placeholder,
+  Send,
+  Shirt,
+  ShopItemCard,
+  ShopMark,
+  SpriteImage,
+  Stack,
+  Sun,
+  Text,
+  Ticket,
+  WishCard,
+  type CategoryOption,
+} from '@questclass/ui';
+import { useState, type ComponentType, type ReactNode } from 'react';
+
+type StateName = 'default' | 'disabled' | 'loading' | 'empty' | 'error';
+
+/** The gallery's Demo (one section with the five states). */
+export type GalleryDemo = ComponentType<{
+  id: string;
+  title: string;
+  description?: string;
+  states: Record<StateName, ReactNode | { readonly na: string }>;
+}>;
+
+const TICKETS = '/assets/game/wishes-transparent-v1.webp';
+const SPACE = '/assets/game/fitting-room/space-original.webp';
+const ROOM = '/assets/game/rooms/room-mart-islands-thumb.webp';
+
+const SECTIONS: readonly CategoryOption<'all' | 'heroes' | 'rooms' | 'wishes'>[] = [
+  { value: 'all', label: 'Всё', icon: <LayoutGrid /> },
+  { value: 'heroes', label: 'Герои', icon: <Shirt />, tone: 'blue' },
+  { value: 'rooms', label: 'Комнаты', icon: <House />, tone: 'green' },
+  { value: 'wishes', label: 'Желания', icon: <Ticket />, tone: 'pink' },
+];
+
+const ROOM_FILTERS: readonly CategoryOption<'day' | 'night' | 'animated'>[] = [
+  { value: 'day', label: 'День', icon: <Sun />, tone: 'gold' },
+  { value: 'night', label: 'Ночь', icon: <Moon />, tone: 'violet' },
+  { value: 'animated', label: 'Анимированные', icon: <Clapperboard />, tone: 'teal' },
+];
+
+function FilterDemo() {
+  const [section, setSection] = useState<(typeof SECTIONS)[number]['value']>('rooms');
+  const [room, setRoom] = useState<(typeof ROOM_FILTERS)[number]['value']>('night');
+  return (
+    <Stack gap="sm">
+      <CategoryFilter
+        label="Разделы (демо)"
+        options={SECTIONS}
+        value={section}
+        onChange={setSection}
+      />
+      <CategoryFilter
+        size="sm"
+        label="Комнаты (демо)"
+        options={ROOM_FILTERS}
+        value={room}
+        onChange={setRoom}
+      />
+    </Stack>
+  );
+}
+
+const roomMarks = (
+  <>
+    <ShopMark icon={<Sun />} label="Дневная комната" />
+    <ShopMark tone="teal" icon={<Clapperboard />} label="Анимированная комната" />
+  </>
+);
+
+export function ShopSections({ Demo }: { readonly Demo: GalleryDemo }) {
+  return (
+    <>
+      <Demo
+        id="category-filter"
+        title="CategoryFilter"
+        description="Разделы магазина: значок, подпись, цвет раздела и галочка выбранного; стрелки двигают выбор."
+        states={{
+          default: <FilterDemo />,
+          disabled: (
+            <CategoryFilter
+              label="Разделы (недоступно)"
+              options={SECTIONS}
+              value="all"
+              onChange={() => {}}
+              disabled
+            />
+          ),
+          loading: { na: 'варианты фильтра известны заранее' },
+          empty: { na: 'фильтр без вариантов не показывается' },
+          error: { na: 'фильтр не загружает данные' },
+        }}
+      />
+
+      <Demo
+        id="shop-item-card"
+        title="ShopItemCard"
+        description="Карточка магазина: превью, метки раздела и анимации, название открывает «Подробнее», цена — покупка."
+        states={{
+          default: (
+            <Grid min="sm">
+              <ShopItemCard
+                title="Космонавт"
+                media={<SpriteImage src={SPACE} alt="Космонавт" />}
+                price={40}
+                onBuy={() => {}}
+                onDetails={() => {}}
+              />
+              <ShopItemCard
+                title="Острова Марта"
+                media={<SpriteImage src={ROOM} alt="Острова Марта" />}
+                mediaShape="wide"
+                marks={roomMarks}
+                live
+                price={200}
+                onBuy={() => {}}
+                onDetails={() => {}}
+              />
+            </Grid>
+          ),
+          disabled: (
+            <Grid min="sm">
+              <ShopItemCard
+                title="Острова Марта"
+                media={<SpriteImage src={ROOM} alt="Острова Марта" />}
+                mediaShape="wide"
+                marks={roomMarks}
+                live
+                price={200}
+                missingCoins={150}
+                onBuy={() => {}}
+                onDetails={() => {}}
+              />
+            </Grid>
+          ),
+          loading: (
+            <Grid min="sm">
+              <ShopItemCard title="" price={0} loading />
+            </Grid>
+          ),
+          empty: (
+            <Grid min="sm">
+              <ShopItemCard
+                title="Свой образ"
+                media={<Placeholder kind="upload" label="Картинка товара" />}
+                price={80}
+                onBuy={() => {}}
+              />
+            </Grid>
+          ),
+          error: (
+            <Grid min="sm">
+              <ShopItemCard
+                title="Космонавт"
+                media={<SpriteImage src={SPACE} alt="Космонавт" />}
+                price={40}
+                buying
+                onBuy={() => {}}
+              />
+            </Grid>
+          ),
+        }}
+      />
+
+      <Demo
+        id="wish-card"
+        title="WishCard и SpriteImage"
+        description="«Мои желания»: картинка билета (ячейка спрайта), остаток, статус и «Хочу использовать»."
+        states={{
+          default: (
+            <WishCard
+              title="Robux"
+              amount="300 Robux"
+              description="300 Robux от родителя."
+              picture={
+                <SpriteImage src={TICKETS} sprite={{ cols: 2, rows: 2, col: 1, row: 0 }} alt="" />
+              }
+              status={<Badge tone="success">Куплено · можно использовать</Badge>}
+              action={<Button icon={<Send aria-hidden="true" />}>Хочу использовать</Button>}
+            />
+          ),
+          disabled: (
+            <WishCard
+              title="Картошка и наггетсы"
+              amount="Билетов: 2"
+              picture={
+                <SpriteImage src={TICKETS} sprite={{ cols: 2, rows: 2, col: 0, row: 0 }} alt="" />
+              }
+              status={<Badge tone="info">Просьба отправлена</Badge>}
+              action={
+                <Text size="sm" tone="muted">
+                  Родитель получил твою просьбу.
+                </Text>
+              }
+            />
+          ),
+          loading: (
+            <WishCard
+              title="Robux"
+              amount="300 Robux"
+              picture={
+                <SpriteImage src={TICKETS} sprite={{ cols: 2, rows: 2, col: 1, row: 0 }} alt="" />
+              }
+              action={<Button loading>Хочу использовать</Button>}
+            />
+          ),
+          empty: (
+            <WishCard
+              title="Своё желание"
+              amount="Билетов: 1"
+              picture={<Placeholder kind="upload" label="Картинка товара" size="sm" />}
+            />
+          ),
+          error: { na: 'ошибка просьбы — Notice под кнопкой' },
+        }}
+      />
+    </>
+  );
+}
+
+const FITTING_ROOM = {
+  image: '/assets/game/fitting-room/room-bright.webp',
+  title: 'Уютная примерочная',
+  footAnchor: { x: 50, y: 75 },
+};
+const BLUE = '/assets/game/fitting-room/blue-original.webp';
+const PURPLE = '/assets/game/fitting-room/purple-original.webp';
+
+const blueHero = <AnimatedHero poster={BLUE} alt="Синий исследователь" playing={false} />;
+
+const WARDROBE_TABS = [
+  { id: 'ordinary', label: 'Обычные', icon: <Shirt aria-hidden="true" /> },
+  { id: 'live', label: 'Живые', icon: <Play aria-hidden="true" /> },
+  { id: 'rooms', label: 'Комнаты', icon: <House aria-hidden="true" /> },
+] as const;
+
+const WARDROBE_CARDS = [
+  { id: 'blue', title: 'Синий исследователь', picture: <SpriteImage src={BLUE} alt="" /> },
+  { id: 'purple', title: 'Фиолетовый исследователь', picture: <SpriteImage src={PURPLE} alt="" /> },
+  { id: 'space', title: 'Космонавт', picture: <SpriteImage src={SPACE} alt="" />, live: true },
+];
+
+function RibbonDemo({ disabled = false }: { readonly disabled?: boolean }) {
+  const [tab, setTab] = useState<(typeof WARDROBE_TABS)[number]['id']>('ordinary');
+  const [worn, setWorn] = useState('blue');
+  return (
+    <HeroRibbon
+      label="Персонажи и комнаты (демо)"
+      tabs={WARDROBE_TABS}
+      tab={tab}
+      onTabChange={setTab}
+      listLabel="Персонажи (демо)"
+      cards={WARDROBE_CARDS.map((card) => ({
+        ...card,
+        current: card.id === worn,
+        label: card.id === worn ? `${card.title}, надет` : card.title,
+      }))}
+      onChoose={setWorn}
+      disabled={disabled}
+    />
+  );
+}
+
+export function HeroSections({ Demo }: { readonly Demo: GalleryDemo }) {
+  return (
+    <>
+      <Demo
+        id="hero-scene"
+        title="HeroScene и DressEffect"
+        description="Сцена 3:2: комната (cover, пиксели без сглаживания), герой стоит на точке опоры комнаты; дымка переодевания."
+        states={{
+          default: (
+            <Grid min="md">
+              <HeroScene room={FITTING_ROOM} hero={blueHero} />
+              <HeroScene room={FITTING_ROOM} hero={blueHero} phase="cover" />
+            </Grid>
+          ),
+          disabled: { na: 'сцена не нажимается (живые комнаты — FEAT-036)' },
+          loading: <HeroScene room={null} />,
+          empty: <HeroScene room={FITTING_ROOM} />,
+          error: { na: 'фон не загрузился — подпись поверх прежней комнаты' },
+        }}
+      />
+
+      <Demo
+        id="hero-ribbon"
+        title="HeroRibbon"
+        description="Гардероб: «Обычные / Живые / Комнаты», один тап надевает; метки «Надет» и «Живой»."
+        states={{
+          default: <RibbonDemo />,
+          disabled: <RibbonDemo disabled />,
+          loading: { na: 'пока персонаж грузится — Skeleton' },
+          empty: (
+            <HeroRibbon
+              label="Гардероб (пусто)"
+              tabs={WARDROBE_TABS}
+              tab="live"
+              onTabChange={() => {}}
+              listLabel="Живые (демо)"
+              cards={[]}
+              onChoose={() => {}}
+              empty={<Text>Живые скины можно получить в магазине.</Text>}
+            />
+          ),
+          error: { na: 'ошибка сохранения — Notice под гардеробом' },
+        }}
+      />
+    </>
+  );
+}
+
+const DOZER_ROOM = {
+  image: '/assets/game/rooms/room-dozer-bedroom.webp',
+  title: 'Сонная спальня Дозера',
+  footAnchor: { x: 50, y: 75 },
+  scene: 'ambient:fairy',
+};
+const DOZER_THUMB = '/assets/game/rooms/room-dozer-bedroom-thumb.webp';
+
+function RoomPreviewDemo() {
+  const [playing, setPlaying] = useState(false);
+  return (
+    <LiveRoomPreview
+      room={DOZER_ROOM}
+      thumb={DOZER_THUMB}
+      alt="Сонная спальня Дозера"
+      playing={playing}
+      onToggle={() => setPlaying((value) => !value)}
+    />
+  );
+}
+
+export function LiveRoomSections({ Demo }: { readonly Demo: GalleryDemo }) {
+  return (
+    <Demo
+      id="live-rooms"
+      title="Живые комнаты"
+      description="Слои выбираются по типу сцены комнаты: ambient (огоньки), «Ночной отель», Astro, Rebound. Касание будит комнату; превью магазина — по кнопке, без звука."
+      states={{
+        default: (
+          <Grid min="md">
+            <HeroScene room={DOZER_ROOM} hero={blueHero} />
+            <RoomPreviewDemo />
+          </Grid>
+        ),
+        disabled: (
+          <HeroScene
+            room={DOZER_ROOM}
+            hero={blueHero}
+            settings={{ ...DEFAULT_ROOM_SETTINGS, animations: false }}
+          />
+        ),
+        loading: { na: 'пока фон грузится — подпись «Загружаем комнату…» поверх прежней' },
+        empty: <HeroScene room={{ ...DOZER_ROOM, scene: 'static' }} hero={blueHero} />,
+        error: { na: 'эффект не загрузился — подпись, остальная комната работает' },
+      }}
+    />
+  );
+}

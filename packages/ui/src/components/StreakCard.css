@@ -1,0 +1,199 @@
+.qc-streak-card {
+  border: 1px solid var(--q-border-strong);
+  border-radius: var(--q-radius-lg);
+  background: var(--q-card);
+  color: var(--q-text);
+  box-shadow: var(--q-inset-highlight);
+}
+
+.qc-streak-card-heading {
+  font-size: inherit;
+}
+
+.qc-streak-card-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--q-space-3);
+  width: 100%;
+  min-height: 56px;
+  padding: var(--q-space-2) var(--q-space-5);
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: var(--q-text);
+  font-size: var(--q-text-md);
+  font-weight: var(--q-weight-bold);
+  text-align: left;
+}
+
+.qc-streak-card-toggle:disabled {
+  opacity: 0.75;
+}
+
+.qc-streak-card-flame {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  color: var(--q-coin);
+}
+
+.qc-streak-card-title {
+  white-space: nowrap;
+}
+
+.qc-streak-card-count {
+  color: var(--q-blue);
+  font-size: var(--q-text-sm);
+}
+
+.qc-streak-card-dots {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.qc-streak-card-dot {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border: 1.5px solid var(--q-muted);
+  border-radius: var(--q-radius-round);
+}
+
+.qc-streak-card-gift {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  color: var(--q-coin);
+}
+
+.qc-streak-card-dot + .qc-streak-card-dot,
+.qc-streak-card-dot + .qc-streak-card-gift {
+  margin-left: var(--q-space-2);
+}
+
+.qc-streak-card-dot[data-done] {
+  border-color: var(--q-coin);
+  background: var(--q-coin);
+}
+
+.qc-streak-card-chevron {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--q-muted);
+  transition: transform var(--q-duration-fast);
+}
+
+.qc-streak-card[data-expanded] .qc-streak-card-chevron {
+  transform: rotate(180deg);
+}
+
+.qc-streak-card-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--q-space-3);
+  padding: 0 var(--q-space-3) var(--q-space-4);
+}
+
+.qc-streak-card-panel[hidden] {
+  display: none;
+}
+
+.qc-streak-card-days {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(48px, 1fr));
+  gap: var(--q-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.qc-streak-card-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--q-space-2);
+  font-size: var(--q-text-sm);
+  font-weight: var(--q-weight-bold);
+}
+
+.qc-streak-card-day-mark {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 36px;
+  border-radius: var(--q-radius-sm);
+  background: var(--q-raised);
+  font-size: var(--q-text-md);
+}
+
+.qc-streak-card-day-mark svg {
+  width: 16px;
+  height: 16px;
+}
+
+.qc-streak-card-day[data-done] .qc-streak-card-day-mark {
+  background: var(--q-gold-bg);
+  color: var(--q-coin);
+  box-shadow: inset 0 0 0 1px var(--q-gold-border);
+}
+
+.qc-streak-card-bonus {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--q-space-2);
+  padding-inline: var(--q-space-2);
+}
+
+.qc-streak-card-prize {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--q-space-3);
+  font-size: var(--q-text-lg);
+  font-weight: var(--q-weight-black);
+}
+
+.qc-streak-card-prize svg {
+  width: 18px;
+  height: 18px;
+}
+
+.qc-streak-card-coins,
+.qc-streak-card-xp {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--q-space-1);
+}
+
+.qc-streak-card-coins {
+  color: var(--q-coin);
+}
+
+.qc-streak-card-xp {
+  color: var(--q-blue);
+}
+
+.qc-streak-card-panel > :not(.qc-streak-card-days, .qc-streak-card-bonus) {
+  padding-inline: var(--q-space-2);
+}
+
+@media (width <= 480px) {
+  .qc-streak-card-toggle {
+    gap: var(--q-space-2);
+    padding-inline: var(--q-space-3);
+    font-size: var(--q-text-sm);
+  }
+
+  .qc-streak-card-dot {
+    width: 18px;
+    height: 18px;
+  }
+
+  .qc-streak-card-dot + .qc-streak-card-dot,
+  .qc-streak-card-dot + .qc-streak-card-gift {
+    margin-left: var(--q-space-1);
+  }
+}
