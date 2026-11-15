@@ -1,7 +1,8 @@
 // /admin/shop/new and /admin/shop/:id — one shop item: kind, name, price, «Показывать в
 // магазине», the picture (built-in art or an upload), the animation (built-in or an upload) and,
 // for a ticket, what it gives (a wish or Robux). Every change raises the item's version: a
-// purchase made from an older version is refused.
+// purchase made from an older version is refused. Below the form: the item's other built-in files
+// (a scene's layers and sounds, the first frame of the animation), replaced in place.
 import {
   ROOM_CATEGORIES,
   type CatalogItemDto,
@@ -36,6 +37,7 @@ import { useMemo, useState, type FormEvent } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { errorText } from '../../features/admin/forms';
 import { ItemArt, StillArt } from '../../features/admin-shop/ItemArt';
+import { ItemFiles } from '../../features/admin-shop/ItemFiles';
 import {
   useCatalogItem,
   useCatalogItems,
@@ -566,6 +568,7 @@ export function ShopItemEdit() {
         <ItemArt item={data} />
       </Grid>
       <ItemForm key={data.id} item={data} />
+      <ItemFiles item={data} />
     </AdminPage>
   );
 }

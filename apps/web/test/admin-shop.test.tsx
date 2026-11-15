@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 // FEAT-042: the shop catalog in the admin area — list with kinds, an item from built-in art or an
 // upload, switching it on, the version; handing out Robux (part of what is left) and wishes.
+import type { AppearanceSlotDto } from '@questclass/shared/assets/appearance';
+import type { AssetUseRole } from '@questclass/shared/assets/uses';
 import type { CatalogItemDto, CatalogLibraryDto } from '@questclass/shared/catalog/dto';
 import type { LearnerWishesDto } from '@questclass/shared/wishes/dto';
 import { screen, waitFor, within } from '@testing-library/react';
@@ -106,8 +108,51 @@ function shopApi(extra: ApiTable = {}): ApiTable {
     'GET /api/admin/catalog/items': { body: [pizza, robux] },
     'GET /api/admin/catalog/items/5': { body: pizza },
     'GET /api/admin/uploads': { body: [] },
+    'GET /api/admin/appearance': { body: [] },
     ...extra,
   });
+}
+
+const hotel: CatalogItemDto = {
+  ...base,
+  id: 7,
+  kind: 'room',
+  title: 'Ночной отель',
+  price: 900,
+  active: true,
+  animated: true,
+  roomCategory: 'night',
+  room: {
+    roomKey: 'room-night-hotel-v1',
+    uploadId: null,
+    title: 'Ночной отель',
+    image: '/assets/game/rooms/night-hotel/room_base.webp',
+    thumb: '/assets/game/rooms/night-hotel/thumbnail.webp',
+    footAnchor: { x: 50, y: 75 },
+    scene: 'night-hotel',
+    sceneAssets: { layers: { candles: 'game/rooms/night-hotel/candles_flicker.webp' } },
+  },
+};
+
+/** A built-in file of «Оформление» used by the given items (`[href, role, part]`). */
+function builtin(key: string, uses: [string, AssetUseRole, string][]): AppearanceSlotDto {
+  return {
+    key,
+    files: [key],
+    kind: 'image',
+    area: 'rooms',
+    uses: uses.map(([href, role, part]) => ({
+      area: 'rooms',
+      role,
+      owner: href === '/admin/shop/7' ? 'Ночной отель' : 'Другая комната',
+      part,
+      place: 'Магазин и комната героя',
+      href,
+    })),
+    builtin: { width: 1536, height: 1024, bytes: 90_000, frames: null, durationMs: null },
+    url: `/assets/${key}?v=0`,
+    replacement: null,
+  };
 }
 
 describe('/admin/shop', () => {
@@ -212,6 +257,48 @@ describe('/admin/shop', () => {
     await userEvent.click(within(form).getByRole('button', { name: 'Сохранить' }));
     expect(await screen.findByText('Сохранено, версия 2')).toBeInTheDocument();
     expect(calls.find((call) => call.method === 'PATCH')?.body).toEqual({ active: true });
+  });
+
+  it('a special scene shows its background, layers and sounds, each replaced in place', async () => {
+    mockApi(
+      shopApi({
+        'GET /api/admin/catalog/items/7': { body: hotel },
+        'GET /api/admin/appearance': {
+          body: [
+            builtin('game/rooms/night-hotel/candles_flicker.webp', [
+              ['/admin/shop/7', 'layer', 'Слой сцены: свечи'],
+              ['/admin/shop/8', 'layer', 'Слой сцены: свечи'],
+            ]),
+            builtin('game/rooms/night-hotel/room_base.webp', [
+              ['/admin/shop/7', 'picture', 'Фон сцены'],
+            ]),
+            builtin('game/rooms/other.webp', [['/admin/shop/8', 'picture', 'Фон комнаты']]),
+          ],
+        },
+      }),
+    );
+    renderRoute('/admin/shop/7');
+    const scene = await screen.findByRole('region', { name: 'Сцена комнаты: фон, слои и звуки' });
+    // As the scene is built: the background first, then the layers; other items' files are not here.
+    expect(
+      within(scene)
+        .getAllByRole('button', { name: /^Заменить:/ })
+        .map((tile) => tile.getAttribute('aria-label')),
+    ).toEqual([
+      expect.stringMatching(/^Заменить: Фон сцены/),
+      expect.stringMatching(/^Заменить: Слой сцены: свечи/),
+    ]);
+    await userEvent.click(
+      within(scene).getByRole('button', {
+        name: 'Заменить: Слой сцены: свечи, Общий файл, ещё в 1',
+      }),
+    );
+    const dialog = await screen.findByRole('dialog', { name: 'Ночной отель — слой сцены: свечи' });
+    expect(within(dialog).getByText(/Файл общий/)).toBeInTheDocument();
+    expect(within(dialog).getByRole('link', { name: /Другая комната/ })).toHaveAttribute(
+      'href',
+      '/admin/shop/8',
+    );
   });
 
   it('an own picture is uploaded and replaces the built-in hero', async () => {
