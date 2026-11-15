@@ -1,5 +1,8 @@
 # Данные ребёнка и выгрузки оригинала — не коммитить
 /ddatabase/
+# Скриншоты оригинала (в них данные ребёнка) лежат только локально
+/docs/reference-screens/desktop/
+/docs/reference-screens/mobile/
 /QuestClass-Source.zip
 /QuestClass-Source/
 
