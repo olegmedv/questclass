@@ -1,6 +1,7 @@
 // Interface sounds (spec/02 §2.15): four short effects with priorities, one at a time. A sound
 // that took longer than 900 ms to load is dropped rather than announcing an old event late.
 // Sounds never change progress; they only follow what the app already decided.
+import { APP_ASSETS, assetStem } from '@questclass/shared/assets/uses';
 
 export type InterfaceSound = 'packet' | 'element' | 'level' | 'complete';
 export type AudioFormat = 'ogg' | 'mp3';
@@ -12,7 +13,7 @@ export const INTERFACE_SOUNDS: Readonly<
   packet: { file: 'game/ui-audio/packet-magic', priority: 1 },
   element: { file: 'game/ui-audio/element-shimmer', priority: 2 },
   level: { file: 'game/ui-audio/level-enchantment', priority: 3 },
-  complete: { file: 'game/ui-audio/collection-blessing', priority: 4 },
+  complete: { file: assetStem(APP_ASSETS.rewardSound.file), priority: 4 },
 };
 
 export const MAX_LOAD_DELAY_MS = 900;

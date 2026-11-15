@@ -18,6 +18,7 @@ import {
   Users,
 } from '@questclass/ui';
 import type { ReactNode } from 'react';
+import { LOGO_URL } from '../features/tasks/assets';
 
 export type LearnerSection = 'study' | 'hero' | 'shop';
 
@@ -78,7 +79,7 @@ export function LearnerShell({
   const showStats = Boolean(stats) || statsLoading;
   const header = (
     <TopBar
-      brand={<Brand logo="/assets/icons/star-v1-192.png" href={LEARNER_PATHS.study} />}
+      brand={<Brand logo={LOGO_URL} href={LEARNER_PATHS.study} />}
       actions={
         <>
           <Menu

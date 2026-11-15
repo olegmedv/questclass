@@ -1,6 +1,7 @@
 // «Мои желания»: bought tickets grouped by reward (all Robux together), «Хочу использовать» and
 // the history of what the parent handed out (spec/02 §2.6). Used by the wishes page and the
 // «Билетики» tab of «Мои награды».
+import { APP_ASSETS } from '@questclass/shared/assets/uses';
 import type { WishGroupDto } from '@questclass/shared/wishes/dto';
 import {
   Accordion,
@@ -26,7 +27,7 @@ import { assetUrl } from '../tasks/assets';
 import { remainingText } from './model';
 import { useMyWishes, useWishRequest } from './queries';
 
-const ROBUX_ICON = assetUrl('game/report-robux.svg');
+const ROBUX_ICON = assetUrl(APP_ASSETS.robuxIcon.file);
 
 const date = (iso: string) =>
   new Date(iso).toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });

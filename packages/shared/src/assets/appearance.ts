@@ -1,6 +1,7 @@
 // «Оформление» (FEAT-059): built-in files the admin replaced with own uploads.
 import { z } from 'zod';
-import type { AssetGroupId, AssetSlotKind } from './slots';
+import type { AssetSlotKind } from './slots';
+import type { AssetArea, AssetUseDto } from './uses';
 
 export interface AssetReplacementDto {
   readonly uploadId: number;
@@ -12,13 +13,16 @@ export interface AssetReplacementDto {
   readonly updatedAt: string;
 }
 
-/** One replaceable built-in file as the admin sees it. */
+/** One replaceable built-in file as the admin sees it: what it is and where it shows. */
 export interface AppearanceSlotDto {
   readonly key: string;
   /** Files it stands for (a sound: `.mp3` and `.ogg`). */
   readonly files: readonly string[];
   readonly kind: AssetSlotKind;
-  readonly group: AssetGroupId;
+  /** The area of its first use; `unused` for a replaced file nothing shows any more. */
+  readonly area: AssetArea;
+  /** Where the app shows it, the owners' admin pages first. */
+  readonly uses: readonly AssetUseDto[];
   /** The built-in file. */
   readonly builtin: {
     readonly width: number | null;

@@ -10,6 +10,7 @@ import {
   type AssetSlot,
   type AssetSlotKind,
 } from '@questclass/shared/assets/slots';
+import type { AssetFileUse, AssetUseDto } from '@questclass/shared/assets/uses';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
 import type { Db } from '../../db/client';
@@ -37,7 +38,10 @@ export interface AssetReplacementFile {
 }
 
 export interface AppearanceService {
-  /** Every replaceable built-in file with its replacement, for the admin. */
+  /**
+   * The built-in files the app shows (and the replaced ones), with where each shows and its
+   * replacement, for the admin. A file nothing shows is left out: replacing it changes nothing.
+   */
   list(): AppearanceSlotDto[];
   /** Replaces a built-in file with an upload of the same kind (still, animation, sound). */
   replace(slotKey: string, uploadId: number, actorId: number | null): AppearanceSlotDto;
@@ -54,6 +58,8 @@ export interface AppearanceService {
 export interface AppearanceDeps {
   readonly audit: AuditService;
   readonly uploads: UploadsService;
+  /** Every use of a built-in file: shop items, subjects, the app itself (read on each list). */
+  readonly uses?: () => readonly AssetFileUse[];
   readonly clock?: () => number;
 }
 
@@ -64,7 +70,21 @@ const KIND_NEEDED: Record<AssetSlotKind, string> = {
 };
 
 export function createAppearanceService(db: Db, deps: AppearanceDeps): AppearanceService {
-  const { audit, uploads, clock = Date.now } = deps;
+  const { audit, uploads, uses = () => [], clock = Date.now } = deps;
+
+  /** Uses by slot key (a sound named by its `.ogg` goes to its `.mp3` slot), duplicates once. */
+  const usesBySlot = (): Map<string, AssetUseDto[]> => {
+    const found = new Map<string, AssetUseDto[]>();
+    const seen = new Set<string>();
+    for (const { file, ...use } of uses()) {
+      const slot = assetSlotOfFile(file);
+      const id = slot ? JSON.stringify([slot.key, use.owner, use.part, use.href]) : '';
+      if (!slot || seen.has(id)) continue;
+      seen.add(id);
+      found.set(slot.key, [...(found.get(slot.key) ?? []), use]);
+    }
+    return found;
+  };
 
   // One process serves the app: the rows are read once and re-read after every change.
   let cache: Map<string, AssetOverrideRow> | null = null;
@@ -87,7 +107,7 @@ export function createAppearanceService(db: Db, deps: AppearanceDeps): Appearanc
     return slot;
   };
 
-  const toDto = (slot: AssetSlot): AppearanceSlotDto => {
+  const toDto = (slot: AssetSlot, slotUses: readonly AssetUseDto[]): AppearanceSlotDto => {
     const row = rows().get(slot.key);
     const upload = row ? uploads.get(row.uploadId) : undefined;
     const main = slot.files[0] ?? slot.key;
@@ -95,7 +115,8 @@ export function createAppearanceService(db: Db, deps: AppearanceDeps): Appearanc
       key: slot.key,
       files: slot.files,
       kind: slot.kind,
-      group: slot.group,
+      area: slotUses[0]?.area ?? 'unused',
+      uses: slotUses,
       builtin: {
         width: slot.width,
         height: slot.height,
@@ -118,7 +139,13 @@ export function createAppearanceService(db: Db, deps: AppearanceDeps): Appearanc
   };
 
   return {
-    list: () => ASSET_SLOTS.map(toDto),
+    list() {
+      const found = usesBySlot();
+      const replaced = rows();
+      return ASSET_SLOTS.filter((slot) => found.has(slot.key) || replaced.has(slot.key)).map(
+        (slot) => toDto(slot, found.get(slot.key) ?? []),
+      );
+    },
 
     replace(slotKey, uploadId, actorId) {
       const slot = requireSlot(slotKey);
@@ -151,7 +178,7 @@ export function createAppearanceService(db: Db, deps: AppearanceDeps): Appearanc
         audit.record(actorId, assetReplaced, 'asset', slot.key, payload);
       });
       cache = null;
-      return toDto(slot);
+      return toDto(slot, usesBySlot().get(slot.key) ?? []);
     },
 
     restore(slotKey, actorId) {
@@ -171,7 +198,7 @@ export function createAppearanceService(db: Db, deps: AppearanceDeps): Appearanc
         }
       });
       cache = null;
-      return toDto(slot);
+      return toDto(slot, usesBySlot().get(slot.key) ?? []);
     },
 
     current() {

@@ -14,6 +14,7 @@ import type {
 } from '@questclass/shared/wishes/dto';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, ApiError } from '../../api/client';
+import { appearanceKeys } from '../appearance/keys';
 
 /** `GET /api/admin/uploads`: a picture the admin uploaded. */
 export interface UploadDto {
@@ -68,7 +69,10 @@ export function useCreateItem() {
       api<CatalogItemDto>('/api/admin/catalog/items', { method: 'POST', json: input }),
     onSuccess: (item) => {
       client.setQueryData(shopKeys.item(item.id), item);
-      return client.invalidateQueries({ queryKey: shopKeys.items });
+      return Promise.all([
+        client.invalidateQueries({ queryKey: shopKeys.items }),
+        client.invalidateQueries({ queryKey: appearanceKeys.admin }),
+      ]);
     },
   });
 }
@@ -80,10 +84,13 @@ export function useUpdateItem(id: number) {
       api<CatalogItemDto>(`/api/admin/catalog/items/${id}`, { method: 'PATCH', json: patch }),
     onSuccess: (item) => {
       client.setQueryData(shopKeys.item(item.id), item);
-      return client.invalidateQueries({
-        queryKey: shopKeys.items,
-        predicate: (q) => q.queryKey[3] !== 'one',
-      });
+      return Promise.all([
+        client.invalidateQueries({
+          queryKey: shopKeys.items,
+          predicate: (q) => q.queryKey[3] !== 'one',
+        }),
+        client.invalidateQueries({ queryKey: appearanceKeys.admin }),
+      ]);
     },
   });
 }

@@ -14,6 +14,7 @@ import {
   UserRound,
 } from '@questclass/ui';
 import type { ReactNode } from 'react';
+import { LOGO_URL } from '../features/tasks/assets';
 
 export interface AdminSection {
   readonly id: string;
@@ -38,9 +39,7 @@ export function AdminShell({ sections, active, adminName, onLogout, children }: 
       header={
         <TopBar
           width="admin"
-          brand={
-            <Brand logo="/assets/icons/star-v1-192.png" caption="Кабинет родителя" href="/admin" />
-          }
+          brand={<Brand logo={LOGO_URL} caption="Кабинет родителя" href="/admin" />}
           actions={
             <Menu
               label="Профиль родителя"

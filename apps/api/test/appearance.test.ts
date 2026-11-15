@@ -1,7 +1,9 @@
-// «Оформление» (FEAT-059): any built-in file is replaced with an own upload and answered at its
-// own /assets URL; restoring puts the built-in file back; versions are public.
+// «Оформление» (FEAT-059, FEAT-062): any built-in file is replaced with an own upload and answered
+// at its own /assets URL; restoring puts the built-in file back; versions are public. The admin
+// list names every file by where it shows and links the page that edits its owner.
 import type { AppearanceDto, AppearanceSlotDto } from '@questclass/shared/assets/appearance';
-import { ASSET_SLOTS } from '@questclass/shared/assets/slots';
+import { assetSlot } from '@questclass/shared/assets/slots';
+import { APP_ASSETS } from '@questclass/shared/assets/uses';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -14,7 +16,7 @@ import { quickAdmin } from './helpers/fastUsers';
 
 const LOGO = 'icons/star-v1-32.png';
 const MOVIE = 'celebrations/streak-five-v1.webp';
-const SOUND = ASSET_SLOTS.find((slot) => slot.group === 'sounds');
+const SOUND = assetSlot(APP_ASSETS.rewardSound.file);
 const BUILTIN = 'BUILT-IN FILE';
 
 let runtime: TestRuntime;
@@ -66,7 +68,7 @@ describe('replacing built-in files', () => {
     const res = await replace(LOGO, own.id);
     expect(res.status, await res.clone().text()).toBe(200);
     const slot = (await res.json()) as AppearanceSlotDto;
-    expect(slot).toMatchObject({ key: LOGO, kind: 'image', group: 'brand' });
+    expect(slot).toMatchObject({ key: LOGO, kind: 'image', area: 'brand' });
     expect(slot.replacement).toMatchObject({ uploadId: own.id, mime: 'image/png' });
     expect(slot.url).toBe(`/assets/${LOGO}?v=${own.id}`);
 
@@ -149,15 +151,79 @@ describe('replacing built-in files', () => {
     expect(runtime.ctx.appearance.replacementOf(MOVIE)).toBeUndefined();
   });
 
-  it('lists every replaceable file for the admin, grouped', async () => {
+  it('names every file by where it shows and leaves out the files nothing shows', async () => {
     const res = await admin.get('/api/admin/appearance');
     expect(res.status).toBe(200);
     const slots = (await res.json()) as AppearanceSlotDto[];
-    expect(slots).toHaveLength(ASSET_SLOTS.length);
-    expect(slots.find((slot) => slot.key === LOGO)).toMatchObject({
+    const byKey = new Map(slots.map((slot) => [slot.key, slot]));
+    const hotel = runtime.ctx.catalog
+      .items({ kind: 'room' })
+      .find((item) => item.title === 'Ночной отель');
+    if (!hotel) throw new Error('No «Ночной отель» in the seed catalog');
+
+    expect(byKey.get(LOGO)).toMatchObject({
       kind: 'image',
+      area: 'brand',
       replacement: null,
       url: `/assets/${LOGO}?v=0`,
+      uses: [{ role: 'app', owner: null, part: 'Значок вкладки', href: null }],
     });
+    // A layer and a sound of a special scene: named by the item, linked to its editor.
+    expect(byKey.get('game/rooms/night-hotel/candles_flicker.webp')).toMatchObject({
+      area: 'rooms',
+      uses: [
+        {
+          role: 'layer',
+          owner: 'Ночной отель',
+          part: 'Слой сцены: свечи',
+          place: 'Магазин и комната героя',
+          href: `/admin/shop/${hotel.id}`,
+        },
+      ],
+    });
+    expect(byKey.get('game/rooms/night-hotel/audio/events/door_creak.mp3')?.uses).toEqual([
+      expect.objectContaining({ role: 'sound', part: 'Звук события: скрип двери' }),
+    ]);
+    expect(byKey.get('game/subjects-pixel/math.webp')?.uses).toEqual([
+      expect.objectContaining({ area: 'subjects', owner: 'Математика', href: '/admin/subjects' }),
+    ]);
+    // The starter animation: the shop item first, then the home card that shows it too.
+    expect(byKey.get(APP_ASSETS.starterHero.file)?.area).toBe('heroes');
+    expect(byKey.get(APP_ASSETS.starterHero.file)?.uses.map((use) => use.role)).toEqual([
+      'animation',
+      'app',
+    ]);
+    // Pictures the app never shows are not offered.
+    expect(byKey.has('game/menu/handwriting.webp')).toBe(false);
+    expect(byKey.has('game/ui-audio/packet-magic.mp3')).toBe(false);
+  });
+
+  it('an own picture of an item drops its built-in files; a replaced unused file stays listed', async () => {
+    const hotel = runtime.ctx.catalog
+      .items({ kind: 'room' })
+      .find((item) => item.title === 'Ночной отель');
+    if (!hotel) throw new Error('No «Ночной отель» in the seed catalog');
+    const own = await upload(png(300, 200), 'game/rooms/night-hotel/room_base.webp');
+    const patched = await admin.request('PATCH', `/api/admin/catalog/items/${hotel.id}`, {
+      json: { roomKey: null, imageUploadId: own.id, roomCategory: 'night' },
+    });
+    expect(patched.status, await patched.clone().text()).toBe(200);
+
+    const unused = 'game/menu/handwriting.webp';
+    const spare = await upload(png(64, 64), unused);
+    expect((await replace(unused, spare.id)).status).toBe(200);
+
+    const math = runtime.ctx.subjects.findByKey('math');
+    const icon = await upload(png(64, 64), 'game/subjects-pixel/math.webp');
+    expect(
+      (await admin.patch(`/api/admin/subjects/${math?.id}`, { iconUploadId: icon.id })).status,
+    ).toBe(200);
+
+    const slots = (await (await admin.get('/api/admin/appearance')).json()) as AppearanceSlotDto[];
+    const byKey = new Map(slots.map((slot) => [slot.key, slot]));
+    expect(byKey.has('game/rooms/night-hotel/candles_flicker.webp')).toBe(false);
+    expect(byKey.has('game/subjects-pixel/math.webp')).toBe(false);
+    expect(byKey.get(unused)).toMatchObject({ area: 'unused', uses: [] });
+    expect(byKey.get(unused)?.replacement?.uploadId).toBe(spare.id);
   });
 });

@@ -10,6 +10,7 @@ import type {
 } from '@questclass/shared/tasks/dto';
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 import { api } from '../../api/client';
+import { appearanceKeys } from '../appearance/keys';
 
 export const adminTaskKeys = {
   subjects: ['admin', 'subjects'] as const,
@@ -37,6 +38,8 @@ function refreshSubjects(client: QueryClient) {
   return Promise.all([
     client.invalidateQueries({ queryKey: adminTaskKeys.subjects }),
     client.invalidateQueries({ queryKey: ['subjects'] }),
+    // A subject's icon decides where a built-in picture shows («Оформление»).
+    client.invalidateQueries({ queryKey: appearanceKeys.admin }),
   ]);
 }
 

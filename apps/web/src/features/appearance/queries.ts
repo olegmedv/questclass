@@ -7,10 +7,9 @@ import { api } from '../../api/client';
 import { shopKeys, uploadPicture } from '../admin-shop/queries';
 import { builtinDurationMs } from '../tasks/assets';
 
-export const appearanceKeys = {
-  current: ['appearance'] as const,
-  admin: ['admin', 'appearance'] as const,
-};
+import { appearanceKeys } from './keys';
+
+export { appearanceKeys };
 
 /** Public: replaced files with their versions and animation lengths. */
 export function useAppearance() {
@@ -85,5 +84,39 @@ export function useRestoreBuiltin() {
   return useMutation({
     mutationFn: (slot: string) => api<AppearanceSlotDto>(slotPath(slot), { method: 'DELETE' }),
     onSuccess: refresh,
+  });
+}
+
+/** One file for several slots (the logo in every size): uploaded once, put in place of each. */
+export function useReplaceAllWithFile() {
+  const refresh = useRefresh();
+  return useMutation({
+    mutationFn: async ({ slots, file }: { slots: readonly string[]; file: File }) => {
+      const [first] = slots;
+      if (first === undefined) return;
+      const upload = await uploadPicture(file, first);
+      for (const slot of slots) {
+        await api<AppearanceSlotDto>(slotPath(slot), {
+          method: 'PUT',
+          json: { uploadId: upload.id },
+        });
+      }
+    },
+    // A failure half-way leaves some slots replaced: show what is there.
+    onSettled: refresh,
+  });
+}
+
+/** Puts the built-in files of several slots back. */
+export function useRestoreAll() {
+  const refresh = useRefresh();
+  return useMutation({
+    mutationFn: async (slots: readonly string[]) => {
+      for (const slot of slots) {
+        await api<AppearanceSlotDto>(slotPath(slot), { method: 'DELETE' });
+      }
+    },
+    // A failure half-way leaves some slots replaced: show what is there.
+    onSettled: refresh,
   });
 }

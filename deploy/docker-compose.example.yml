@@ -1,0 +1,41 @@
+# КвестКласс on a fresh server: the app and Caddy (HTTPS from Let's Encrypt) in one compose file.
+# See docs/DEPLOY.md. From the repository root:
+#
+#   DOMAIN=quest.example.com docker compose -f deploy/docker-compose.example.yml up -d --build
+#
+# The domain's DNS must point at this server, ports 80 and 443 must be open.
+services:
+  questclass:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: questclass:local
+    restart: unless-stopped
+    # The database, master.key, media and migration snapshots. A named volume is owned by
+    # uid 1000 (user `node` in the image); a bind mount must be chowned to 1000 by hand.
+    volumes:
+      - questclass-data:/data
+    mem_limit: 256m
+    # tini forwards SIGTERM; the server finishes in-flight requests and closes the DB.
+    stop_grace_period: 20s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  caddy:
+    image: caddy:2.8
+    restart: unless-stopped
+    command: caddy reverse-proxy --from ${DOMAIN:?set DOMAIN to the site address} --to questclass:8080
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy-data:/data
+    depends_on:
+      - questclass
+
+volumes:
+  questclass-data:
+  caddy-data:

@@ -5,9 +5,10 @@ import { Brand } from '@questclass/ui';
 import { useEffect, useState } from 'react';
 import { isApiError } from '../../api/client';
 import { HOME_BY_ROLE, type LoginRedirectState } from '../../app/guards';
+import { LOGO_URL } from '../../features/tasks/assets';
 
 export function AuthBrand() {
-  return <Brand logo="/assets/icons/star-v1-192.png" />;
+  return <Brand logo={LOGO_URL} />;
 }
 
 /** `{ field: message }` from a 400 answer (`details: [{ path, message }]`). */
